@@ -27,20 +27,27 @@ const PluginDefinitionNameMatcher = /definePlugin\(\{\s*(["'])?name\1:\s*(["'`])
  */
 export const resolvePluginName = async (base, dirent) => {
     const fullPath = join(base, dirent.name);
-    const content = await (dirent.isFile()
-        ? readFile(fullPath, "utf-8")
-        : (async () => {
-            for (const file of ["index.ts", "index.tsx"]) {
-                try {
-                    return await readFile(join(fullPath, file), "utf-8");
-                } catch {
-                    continue;
-                }
+    /**
+     * @type {string}
+     */
+    let content;
+    if (dirent.isFile()) {
+        content = await readFile(fullPath, "utf-8");
+    } else {
+        for (const file of ["index.ts", "index.tsx"]) {
+            try {
+                content = await readFile(join(fullPath, file), "utf-8");
+                break;
+            } catch {
+                continue;
             }
+        }
+        if (!content) {
             throw new Error(
                 `Invalid plugin ${fullPath}: neither index.ts nor index.tsx found`
             );
-        })());
+        }
+    }
     return (
         PluginDefinitionNameMatcher.exec(content)?.[3] ??
         (() => {
