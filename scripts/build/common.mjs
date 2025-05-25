@@ -37,6 +37,9 @@ export const resolvePluginName = async (base, dirent) => {
                     continue;
                 }
             }
+            throw new Error(
+                `Invalid plugin ${fullPath}: neither index.ts nor index.tsx found`
+            );
         })());
     return (
         PluginDefinitionNameMatcher.exec(content)?.[3] ??
