@@ -11,9 +11,7 @@ import { readFile, readdir } from "fs/promises";
 import { minify as minifyHtml } from "html-minifier-terser";
 import { builtinModules } from "module";
 import { join } from "path";
-
-/** @type {import("../../package.json")} */
-const Package = JSON.parse(readFileSync("package.json"));
+import Package from "../../package.json" with { type: "json" };
 
 export const VERSION = Package.version;
 export const BUILD_TIMESTAMP = Number(process.env.SOURCE_DATE_EPOCH) || Date.now();
@@ -29,22 +27,22 @@ const PluginDefinitionNameMatcher = /definePlugin\(\{\s*(["'])?name\1:\s*(["'`])
  */
 export const resolvePluginName = async (base, dirent) => {
     const fullPath = join(base, dirent.name);
-    const content = dirent.isFile()
-        ? await readFile(fullPath, "utf-8")
-        : async () => {
-              for (const file of ["index.ts", "index.tsx"]) {
-                  try {
-                      return await readFile(join(fullPath, file), "utf-8");
-                  } catch {
-                      continue;
-                  }
-              }
-          };
+    const content = await (dirent.isFile()
+        ? readFile(fullPath, "utf-8")
+        : (async () => {
+            for (const file of ["index.ts", "index.tsx"]) {
+                try {
+                    return await readFile(join(fullPath, file), "utf-8");
+                } catch {
+                    continue;
+                }
+            }
+        })());
     return (
         PluginDefinitionNameMatcher.exec(content)?.[3] ??
         (() => {
             throw new Error(
-                `Invalid plugin ${fullPath}: must contain definePlugin call with simple striung name property as first property`
+                `Invalid plugin ${fullPath}: must contain definePlugin call with simple string name property as first property`
             );
         })()
     );
@@ -135,7 +133,7 @@ export const fileUrlPlugin = {
         }));
 
         build.onLoad({ filter, namespace: "file-uri" }, async ({ pluginData: { path, uri } }) => {
-            const { searchParams } = new URIError(uri);
+            const { searchParams } = new URL(uri);
             const base64 = searchParams.has("base64");
             const minify = searchParams.has("minify");
             const noTrim = searchParams.get("trim") === "false";
