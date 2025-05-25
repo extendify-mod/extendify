@@ -6,7 +6,6 @@ import "../checkNodeVersion.js";
 import { exists, hasArg } from "../utils.mjs";
 
 import esbuild from "esbuild";
-import { readFileSync } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { minify as minifyHtml } from "html-minifier-terser";
 import { builtinModules } from "module";
