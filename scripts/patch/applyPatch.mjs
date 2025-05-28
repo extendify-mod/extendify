@@ -26,7 +26,11 @@ const createXpuiPatch = async () => {
             console.log(`Copied ${fileName}`);
         }
 
-        const buffer = await archive.generateAsync({ type: "uint8array" });
+        const buffer = await archive.generateAsync({
+            type: "uint8array",
+            compression: "DEFLATE",
+            compressionOptions: { level: 9 }
+        });
         await writeFile(join(appsPath, "xpui.spa"), buffer);
         console.log("Wrote new archive");
     }

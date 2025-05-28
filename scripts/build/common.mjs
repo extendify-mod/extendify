@@ -2,6 +2,7 @@
  * Modified version of Vendicated's common.mjs
  * @link https://github.com/Vendicated/Vencord/blob/main/scripts/build/common.mjs
  */
+import Package from "../../package.json" with { type: "json" };
 import "../checkNodeVersion.js";
 import { exists, hasArg } from "../utils.mjs";
 
@@ -10,7 +11,6 @@ import { readFile, readdir } from "fs/promises";
 import { minify as minifyHtml } from "html-minifier-terser";
 import { builtinModules } from "module";
 import { join } from "path";
-import Package from "../../package.json" with { type: "json" };
 
 export const VERSION = Package.version;
 export const BUILD_TIMESTAMP = Number(process.env.SOURCE_DATE_EPOCH) || Date.now();
@@ -42,9 +42,7 @@ export const resolvePluginName = async (base, dirent) => {
             }
         }
         if (!content) {
-            throw new Error(
-                `Invalid plugin ${fullPath}: neither index.ts nor index.tsx found`
-            );
+            throw new Error(`Invalid plugin ${fullPath}: neither index.ts nor index.tsx found`);
         }
     }
     return (
@@ -203,9 +201,8 @@ export const commonOpts = {
     logLevel: "info",
     bundle: true,
     watch,
-    minify: !watch,
+    minify: !IS_DEV,
     sourcemap: IS_DEV ? "inline" : false,
-    // sourcemap: false,
     legalComments: "linked",
     plugins: [fileUrlPlugin],
     external: ["~plugins"],
