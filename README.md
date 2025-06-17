@@ -6,6 +6,29 @@ The best [Spicetify](https://spicetify.app) alternative in [a familiar way](http
 
 Join the official Extendify [Discord server](https://discord.gg/eWD5BahyBm)!
 
+# Project Status
+
+For this project to continue, the native part of Extendify needs to be completed.
+This is being developed by [1 person](https://github.com/sadan4) and will therefore take a while.
+The native part of Extendify will allow us to hook into Spotify's executable which will open up many possibilities
+for plugins regarding playback and other things that are not controlled by the frontend.
+An example of this is changing the playback speed. We are currently not able to do this because audio is played from the application process.
+
+The way we load and patch webpack modules also needs to be rewritten to allow for better access to components,
+as right now there's not much we can patch or access.
+A big problem with the current system is that dedicated modules (ones that are exported by a file, like the Now Playing view) only export their final component,
+meaning all their child functions, variables and components are not available to us.
+
+For example, if you want to add an "About the artist" section for every artist on a song in the Now Playing view you would need access to the component that creates
+the grid of boxes in the Now Playing view, but you would also (optionally, as you could just recreate this, but it's not preferred) need access to the About the artist component.
+The problem is that these specific individual components are not exported as webpack modules. The only thing that gets exported is the final Now Playing view,
+which is then imported and rendered by Spotify's private bootstrap function.
+
+Finally, we need to implement trivial things like being able to add options to context menus among other things, which will open a lot more doors for new plugins.
+If you're able to create a plugin with the current limitations, make a PR!
+
+The TL;DR is that we're working on it. You can join the [Discord server](https://discord.gg/eWD5BahyBm) to keep up with progress if you want to.
+
 # Inspirations
 
 This project was largely inspired by [Vencord](https://vencord.dev).
