@@ -8,7 +8,12 @@ function replaceAdd(content: string, find: string, add: string) {
  * Exposes the webpack module cache.
  */
 function exposeModuleCache(content: string) {
-    return replaceAdd(content, "o.m=__webpack_modules__,", "o.c=s,");
+    let globals = content.match(/,(.+?)={};/);
+    if (!globals) {
+        return content;
+    }
+    const globalNames = globals[1].split(",");
+    return replaceAdd(content, "o.m=__webpack_modules__,", `o.c=${globalNames[globalNames.length - 1]},`);
 }
 
 /**
@@ -76,6 +81,7 @@ export async function injectExporter() {
     }
 }
 
+// Can be used later for when we implement this for every module..? idk just saving this for now
 function exportAllFunctions(content: string) {
     const regex = /([{,][0-9]+):(\(.*?\))=>{/g;
     return content.replace(regex, (_, prefix, middle) => {
@@ -92,7 +98,7 @@ export async function loadEntrypoint(): Promise<boolean> {
     }
     let r = `// Original name: ${ENTRYPOINT_SCRIPT}\n${text}`;
 
-    [exposeModuleCache, exposePrivateModule, exportAllFunctions].forEach((f) => (r = f(r)));
+    [exposeModuleCache, exposePrivateModule].forEach((f) => (r = f(r)));
 
     if (IS_DEV) {
         const sourceMap = {
