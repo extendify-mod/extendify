@@ -77,11 +77,3 @@ export function launchSpotify() {
             throw new Error(`Platform not implemented: ${process.platform}`);
     }
 }
-
-export async function wrapSpotifyProcess(func) {
-    try {
-        killSpotify();
-    } catch {}
-    await func();
-    launchSpotify();
-}

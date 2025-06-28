@@ -2,7 +2,7 @@
  * Modified version of Vendicated's patchWebpack.ts
  * @link https://github.com/Vendicated/Vencord/blob/main/src/webpack/patchWebpack.ts
  */
-import { ENTRYPOINT_SCRIPT, WEBPACK_CHUNK } from "@utils/constants";
+import { WEBPACK_CHUNK } from "@utils/constants";
 import { Logger } from "@utils/logger";
 import { canonicalizeReplacement } from "@utils/patches";
 import { PatchReplacement } from "@utils/types";
@@ -24,8 +24,8 @@ const logger = new Logger("WebpackInterceptor", "#8caaee");
 
 let webpackChunk: any[];
 
-import("@webpack/loader").then(async (v) => {
-    (await v.loadEntrypoint())
+loadEntrypoint().then((success) => {
+    success
         ? logger.info("Loaded entrypoint")
         : logger.error("Failed to load entrypoint, make sure you're manually updated to the latest Spotify version");
 });
@@ -133,9 +133,10 @@ const patchModule = (mod: any, id: string) => {
     const patchedBy = new Set();
 
     let code: string = "0," + mod.toString().replaceAll("\n", "");
-    if (id !== "Private") {
-        code = code.replace(id, "function");
-    }
+    // The check for "0" is so funny because we do "0,function(){}" so it became "function,function(){}"
+    // if (id !== "Private" && id !== "0") {
+    //     code = code.replace(id, "function");
+    // }
 
     for (let i = 0; i < patches.length; i++) {
         const patch = patches[i];
@@ -160,7 +161,7 @@ const patchModule = (mod: any, id: string) => {
                 patchedBy.add(patch.plugin);
 
                 if (newCode === code) {
-                    if (!patch.noWarn) {
+                    if (!patch.noWarn && !replacement.noWarn) {
                         logger.warn(
                             `Patch by ${patch.plugin} had no effect (Module id is ${id}): ${replacement.match}`
                         );
@@ -184,7 +185,7 @@ const patchModule = (mod: any, id: string) => {
 
                 code = newCode;
                 mod = (0, eval)(
-                    `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}\n${newCode}\n//# sourceURL=https://xpui.app.spotify.com/patched/WebpackModule${id}.js`
+                    `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}\n${newCode}\n//# sourceURL=https://xpui.app.spotify.com/modules/WebpackModule${id}.js`
                 );
             } catch (e) {
                 logger.error(`Patch by ${patch.plugin} errored (Module id is ${id}): ${replacement.match}`, e);

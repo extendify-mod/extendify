@@ -81,15 +81,11 @@ export const beforeInitListeners = new Set<(wreq: WebpackInstance) => void>();
 export const _initWebpack = (webpackRequire: WebpackInstance) => {
     wreq = webpackRequire;
     cache = webpackRequire.c;
-
-    if (IS_DEV) {
-        window.wreq = wreq;
-    }
 };
 
 export const handleModuleNotFound = (method: string, ...filter: unknown[]) => {
     const err = new Error(`webpack.${method} found no module`);
-    logger.error(err, "Filter:", filter);
+    logger.error(err, "Filter:\n", filter);
     if (IS_DEV) {
         throw err;
     }

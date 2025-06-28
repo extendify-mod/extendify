@@ -46,6 +46,8 @@ See the next section for info on how to manually update your install.
 
 Currently the `applyPatch.mjs` script supports Windows and Linux (tested on Arch + Hyprland).
 
+One thing is that for loading the entrypoint we reference [hardcoded variables](/src/webpack/loader.ts). Linux versions will always be behind MacOS and Windows, so if these change between versions it won't work on Linux until it's caught up. You can change these to test or make a fix for this but I don't have access to testing that stuff right now so I will leave it to someone else.
+
 ## Manual Updating
 
 The idea of manual updating is that you delete the `.spa` files in the `Apps` folder of the Spotify install and then re-run the installer.
@@ -55,12 +57,13 @@ You can get the latest installer from [here (Windows + MacOS + Linux)](https://l
 
 ## Scripts:
 
-- `npm run build`: Build Extendify.
 - `npm run dev`: Build, enable devtools and patch Spotify.
+- `npm run build`: Build Extendify.
+- `npm run devtools`: Enable devtools for Spotify.
 - `npm run patch`: Patch Spotify.
 - `npm run unpatch`: Undo the patch.
 
-## Flags:
+## OPTIONAL Flags:
 
 - `--flatpak`: Use this flag when running on Linux with flatpak.
 - `--spotifyPath`: Use this flag to specify the path to Spotify's installation directory. (It should contain an `Apps` folder)

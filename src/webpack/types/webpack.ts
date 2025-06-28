@@ -34,4 +34,5 @@ export interface WebpackInstance {
      */
     u: (e: any) => string;
     iife: (wreq: WebpackInstance) => void;
+    d: (id: any, exports: any) => void;
 }

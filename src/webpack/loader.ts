@@ -1,4 +1,5 @@
 import { ENTRYPOINT_SCRIPT } from "@utils/constants";
+import { wreq } from "@webpack";
 
 function replaceAdd(content: string, find: string, add: string) {
     return content.replace(find, find + add);
@@ -18,6 +19,8 @@ function exposeModuleCache(content: string) {
 
 /**
  * Exposes the private iife module that's buried in Spotify's webpack initializer.
+ * NOTE: This might be broken for platforms like Linux, because their main release version is behind.
+ *       That means that if the variables change (like "o") between versions, it will only work for Windows and Mac, but not for Linux.
  */
 function exposePrivateModule(content: string) {
     return replaceAdd(content, "var c={};(", "o.iife=")
@@ -59,6 +62,10 @@ async function getParser(): Promise<any> {
 export async function injectExporter() {
     const code: string = arguments[3];
 
+    if (!code) {
+        return;
+    }
+
     try {
         const tree = (await getParser()).parse(code, {
             ecmaVersion: "latest"
@@ -74,26 +81,22 @@ export async function injectExporter() {
             }
         }
 
-        arguments[2].d(arguments[1], customExport);
+        if (!arguments[2].d) {
+            wreq.d(arguments[1], customExport);
+        } else {
+            arguments[2].d(arguments[1], customExport);
+        }
     } catch (e) {
-        console.log(code);
+        console.log(arguments);
         throw e;
     }
-}
-
-// Can be used later for when we implement this for every module..? idk just saving this for now
-function exportAllFunctions(content: string) {
-    const regex = /([{,][0-9]+):(\(.*?\))=>{/g;
-    return content.replace(regex, (_, prefix, middle) => {
-        return `${prefix}${middle}{Extendify.Webpack.injectExporter(...arguments, (v) => eval(v));`;
-    });
 }
 
 export async function loadEntrypoint(): Promise<boolean> {
     let text: string;
     try {
         text = await (await fetch(ENTRYPOINT_SCRIPT)).text();
-    } catch (e) {
+    } catch {
         return false;
     }
     let r = `// Original name: ${ENTRYPOINT_SCRIPT}\n${text}`;

@@ -32,7 +32,5 @@ declare global {
     interface Window {
         EXTENDIFY_NATIVE_AVAILABLE: boolean = false;
         ExtendifyNative: ExtendifyNative;
-        wreq: WebpackInstance;
-        platform: Platform;
     }
 }

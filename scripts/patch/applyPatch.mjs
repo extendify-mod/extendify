@@ -1,4 +1,4 @@
-import { exists, getSpotifyPath, wrapSpotifyProcess } from "../utils.mjs";
+import { exists, getSpotifyPath } from "../utils.mjs";
 
 import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
@@ -6,7 +6,7 @@ import { join } from "path";
 
 const appsPath = join(getSpotifyPath(), "Apps");
 
-const createXpuiPatch = async () => {
+export async function applyPatch() {
     const dir = await readdir(appsPath);
     if (dir.includes("xpui")) {
         await rm(join(appsPath, "xpui"), { recursive: true });
@@ -34,6 +34,4 @@ const createXpuiPatch = async () => {
         await writeFile(join(appsPath, "xpui.spa"), buffer);
         console.log("Wrote new archive");
     }
-};
-
-wrapSpotifyProcess(createXpuiPatch);
+}

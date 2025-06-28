@@ -5,7 +5,7 @@ import { join } from "path";
 
 const bnkPath = join(getCachePath(), "offline.bnk");
 
-const enableDevtools = async () => {
+export async function enableDevtools() {
     const content = await readFile(bnkPath, "binary");
 
     const length = "app-developer".length;
@@ -25,6 +25,4 @@ const enableDevtools = async () => {
 
     await writeFile(bnkPath, buffer, "binary");
     console.log("Enabled devtools");
-};
-
-enableDevtools();
+}
