@@ -90,7 +90,7 @@ export interface Platform {
     getFeatureFlags(): {
         enableShows: boolean;
     };
-    getGraphQLLoader(): any;
+    getGraphQLLoader(): (...args: any[]) => Promise<any>;
     getHistory(): History;
     /**
      * Data harvesting shenanigans.

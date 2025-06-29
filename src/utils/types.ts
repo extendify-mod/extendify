@@ -68,7 +68,7 @@ export interface PluginDef {
     /**
      * Whether this plugin is required and forcefully enabled
      */
-    required: boolean;
+    required?: boolean;
     /**
      * Whether this plugin should be hidden from the user
      */

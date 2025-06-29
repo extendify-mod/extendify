@@ -11,7 +11,7 @@ export default definePlugin({
     name: "WebPlayer",
     description: "Play music on the frontend instead of the backend",
     authors: [Devs.elia],
-    required: false,
+    hidden: true,
     startAt: StartAt.ApisLoaded,
     start() {
         const script = document.createElement("script");

@@ -17,7 +17,7 @@ export let wreq: WebpackInstance;
 export let cache: WebpackInstance["c"];
 
 export type FilterFn = (mod: any) => boolean;
-export type PropsFilter = Array<string>;
+export type PropsFilter = string[];
 export type CodeFilter = Array<string | RegExp>;
 
 export const stringMatches = (s: string, filter: CodeFilter) => {
@@ -28,7 +28,10 @@ export const stringMatches = (s: string, filter: CodeFilter) => {
 
 export const filters = {
     byProps: (...props: PropsFilter): FilterFn => {
-        return props.length === 1 ? (m) => m[props[0]] !== void 0 : (m) => props.every((p) => m[p] !== void 0);
+        return (modules) => {
+            const keys = Object.keys(modules);
+            return props.every((p) => keys.includes(p));
+        };
     },
     byCode: (...code: CodeFilter): FilterFn => {
         const parsedCode = code.map(canonicalizeMatch);
@@ -36,7 +39,7 @@ export const filters = {
             if (typeof m !== "function") {
                 return false;
             }
-            return stringMatches(Function.prototype.toString.call(m), parsedCode);
+            return stringMatches(m.toString(), parsedCode);
         };
         filter.$$extendifyProps = [...code];
         return filter;
@@ -59,11 +62,16 @@ export const filters = {
     componentByName: (name: string): FilterFn => {
         const codeFilter = filters.componentByCode(new RegExp(String.raw`"data-encore-id":.\..\.${name}`));
         return (m) => {
+            if (m.displayName === name) {
+                return true;
+            }
+
             if (m.render && m.$$typeof) {
-                if (m.displayName === name || codeFilter(m)) {
+                if (codeFilter(m)) {
                     return true;
                 }
             }
+
             return false;
         };
     }
@@ -563,7 +571,7 @@ export const waitForComponent = <T extends React.ComponentType<any> = React.Comp
     filter: FilterFn | string | string[]
 ): T => {
     let value: T = function () {
-        // throw new Error(`Extendify could not find the ${name} Component`);
+        throw new Error(`Extendify could not find the ${name} Component`);
     } as any;
 
     const lazyComponent = LazyComponent(() => value, -1) as T;
@@ -628,7 +636,7 @@ export const extract = (id: string | number) => {
 };
 
 export const shouldIgnoreValue = (value: any) => {
-    if ([null, window, document, document.documentElement].includes(value)) {
+    if ([undefined, null, window, document, document.documentElement].includes(value)) {
         return true;
     } else if (value[Symbol.toStringTag] === "DOMTokenList") {
         return true;

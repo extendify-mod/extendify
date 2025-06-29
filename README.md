@@ -14,18 +14,8 @@ The native part of Extendify will allow us to hook into Spotify's executable whi
 for plugins regarding playback and other things that are not controlled by the frontend.
 An example of this is changing the playback speed. We are currently not able to do this because audio is played from the application process.
 
-The way we load and patch webpack modules also needs to be rewritten to allow for better access to components,
-as right now there's not much we can patch or access.
-A big problem with the current system is that dedicated modules (ones that are exported by a file, like the Now Playing view) only export their final component,
-meaning all their child functions, variables and components are not available to us.
-
-For example, if you want to add an "About the artist" section for every artist on a song in the Now Playing view you would need access to the component that creates
-the grid of boxes in the Now Playing view, but you would also (optionally, as you could just recreate this, but it's not preferred) need access to the About the artist component.
-The problem is that these specific individual components are not exported as webpack modules. The only thing that gets exported is the final Now Playing view,
-which is then imported and rendered by Spotify's private bootstrap function.
-
-Finally, we need to implement trivial things like being able to add options to context menus among other things, which will open a lot more doors for new plugins.
-If you're able to create a plugin with the current limitations, make a PR!
+Right now on the frontend side of things we need to implement trivial things
+like being able to add options to context menus among other things, which will open a lot more doors for new plugins.
 
 The TL;DR is that we're working on it. You can join the [Discord server](https://discord.gg/eWD5BahyBm) to keep up with progress if you want to.
 
@@ -44,7 +34,7 @@ If you're on Windows, Extendify requires installing Spotify from the installer. 
 If you already have Spotify installed through this method, your install is probably not up to date, even if you're technically on the latest version.
 See the next section for info on how to manually update your install.
 
-Currently the `applyPatch.mjs` script supports Windows and Linux (tested on Arch + Hyprland).
+Currently the [`applyPatch.mjs`](/scripts/patch/applyPatch.mjs) script supports Windows and Linux (tested on Arch + Hyprland).
 
 One thing is that for loading the entrypoint we reference [hardcoded variables](/src/webpack/loader.ts). Linux versions will always be behind MacOS and Windows, so if these change between versions it won't work on Linux until it's caught up. You can change these to test or make a fix for this but I don't have access to testing that stuff right now so I will leave it to someone else.
 

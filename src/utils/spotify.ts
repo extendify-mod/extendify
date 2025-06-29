@@ -1,6 +1,7 @@
+import { filters, findAll } from "@webpack";
 import { connectDevices, platform, player } from "@webpack/common";
 
-export const getProgress = (): number => {
+export function getProgress(): number {
     if (!player) {
         return 0;
     }
@@ -9,20 +10,20 @@ export const getProgress = (): number => {
         return state.positionAsOfTimestamp;
     }
     return Date.now() - state.timestamp + state.positionAsOfTimestamp;
-};
+}
 
-export const isPlayingLocally = (): boolean => {
+export function isPlayingLocally(): boolean {
     if (!connectDevices || !connectDevices.getActiveDevice()) {
         return true;
     }
     return connectDevices.getActiveDevice().isLocal;
-};
+}
 
-export const redirectTo = (path: string) => {
+export function redirectTo(path: string) {
     platform.getHistory().push(path);
-};
+}
 
-export const findTranslation = (value: string, object = platform.getTranslations()): Record<string, any> => {
+export function findTranslation(value: string, object = platform.getTranslations()): Record<string, any> {
     const results: Record<string, any> = {};
     for (const key in object) {
         const translation = object[key];
@@ -38,4 +39,4 @@ export const findTranslation = (value: string, object = platform.getTranslations
         }
     }
     return results;
-};
+}

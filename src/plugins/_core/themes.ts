@@ -1,4 +1,3 @@
-import { Settings } from "@api/settings";
 import { Devs } from "@utils/constants";
 import { StartAt, definePlugin } from "@utils/types";
 

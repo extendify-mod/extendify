@@ -1,6 +1,10 @@
 import { ENTRYPOINT_SCRIPT } from "@utils/constants";
 import { wreq } from "@webpack";
 
+import { BlockStatement, Identifier, Parser } from "acorn";
+import classFields from "acorn-class-fields";
+import privateMethods from "acorn-private-methods";
+
 function replaceAdd(content: string, find: string, add: string) {
     return content.replace(find, find + add);
 }
@@ -38,26 +42,7 @@ function exposePrivateModule(content: string) {
         );
 }
 
-let parserPromise: Promise<any>;
-
-async function getParser(): Promise<any> {
-    if (parserPromise) {
-        return parserPromise;
-    }
-
-    return (parserPromise = (async () => {
-        const [{ Parser }, classFields, privateMethods] = await Promise.all([
-            // @ts-ignore
-            import("https://esm.sh/acorn"),
-            // @ts-ignore
-            import("https://esm.sh/acorn-class-fields").then((m) => m.default),
-            // @ts-ignore
-            import("https://esm.sh/acorn-private-methods").then((m) => m.default)
-        ]);
-
-        return Parser.extend(classFields, privateMethods);
-    })());
-}
+export const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
 export async function injectExporter() {
     const code: string = arguments[3];
@@ -67,16 +52,31 @@ export async function injectExporter() {
     }
 
     try {
-        const tree = (await getParser()).parse(code, {
+        const tree = parser.parse(code, {
             ecmaVersion: "latest"
         });
         const customExport = {};
 
-        for (const element of tree.body[0].body) {
+        const ev = arguments[4];
+        function addExport(name: string) {
+            customExport[`extendifyExport${Object.keys(customExport).length}`] = () => ev(name);
+        }
+
+        for (const element of (tree.body[0] as BlockStatement).body) {
             if (element.type === "FunctionDeclaration") {
                 if (element.id && element.id.name) {
-                    customExport[`extendifyExport${Object.keys(customExport).length}`] = () =>
-                        arguments[4](element.id.name);
+                    addExport(element.id.name);
+                }
+            } else if (element.type === "VariableDeclaration") {
+                for (const declaration of element.declarations) {
+                    const { init } = declaration;
+                    if (init && init.type === "CallExpression" && init.arguments.length === 1) {
+                        const [arg] = init.arguments;
+                        if (arg.type === "Literal" && typeof arg.value === "number") {
+                            continue;
+                        }
+                    }
+                    addExport((declaration.id as Identifier).name);
                 }
             }
         }

@@ -6,8 +6,13 @@ import { platform } from "@webpack/common";
 const logger = new Logger("Page API");
 const pages = new Map<string, Renderable>();
 
+let Route: any;
+
 export const _injectPages = (children: React.ReactNode[]) => {
-    const Route = findComponentByCode(/^function [\w$]+\([\w$]+\)\{\(0,[\w$]+\.[\w$]+\)\(\!1\)\}$/);
+    if (!Route) {
+        Route = findComponentByCode(/^function [\w$]+\([\w$]+\)\{\(0,[\w$]+\.[\w$]+\)\(\!1\)\}$/);
+    }
+
     for (const [path, Element] of pages) {
         children.push(
             <Route key={path.replaceAll("/", "_")} path={path} element={<Element data-custom-page={true} />} />

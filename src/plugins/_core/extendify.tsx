@@ -12,6 +12,7 @@ export default definePlugin({
     required: true,
     patches: [
         {
+            // This injects our custom exporter into every module c:
             find: "",
             all: true,
             replacement: [
@@ -24,16 +25,28 @@ export default definePlugin({
                 },
                 {
                     match: "{",
+                    // Pretty clever: we just pass a function that runs `eval` from the module's scope so that we can reference local variables from our exporter!!
                     replace: "{Extendify.Webpack.injectExporter(...arguments, (v) => eval(v));"
                 }
             ]
         },
         {
+            // Load the desktop platform
             find: "const{createPlatformDesktop:",
             replacement: {
                 match: /(;const .=)(await async function\(\){.*?}}\(\))/,
                 replace: (_, prefix, call) => {
                     return `${prefix}Extendify.Webpack.Common._loadPlatform(${call})`;
+                }
+            }
+        },
+        {
+            // This is to make sure that when components go through the React profiler they can still be picked up by findComponentByCode and similar functions.
+            find: "displayName=`profiler(${",
+            replacement: {
+                match: /return (.{1,3})\.displayName=/,
+                replace: (match, func) => {
+                    return `${func}.toString=arguments[0].toString.bind(arguments[0]);${match}`;
                 }
             }
         }

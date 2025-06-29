@@ -10,7 +10,6 @@ export default definePlugin({
     description: "Expose internal APIs to the window object",
     required: IS_DEV,
     startAt: StartAt.ApisLoaded,
-    enabledByDefault: false,
     start() {
         window.registry = {};
         for (const key of platform.getRegistry()._map.keys()) {

@@ -6,7 +6,6 @@ export default definePlugin({
     name: "SkipExplicit",
     description: "Automatically skip explicit songs",
     authors: [Devs.elia],
-    required: false,
     events: {
         onSongChange(e) {
             if (e.isExplicit) {

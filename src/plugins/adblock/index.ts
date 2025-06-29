@@ -24,7 +24,6 @@ export default definePlugin({
     name: "Adblock",
     description: "Block ads on Spotify",
     authors: [Devs.elia],
-    required: false,
     startAt: StartAt.ApisLoaded,
     hidden: true,
     start: async () => {

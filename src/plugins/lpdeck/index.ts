@@ -9,7 +9,6 @@ export default definePlugin({
     name: "Lpdeck",
     description: "Lpdeck integration with Spotify",
     authors: [Devs.elia],
-    required: false,
     startAt: StartAt.ApisLoaded,
     events: {
         onPlay: (_) => ws.sendPlayerData(),
