@@ -31,6 +31,18 @@ export const getToggleComponent = () => {
     >('type:"checkbox"', "onChange");
 };
 
+export const Toggle = waitForComponent<
+    ComponentType<
+        Omit<ComponentProps<"input">, "value"> & {
+            /** @default false */
+            condensed?: boolean;
+            inputRef?: React.Ref<unknown>;
+            value: boolean;
+            onSelected?: (value: boolean) => void;
+        }
+    >
+>("Toggle", filters.componentByCode('type:"checkbox"', "onChange"));
+
 export const ConfirmDialog = waitForComponent(
     "ConfirmDialog",
     filters.componentByCode("isOpen", "shouldCloseOnEsc", "shouldFocusAfterRender", "onClose")

@@ -10,7 +10,7 @@ type Props = {
 export default (props: Props) => {
     return (
         <div className="ext-warning-container">
-            <Text as="h1" variant="titleMedium" semanticColor="textWarning">
+            <Text as="h1" variant="titleMedium" semanticColor="textBase">
                 Restart Required
             </Text>
             <div className="ext-warning-content">

@@ -4,15 +4,13 @@ import { ISettingElementProps } from "@components/settings";
 
 import { textToTitle } from "@utils/text";
 import { PluginOptionBoolean } from "@utils/types";
-import { React, Text, getToggleComponent } from "@webpack/common";
+import { React, Text, Toggle } from "@webpack/common";
 
 export default (props: ISettingElementProps<PluginOptionBoolean>) => {
     const [state, setState] = React.useState(props.pluginSettings[props.id] ?? props.setting.default ?? false);
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => props.onError(error !== null), [error]);
-
-    const Toggle = getToggleComponent();
 
     const onChange = (v: boolean) => {
         const isValid = props.setting.isValid?.call(props.definedSettings, v) ?? true;

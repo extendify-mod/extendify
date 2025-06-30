@@ -1,10 +1,16 @@
+import "./icon.css";
+
 export default () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M8.00004 8.70711L11.6465 12.3536L12.3536 11.6465L8.70714 8.00001L12.3536 4.35356L11.6465 3.64645L8.00004 7.2929L4.35359 3.64645L3.64648 4.35356L7.29293 8.00001L3.64648 11.6465L4.35359 12.3536L8.00004 8.70711Z"
-            fill="#C5C5C5"
-        />
+    <svg
+        role="img"
+        aria-label="Close"
+        aria-hidden="false"
+        className="ext-icon ext-baseline"
+        viewBox="0 0 16 16"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path d="M2.47 2.47a.75.75 0 0 1 1.06 0L8 6.94l4.47-4.47a.75.75 0 1 1 1.06 1.06L9.06 8l4.47 4.47a.75.75 0 1 1-1.06 1.06L8 9.06l-4.47 4.47a.75.75 0 0 1-1.06-1.06L6.94 8 2.47 3.53a.75.75 0 0 1 0-1.06" />
     </svg>
 );
+
+// 64482.M

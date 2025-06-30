@@ -73,6 +73,7 @@ export default (props: Props) => {
                         {props.title}
                     </Text>
                     <ButtonTertiary
+                        className="ext-modal-close"
                         aria-label="Close"
                         iconOnly={() => <CloseIcon />}
                         onClick={(_: any) => props.onClose?.()}

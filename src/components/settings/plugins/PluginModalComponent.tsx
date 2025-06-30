@@ -34,23 +34,23 @@ const isObjectEmpty = (obj: object): boolean => {
     return true;
 };
 
-const Components: Record<OptionType, ComponentType<ISettingElementProps<any> | ISettingCustomElementProps<any>>> = {
-    [OptionType.STRING]: SettingTextComponent,
-    [OptionType.NUMBER]: SettingNumericComponent,
-    [OptionType.BIGINT]: SettingNumericComponent,
-    [OptionType.BOOLEAN]: SettingBooleanComponent,
-    [OptionType.SELECT]: SettingSelectComponent,
-    [OptionType.SLIDER]: SettingSliderComponent,
-    [OptionType.COMPONENT]: SettingCustomComponent,
-    [OptionType.CUSTOM]: () => null
-};
-
 export default (props: Props) => {
     const pluginSettings = useSettings().plugins[props.plugin.name];
     const [tempSettings, setTempSettings] = React.useState<Record<string, any>>({});
     const [errors, setErrors] = React.useState<Record<string, boolean>>({});
     const [saveError, setSaveError] = React.useState<string | null>(null);
     const hasSettings = pluginSettings && props.plugin.options && !isObjectEmpty(props.plugin.options);
+
+    const Components: Record<OptionType, ComponentType<ISettingElementProps<any> | ISettingCustomElementProps<any>>> = {
+        [OptionType.STRING]: SettingTextComponent,
+        [OptionType.NUMBER]: SettingNumericComponent,
+        [OptionType.BIGINT]: SettingNumericComponent,
+        [OptionType.BOOLEAN]: SettingBooleanComponent,
+        [OptionType.SELECT]: SettingSelectComponent,
+        [OptionType.SLIDER]: SettingSliderComponent,
+        [OptionType.COMPONENT]: SettingCustomComponent,
+        [OptionType.CUSTOM]: () => null
+    };
 
     const saveAndClose = async () => {
         if (!props.plugin.options) {

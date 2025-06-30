@@ -6,6 +6,7 @@ import "@webpack/patcher";
 import { patches, startAllPlugins } from "plugins";
 
 export * as Api from "./api";
+export * as Components from "./components";
 export * as Plugins from "./plugins";
 export * as Util from "./utils";
 export * as Webpack from "./webpack";

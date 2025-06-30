@@ -256,7 +256,8 @@ const patchFactories = (
         const originalMod = mod;
 
         const factory = (factories[id] = function (module: any, exports: any, require: WebpackInstance) {
-            let src = Function.prototype.toString.call(mod);
+            // let src = Function.prototype.toString.call(mod);
+            let src = mod.toString();
             src = src.substring(src.indexOf("{"));
 
             if (wreq === null && IS_DEV) {

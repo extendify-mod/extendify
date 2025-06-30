@@ -1,6 +1,7 @@
+import { definePluginSettings } from "@api/settings";
 import { Devs } from "@utils/constants";
 import { executeQuery, findQuery } from "@utils/graphql";
-import { StartAt, definePlugin } from "@utils/types";
+import { OptionType, definePlugin } from "@utils/types";
 import { filters, waitForComponent } from "@webpack";
 import { player, useEffect, useState } from "@webpack/common";
 import { Song } from "@webpack/types";
@@ -56,10 +57,19 @@ function MoreArtistCards() {
         Promise.all(promises).then((v) => {
             setCards(v.filter((v) => typeof v !== "undefined"));
         });
-    });
+    }, [song]);
 
     return <>{cards}</>;
 }
+
+const settings = definePluginSettings({
+    hideImages: {
+        type: OptionType.BOOLEAN,
+        description: "Hide artist images from the artist card",
+        default: false,
+        restartNeeded: true
+    }
+});
 
 export default definePlugin({
     name: "MoreArtistCards",
@@ -75,8 +85,21 @@ export default definePlugin({
                     replace: "$self.getArtistCards()"
                 }
             ]
+        },
+        {
+            find: "web-player.now-playing-view.artist-about.title",
+            predicate: () => settings.store.hideImages,
+            replacement: [
+                {
+                    match: /(children:\[)(\(0,.*?name:.{1,3}?}\),)/,
+                    replace: (_, prefix) => {
+                        return prefix;
+                    }
+                }
+            ]
         }
     ],
+    settings,
     getArtistCards() {
         return <MoreArtistCards />;
     }
