@@ -78,6 +78,7 @@ export default definePlugin({
     required: false,
     patches: [
         {
+            // Inject all artist cards
             find: "NPVLyrics",
             replacement: [
                 {
@@ -87,6 +88,7 @@ export default definePlugin({
             ]
         },
         {
+            // Hide artist images
             find: "web-player.now-playing-view.artist-about.title",
             predicate: () => settings.store.hideImages,
             replacement: [
