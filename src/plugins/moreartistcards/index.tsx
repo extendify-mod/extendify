@@ -16,7 +16,7 @@ function MoreArtistCards() {
         const interval = setInterval(() => {
             const { current } = player.getQueue();
 
-            if (song && song.uri === current.uri) {
+            if (!current || (song && song.uri === current.uri)) {
                 return;
             }
 

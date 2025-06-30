@@ -68,7 +68,7 @@ export default definePlugin({
          */
         onSongChange: () => {
             if (isPlayingLocally()) {
-                player.seekTo(0);
+                // player.seekTo(0);
             }
         }
     },

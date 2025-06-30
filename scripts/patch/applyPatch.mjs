@@ -35,3 +35,7 @@ export async function applyPatch() {
         console.log("Wrote new archive");
     }
 }
+
+if (process.argv[1]?.endsWith("applyPatch.mjs")) {
+    await applyPatch();
+}
