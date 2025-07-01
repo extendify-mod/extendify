@@ -62,9 +62,9 @@ export default (props: ISettingElementProps<PluginOptionSlider>) => {
                 <Slider
                     value={state}
                     enableAnimation={true}
-                    onDragStart={(v) => onChange(v)}
-                    onDragMove={(v) => onChange(v)}
-                    onDragEnd={(v) => onChange(v)}
+                    onDragStart={(v: number) => onChange(v)}
+                    onDragMove={(v: number) => onChange(v)}
+                    onDragEnd={(v: number) => onChange(v)}
                     labelText={getRealValue(state).toString()}
                     key={props.id}
                     max={1}

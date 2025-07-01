@@ -8,7 +8,7 @@ const handler: ProxyHandler<any> = {};
 export const SYM_LAZY_GET = Symbol.for("extendify.lazy.get");
 export const SYM_LAZY_CACHED = Symbol.for("extendify.lazy.cached");
 
-export const makeLazy = <T>(factory: () => T, attempts = 5): (() => T) => {
+export function makeLazy<T>(factory: () => T, attempts = 500): () => T {
     let tries = 0;
     let cache: T;
     return () => {
@@ -20,7 +20,7 @@ export const makeLazy = <T>(factory: () => T, attempts = 5): (() => T) => {
         }
         return cache;
     };
-};
+}
 
 /**
  * Wraps the result of {@link makeLazy} in a Proxy you can consume as if it wasn't lazy.
@@ -32,7 +32,7 @@ export const makeLazy = <T>(factory: () => T, attempts = 5): (() => T) => {
  * Note that the example below exists already as an api, see {@link findByPropsLazy}
  * @example const mod = proxyLazy(() => findByProps("blah")); console.log(mod.blah);
  */
-export const proxyLazy = <T>(factory: () => T, attempts = 5, isChild = false): T => {
+export function proxyLazy<T>(factory: () => T, attempts = 500, isChild = false): T {
     let isSameTick = true;
     if (!isChild) {
         setTimeout(() => (isSameTick = false), 0);
@@ -74,4 +74,4 @@ export const proxyLazy = <T>(factory: () => T, attempts = 5, isChild = false): T
             throw new Error("'proxyLazy' called on a primitive value");
         }
     }) as any;
-};
+}

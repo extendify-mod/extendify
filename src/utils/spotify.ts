@@ -1,4 +1,3 @@
-import { filters, findAll } from "@webpack";
 import { connectDevices, platform, player } from "@webpack/common";
 
 export function getProgress(): number {

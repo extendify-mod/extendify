@@ -20,7 +20,7 @@
             "@components/icons": ["./components/icons"],
             "@components/settings": ["./components/settings"],
             "@components/settings/plugins": ["./components/settings/plugins"],
-            "@components/settings/themes": ["./components/settings/themes"],
+            "@components/settings/experiments": ["./components/settings/experiments"],
 
             "@utils/*": ["./utils/*"],
 

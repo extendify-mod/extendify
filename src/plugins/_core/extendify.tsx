@@ -1,9 +1,9 @@
 import { ExtendifyPageComponent } from "@components/settings";
 
 import { Devs } from "@utils/constants";
-import { isPlayingLocally, redirectTo } from "@utils/spotify";
+import { redirectTo } from "@utils/spotify";
 import { StartAt, definePlugin } from "@utils/types";
-import { ButtonPrimary, player } from "@webpack/common";
+import { ButtonPrimary } from "@webpack/common";
 
 export default definePlugin({
     name: "Extendify",
@@ -60,17 +60,6 @@ export default definePlugin({
     },
     pages: {
         "/extendify": () => <ExtendifyPageComponent />
-    },
-    events: {
-        /**
-         * Sometimes Spotify keeps buffering when the next song starts playing and I have no idea why.
-         * I hope this is a temporary solution.
-         */
-        onSongChange: () => {
-            if (isPlayingLocally()) {
-                // player.seekTo(0);
-            }
-        }
     },
     startAt: StartAt.Init
 });

@@ -1,5 +1,5 @@
 import { Platform, WebpackInstance } from "@webpack/types";
-import { Settings } from "@api/settings";
+import { SettingsType } from "@api/settings";
 
 type Theme = {
     name: string;
@@ -19,8 +19,8 @@ type ExtendifyNative = {
         getThemes(): Theme[];
     };
     settings: {
-        get(): Settings;
-        set(settings: Settings, path: string): void;
+        get(): SettingsType;
+        set(settings: SettingsType, path: string): void;
         getSettingsDir(): string;
     };
 }

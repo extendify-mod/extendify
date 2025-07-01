@@ -60,7 +60,7 @@ export const filters = {
         };
     },
     componentByName: (name: string): FilterFn => {
-        const codeFilter = filters.componentByCode(new RegExp(String.raw`"data-encore-id":.\..\.${name}`));
+        const codeFilter = filters.componentByCode(new RegExp(String.raw`"data-encore-id":.\..\.${name}[{,]`));
         return (m) => {
             if (m.displayName === name) {
                 return true;
@@ -306,18 +306,6 @@ export const proxyLazyWebpack = <T = any>(factory: () => T, attempts?: number) =
 };
 
 /**
- * This is just a wrapper around {@link LazyComponent} to make our reporter test for your webpack finds.
- *
- * A lazy component. The factory method is called on first render.
- * @param factory Function returning a Component
- * @param attempts How many times to try to get the component before giving up
- * @returns Result of factory function
- */
-export const LazyComponentWebpack = <T extends object = any>(factory: () => any, attempts?: number) => {
-    return LazyComponent<T>(factory, attempts);
-};
-
-/**
  * Find the first module that matches the filter, lazily
  */
 export const findLazy = (filter: FilterFn) => {
@@ -540,11 +528,11 @@ export const extractAndLoadChunksLazy = (code: CodeFilter, matcher = DefaultExtr
  * Wait for a module that matches the provided filter to be registered,
  * then call the callback with the module as the first argument
  */
-export const waitFor = (
+export function waitFor(
     filter: string | PropsFilter | FilterFn,
     callback: CallbackFn,
     { isIndirect = false }: { isIndirect?: boolean } = {}
-) => {
+) {
     if (typeof filter === "string") {
         filter = filters.byProps(filter);
     } else if (Array.isArray(filter)) {
@@ -564,17 +552,17 @@ export const waitFor = (
     }
 
     subscriptions.set(filter, callback);
-};
+}
 
-export const waitForComponent = <T extends React.ComponentType<any> = React.ComponentType<any> & Record<string, any>>(
+export function waitForComponent<T extends React.ComponentType<any> = React.ComponentType<any> & Record<string, any>>(
     name: string,
     filter: FilterFn | string | string[]
-): T => {
+): T {
     let value: T = function () {
-        throw new Error(`Extendify could not find the ${name} Component`);
+        // throw new Error(`Extendify could not find the ${name} Component`);
     } as any;
 
-    const lazyComponent = LazyComponent(() => value, -1) as T;
+    let lazyComponent = LazyComponent(() => value, -1) as T;
     waitFor(
         filter,
         (v: any) => {
@@ -585,7 +573,7 @@ export const waitForComponent = <T extends React.ComponentType<any> = React.Comp
     );
 
     return lazyComponent;
-};
+}
 
 /**
  * Search modules by keyword. This searches the factory methods,

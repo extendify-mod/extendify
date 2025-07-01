@@ -36,12 +36,14 @@ export default (props: ISettingElementProps<PluginOptionBoolean>) => {
                     {props.setting.description}
                 </Text>
             </div>
-            <Toggle
-                id={props.id}
-                onSelected={(v) => onChange(v)}
-                disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
-                value={state}
-            />
+            {Toggle && (
+                <Toggle
+                    id={props.id}
+                    onSelected={(v) => onChange(v)}
+                    disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
+                    value={state}
+                />
+            )}
             {error && (
                 <Text as="span" semanticColor="textNegative">
                     {error}

@@ -1,24 +1,3 @@
-.ext-plugins-grid {
-    display: grid;
-    gap: 14px;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
-}
-
-.ext-plugin {
-    background-color: var(--background-tinted-base);
-    height: 100%;
-    width: 100%;
-    border-radius: 8px;
-    display: block;
-    box-sizing: border-box;
-    transition: background-color 0.3s ease;
-    padding: 12px;
-}
-
-.ext-plugin:hover {
-    background-color: hsla(0, 0%, 100%, 0.2);
-}
-
 .ext-plugin-header {
     display: flex;
     width: 100%;

@@ -1,9 +1,10 @@
 import { Renderable } from "@utils/types";
-import { filters, findComponentByCodeLazy, waitForComponent } from "@webpack";
+import { filters, findComponentByCodeLazy, waitFor, waitForComponent } from "@webpack";
 
 import { ComponentProps, ComponentType, ElementType, PropsWithChildren, Ref } from "react";
+import { OmitDeep } from "type-fest";
 
-type SemanticColor =
+export type SemanticColor =
     | "textBase"
     | "textSubdued"
     | "textBrightAccent"
@@ -12,6 +13,11 @@ type SemanticColor =
     | "textPositive"
     | "textAnnouncement";
 
+export type Icon = ComponentType<{
+    semanticColor: SemanticColor;
+    size: "small" | "medium";
+}>;
+
 export const waitForCardComponent = (name: string) => {
     return waitForComponent(
         `${name}Card`,
@@ -19,29 +25,18 @@ export const waitForCardComponent = (name: string) => {
     );
 };
 
-export const getToggleComponent = () => {
-    return findComponentByCodeLazy<
-        Omit<ComponentProps<"input">, "value"> & {
-            /** @default false */
-            condensed?: boolean;
-            inputRef?: React.Ref<unknown>;
-            value: boolean;
-            onSelected?: (value: boolean) => void;
-        }
-    >('type:"checkbox"', "onChange");
-};
-
-export const Toggle = waitForComponent<
-    ComponentType<
-        Omit<ComponentProps<"input">, "value"> & {
-            /** @default false */
-            condensed?: boolean;
-            inputRef?: React.Ref<unknown>;
-            value: boolean;
-            onSelected?: (value: boolean) => void;
-        }
-    >
->("Toggle", filters.componentByCode('type:"checkbox"', "onChange"));
+export let Toggle:
+    | ComponentType<
+          Omit<ComponentProps<"input">, "value"> & {
+              /** @default false */
+              condensed?: boolean;
+              inputRef?: React.Ref<unknown>;
+              value: boolean;
+              onSelected?: (value: boolean) => void;
+          }
+      >
+    | undefined;
+waitFor(filters.componentByCode('type:"checkbox"', "onChange"), (v) => (Toggle = v));
 
 export const ConfirmDialog = waitForComponent(
     "ConfirmDialog",
@@ -119,7 +114,7 @@ export const Text = waitForComponent<
 >("Text", filters.componentByCode("bodyMedium", /"data-encore-id":.\..\.Text,/));
 export const Slider = waitForComponent<
     ComponentType<
-        ComponentProps<"input"> & {
+        Omit<Omit<ComponentProps<"input">, "onDragStart">, "onDragEnd"> & {
             value?: number;
             max?: number;
             step?: number;

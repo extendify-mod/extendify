@@ -1,7 +1,15 @@
 import { proxyLazy } from "@utils/lazy";
 import { StartAt } from "@utils/types";
 import { findByCode } from "@webpack";
-import { ConnectDevicesAPI, CosmosAPI, Platform, PlaybackAPI, PlayerAPI } from "@webpack/types";
+import {
+    ConnectDevicesAPI,
+    CosmosAPI,
+    Platform,
+    PlaybackAPI,
+    PlayerAPI,
+    RemoteConfigDebugAPI,
+    RemoteConfiguration
+} from "@webpack/types";
 
 import { createEventListeners, startAllPlugins } from "plugins";
 
@@ -30,6 +38,7 @@ export let player = findApiLazy<PlayerAPI>("PlayerAPI");
 export let playback = findApiLazy<PlaybackAPI>("PlaybackAPI");
 export let connectDevices = findApiLazy<ConnectDevicesAPI>("ConnectDevicesAPI");
 export let cosmos = findApiLazy<CosmosAPI>("Cosmos");
+export let remoteConfig = findApiLazy<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
 
 export const _loadPlatform = (value: Platform): Platform => {
     platform = value;

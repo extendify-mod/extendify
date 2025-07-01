@@ -1,3 +1,4 @@
+import { AnyExperiment } from "@utils/experiments";
 import { AdManagers, SettingsAPI, User } from "@webpack/types";
 
 import { History } from "history";
@@ -230,4 +231,16 @@ export interface CosmosAPI {
     del<T>(url: string, data?: any, headers?: any): Promise<T>;
     patch<T>(url: string, data?: any, headers?: any): Promise<T>;
     sub<T>(url: string, data?: any, headers?: any): Promise<T>;
+}
+
+export interface RemoteConfigDebugAPI {
+    _properties: AnyExperiment[];
+    setOverride(
+        key: {
+            source: string;
+            type: "enum" | "number" | "boolean";
+            name: string;
+        },
+        value: any
+    ): Promise<void>;
 }

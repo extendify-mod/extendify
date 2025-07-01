@@ -16,7 +16,7 @@ import plugins from "~plugins";
 
 const logger = new Logger("Settings");
 
-export type Settings = {
+export type SettingsType = {
     plugins: {
         [plugin: string]: {
             enabled: boolean;
@@ -25,15 +25,17 @@ export type Settings = {
     };
     enableQuickCss: boolean;
     enabledThemes: string[];
+    experimentOverrides: Record<string, any>;
 };
 
-const DefaultSettings: Settings = {
+const DefaultSettings: SettingsType = {
     plugins: {},
     enableQuickCss: true,
-    enabledThemes: []
+    enabledThemes: [],
+    experimentOverrides: []
 };
 
-const settings: Settings = window.EXTENDIFY_NATIVE_AVAILABLE
+const settings: SettingsType = window.EXTENDIFY_NATIVE_AVAILABLE
     ? window.ExtendifyNative.settings.get()
     : JSON.parse(localStorage.getItem(CONFIG_KEY) ?? "{}");
 mergeDefaults(settings, DefaultSettings);
@@ -91,12 +93,12 @@ SettingsStore.addGlobalChangeListener((_, path) => {
 });
 
 /**
- * Same as {@link Settings} but unproxied. You should treat this as readonly,
+ * Same as {@link SettingsType} but unproxied. You should treat this as readonly,
  * as modifying properties on this will not save to disk or call settings
  * listeners.
  * WARNING: default values specified in plugin.options will not be ensured here. In other words,
  * settings for which you specified a default value may be uninitialised. If you need proper
- * handling for default values, use {@link Settings}
+ * handling for default values, use {@link SettingsType}
  */
 export const PlainSettings = settings;
 /**
@@ -114,7 +116,7 @@ export const Settings = SettingsStore.store;
  * @returns Settings
  */
 // TODO: Representing paths as essentially "string[].join('.')" wont allow dots in paths, change to "paths?: string[][]" later
-export const useSettings = (paths?: UseSettings<Settings>[]) => {
+export const useSettings = (paths?: UseSettings<SettingsType>[]) => {
     const [, forceUpdate] = React.useReducer(() => ({}), {});
 
     useEffect(() => {
@@ -182,7 +184,7 @@ export function definePluginSettings<
         },
         use: (settings) => {
             return useSettings(
-                settings?.map((name) => `plugins.${definedSettings.pluginName}.${name}`) as UseSettings<Settings>[]
+                settings?.map((name) => `plugins.${definedSettings.pluginName}.${name}`) as UseSettings<SettingsType>[]
             ).plugins[definedSettings.pluginName] as any;
         },
         def,
