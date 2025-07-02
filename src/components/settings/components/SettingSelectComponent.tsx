@@ -40,8 +40,9 @@ export default (props: ISettingElementProps<PluginOptionSelect>) => {
                 </Text>
             </div>
             <SelectComponent
-                value={props.setting.options?.find((v) => v.value === state)}
                 id={props.id}
+                className="ext-plugin-setting-element"
+                value={props.setting.options?.find((v) => v.value === state)}
                 options={props.setting.options as SelectOption[]}
                 onSelect={(v) => onChange(v.value)}
             />

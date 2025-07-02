@@ -4,7 +4,8 @@ import { Text } from "@webpack/common";
 
 type Props = {
     label?: string;
-    id: string;
+    id?: string;
+    className?: string;
     placeholder?: string;
     maxLength?: number;
     value?: string;
@@ -15,7 +16,7 @@ type Props = {
 
 export default (props: Props) => {
     return (
-        <div className="ext-text-input-container">
+        <div className={["ext-text-input-container", props.className].filter((v) => !!v).join(" ")}>
             {props.label && (
                 <label htmlFor={props.id} className="ext-text-input-label">
                     <Text variant="marginalBold" className="ext-text-input-label-content">

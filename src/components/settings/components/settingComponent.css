@@ -10,3 +10,7 @@
     flex-direction: column;
     width: 50%;
 }
+
+.ext-plugin-setting-element {
+    width: 50%;
+}

@@ -1,11 +1,11 @@
 .ext-select-container {
     -webkit-box-align: center;
     align-items: center;
-    width: 50%;
+    width: 100%;
 }
 
 .ext-select-select {
-    background-color: hsla(0, 0%, 100%, 0.1);
+    background-color: #333;
     border: 0;
     border-radius: 4px;
     color: var(--text-base);

@@ -25,14 +25,12 @@ export type SettingsType = {
     };
     enableQuickCss: boolean;
     enabledThemes: string[];
-    experimentOverrides: Record<string, any>;
 };
 
 const DefaultSettings: SettingsType = {
     plugins: {},
     enableQuickCss: true,
-    enabledThemes: [],
-    experimentOverrides: []
+    enabledThemes: []
 };
 
 const settings: SettingsType = window.EXTENDIFY_NATIVE_AVAILABLE

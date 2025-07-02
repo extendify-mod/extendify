@@ -6,15 +6,16 @@ export type SelectOption = {
 };
 
 type Props = {
+    id?: string;
+    className?: string;
     value?: SelectOption;
     options: SelectOption[];
-    id: string;
     onSelect?: (option: SelectOption) => void;
 };
 
 export default (props: Props) => {
     return (
-        <div className="ext-select-container">
+        <div className={["ext-select-container", props.className].filter((v) => !!v).join(" ")}>
             <span>
                 <select
                     id={props.id}
@@ -22,7 +23,7 @@ export default (props: Props) => {
                     onChange={(e) => props.onSelect?.(props.options[e.target.selectedIndex])}
                 >
                     {props.options.map((v) => (
-                        <option selected={props.value && Object.is(v, props.value)} value={v.value}>
+                        <option selected={v.value === props.value?.value} value={v.value}>
                             {v.label}
                         </option>
                     ))}

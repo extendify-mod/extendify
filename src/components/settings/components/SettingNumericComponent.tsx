@@ -49,6 +49,7 @@ export default (props: ISettingElementProps<PluginOptionNumber>) => {
             </div>
             <TextInputComponent
                 id={props.id}
+                className="ext-plugin-setting-element"
                 onChange={(v) => onChange(v)}
                 disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
                 value={state}

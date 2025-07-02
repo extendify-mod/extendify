@@ -1,62 +1,49 @@
-import { Settings } from "@api/settings";
-import { NumberExperiment } from "@utils/experiments";
-import { Slider, useState } from "@webpack/common";
+import { TextInputComponent } from "@components";
 
-export default (props: { experiment: NumberExperiment }) => {
-    const {
-        experiment,
-        experiment: { spec }
-    } = props;
+import { NumberExperiment } from "@utils/experiments";
+import { remoteConfig, useState } from "@webpack/common";
+
+export default (props: { experiment: NumberExperiment; onValueChanged(): void }) => {
+    const { experiment } = props;
 
     function getDefaultValue(): number {
         const value = experiment.localValue ?? experiment.remoteValue;
-        if (value) {
-            return (value - spec.lower) / spec.upper;
-        } else if (spec.defaultValue) {
-            return (spec.defaultValue - spec.lower) / spec.upper;
+        if (typeof value === "undefined") {
+            return experiment.spec.defaultValue;
         }
-        return 0;
+        return value;
     }
 
-    const [progress, setProgress] = useState(getDefaultValue());
+    const [state, setState] = useState(getDefaultValue());
 
-    function getNumberValue(progress: number): number {
-        if (experiment.type !== "number") {
-            return 0;
+    async function onChange(value: number) {
+        props.onValueChanged();
+
+        if (value > experiment.spec.upper) {
+            setState(experiment.spec.upper);
+            return;
+        } else if (value < experiment.spec.lower) {
+            setState(experiment.spec.lower);
+            return;
         }
-        return progress * experiment.spec.upper + experiment.spec.lower;
-    }
 
-    async function onChange(progress: number) {
-        setProgress(progress);
-        setValue(getNumberValue(progress));
-    }
-
-    function setValue(value: number) {
-        // remoteConfig.setOverride(
-        //     {
-        //         source: experiment.source,
-        //         name: experiment.name,
-        //         type: experiment.type
-        //     },
-        //     value
-        // );
-        Settings.experimentOverrides[experiment.name] = value;
-        console.log(value);
+        setState(value);
+        remoteConfig.setOverride(
+            {
+                source: experiment.source,
+                name: experiment.name,
+                type: experiment.type
+            },
+            value
+        );
     }
 
     return (
-        <Slider
-            value={progress}
-            enableAnimation={true}
-            onDragStart={(v: number) => onChange(v)}
-            onDragMove={(v: number) => onChange(v)}
-            onDragEnd={(v: number) => onChange(v)}
-            labelText={getNumberValue(progress).toString()}
-            min={0}
-            max={1}
-            step={0.1}
-            isInteractive={true}
+        <TextInputComponent
+            onChange={(v) => onChange(Number(v))}
+            value={String(state)}
+            type="number"
+            placeholder={`Enter a number from ${experiment.spec.lower} to ${experiment.spec.upper}`}
         />
     );
 };

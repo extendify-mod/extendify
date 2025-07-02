@@ -1,7 +1,6 @@
 .ext-text-input-container {
-    grid-area: name;
     position: relative;
-    width: 50%;
+    width: 100%;
     margin: auto 0;
 }
 
@@ -24,7 +23,7 @@
 }
 
 .ext-text-input-input {
-    background-color: hsla(0, 0%, 100%, 0.1);
+    background-color: #333;
     border: 1px solid transparent;
     border-radius: 4px;
     color: var(--text-base);

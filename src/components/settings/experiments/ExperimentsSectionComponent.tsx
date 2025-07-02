@@ -2,12 +2,10 @@ import "../settingsSection.css";
 
 import { ExperimentComponent } from "@components/settings/experiments";
 
-import { useSettings } from "@api/settings";
 import { AnyExperiment } from "@utils/experiments";
-import { filters, waitFor } from "@webpack";
-import { Text, remoteConfig } from "@webpack/common";
+import { Text, remoteConfig, useEffect, useState } from "@webpack/common";
 
-const InnerSection = (props: { title: string; values: AnyExperiment[] }) => {
+const InnerSection = (props: { title: string; values: AnyExperiment[]; onValueChanged(): void }) => {
     const { title, values } = props;
 
     if (!values.length) {
@@ -21,7 +19,7 @@ const InnerSection = (props: { title: string; values: AnyExperiment[] }) => {
             </Text>
             <div className="ext-settings-grid">
                 {values.map((v) => (
-                    <ExperimentComponent experiment={v} />
+                    <ExperimentComponent experiment={v} onValueChanged={props.onValueChanged} />
                 ))}
             </div>
         </>
@@ -31,24 +29,29 @@ const InnerSection = (props: { title: string; values: AnyExperiment[] }) => {
 export default (props: { searchQuery?: string }) => {
     const { searchQuery } = props;
 
-    const all = remoteConfig._properties.filter(
-        (v) =>
-            !searchQuery?.length ||
-            v.name.toLowerCase().includes(searchQuery) ||
-            v.description.toLowerCase().includes(searchQuery)
-    );
-    const experiments: AnyExperiment[] = [];
-    const overridden: AnyExperiment[] = [];
+    const [experiments, setExperiments] = useState<AnyExperiment[]>([]);
+    const [overridden, setOverridden] = useState<AnyExperiment[]>([]);
 
-    const { experimentOverrides } = useSettings();
-    all.forEach((v) =>
-        !experimentOverrides.find((i) => i.name === v.name) ? experiments.push(v) : overridden.push(v)
-    );
+    function initializeState() {
+        const all = remoteConfig._properties.filter(
+            (v) =>
+                !searchQuery?.length ||
+                v.name.toLowerCase().includes(searchQuery) ||
+                v.description.toLowerCase().includes(searchQuery)
+        );
+
+        setExperiments(all.filter((v) => v.localValue === v.spec.defaultValue));
+        setOverridden(all.filter((v) => v.localValue !== v.spec.defaultValue));
+    }
+
+    useEffect(() => {
+        initializeState();
+    });
 
     return (
         <div className="ext-settings-section-layout">
-            <InnerSection title="Overridden" values={overridden} />
-            <InnerSection title="Experiments" values={experiments} />
+            <InnerSection title="Overridden" values={overridden} onValueChanged={initializeState} />
+            <InnerSection title="Experiments" values={experiments} onValueChanged={initializeState} />
         </div>
     );
 };

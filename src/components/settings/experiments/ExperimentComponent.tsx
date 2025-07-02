@@ -1,8 +1,7 @@
 import "./experiments.css";
 
-import { NumberExperimentComponent } from "@components/settings/experiments";
+import { NumberExperimentComponent, SelectExperimentComponent } from "@components/settings/experiments";
 
-import { Settings } from "@api/settings";
 import { AnyExperiment } from "@utils/experiments";
 import { filters, waitFor } from "@webpack";
 import { ButtonTertiary, Icon, Text, TooltipWrapper, remoteConfig } from "@webpack/common";
@@ -10,7 +9,7 @@ import { ButtonTertiary, Icon, Text, TooltipWrapper, remoteConfig } from "@webpa
 let GarbageIcon: Icon;
 waitFor(filters.byCode("M5.25 3v-.917C5.25.933"), (v) => (GarbageIcon = v));
 
-export default (props: { experiment: AnyExperiment }) => {
+export default (props: { experiment: AnyExperiment; onValueChanged(): void }) => {
     const { experiment } = props;
 
     return (
@@ -25,6 +24,7 @@ export default (props: { experiment: AnyExperiment }) => {
                             aria-label="Reset to default"
                             iconOnly={() => <GarbageIcon semanticColor="textSubdued" size="small" />}
                             onClick={async () => {
+                                props.onValueChanged();
                                 await remoteConfig.setOverride(
                                     {
                                         name: experiment.name,
@@ -33,7 +33,6 @@ export default (props: { experiment: AnyExperiment }) => {
                                     },
                                     experiment.spec.defaultValue
                                 );
-                                delete Settings.experimentOverrides[experiment.name];
                             }}
                         />
                     </TooltipWrapper>
@@ -41,7 +40,11 @@ export default (props: { experiment: AnyExperiment }) => {
             </div>
             <Text variant="bodySmall">{experiment.description}</Text>
             <div className="ext-experiment-config">
-                {experiment.type === "number" ? <NumberExperimentComponent experiment={experiment} /> : <></>}
+                {experiment.type === "number" ? (
+                    <NumberExperimentComponent experiment={experiment} onValueChanged={props.onValueChanged} />
+                ) : (
+                    <SelectExperimentComponent experiment={experiment} onValueChanged={props.onValueChanged} />
+                )}
             </div>
         </div>
     );
