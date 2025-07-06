@@ -1,18 +1,19 @@
 import "./settingComponent.css";
 
-import { ISettingElementProps } from "@components/settings";
+import { TextInputComponent } from "@components";
+import { ISettingElementProps } from "@components/settings/plugins";
 
 import { textToTitle } from "@utils/text";
-import { PluginOptionBoolean } from "@utils/types";
-import { React, Text, Toggle } from "@webpack/common";
+import { PluginOptionString } from "@utils/types";
+import { React, Text } from "@webpack/common";
 
-export default (props: ISettingElementProps<PluginOptionBoolean>) => {
-    const [state, setState] = React.useState(props.pluginSettings[props.id] ?? props.setting.default ?? false);
+export default (props: ISettingElementProps<PluginOptionString>) => {
+    const [state, setState] = React.useState(props.pluginSettings[props.id] ?? props.setting.default ?? null);
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => props.onError(error !== null), [error]);
 
-    const onChange = (v: boolean) => {
+    const onChange = (v: string) => {
         const isValid = props.setting.isValid?.call(props.definedSettings, v) ?? true;
         if (typeof isValid === "string") {
             setError(isValid);
@@ -36,14 +37,12 @@ export default (props: ISettingElementProps<PluginOptionBoolean>) => {
                     {props.setting.description}
                 </Text>
             </div>
-            {Toggle && (
-                <Toggle
-                    id={props.id}
-                    onSelected={(v) => onChange(v)}
-                    disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
-                    value={state}
-                />
-            )}
+            <TextInputComponent
+                id={props.id}
+                onChange={(v) => onChange(v)}
+                disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
+                value={state}
+            />
             {error && (
                 <Text as="span" semanticColor="textNegative">
                     {error}

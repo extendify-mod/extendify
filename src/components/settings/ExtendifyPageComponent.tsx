@@ -44,6 +44,7 @@ export default () => {
                             alwaysExpanded={false}
                             debounceFilterChangeTimeout={0}
                             onFilter={(v) => setSearchQuery(v.toLowerCase())}
+                            onClear={() => setSearchQuery("")}
                             clearOnEscapeInElementRef={outerRef}
                         />
                     </FilterProvider>

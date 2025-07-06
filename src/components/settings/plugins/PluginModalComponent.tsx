@@ -10,7 +10,7 @@ import {
     SettingSelectComponent,
     SettingSliderComponent,
     SettingTextComponent
-} from "@components/settings";
+} from "@components/settings/plugins";
 
 import { useSettings } from "@api/settings";
 import { OptionType, Plugin } from "@utils/types";

@@ -1,5 +1,9 @@
 import { remoteConfig } from "@webpack/common";
 
+export function getLocalValue<T>(name: string): T {
+    return remoteConfig._properties.find((v) => v.name === name)?.localValue as T;
+}
+
 export interface Experiment<T, S extends ExperimentSpec<T>> {
     name: string;
     description: string;

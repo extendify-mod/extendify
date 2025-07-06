@@ -1,6 +1,6 @@
 import "./settingComponent.css";
 
-import { ISettingElementProps } from "@components/settings";
+import { ISettingElementProps } from "@components/settings/plugins";
 
 import { textToTitle } from "@utils/text";
 import { PluginOptionSlider } from "@utils/types";

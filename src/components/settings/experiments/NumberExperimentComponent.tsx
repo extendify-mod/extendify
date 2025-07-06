@@ -7,7 +7,7 @@ export default (props: { experiment: NumberExperiment; onValueChanged(): void })
     const { experiment } = props;
 
     function getDefaultValue(): number {
-        const value = experiment.localValue ?? experiment.remoteValue;
+        const value = experiment.localValue;
         if (typeof value === "undefined") {
             return experiment.spec.defaultValue;
         }
@@ -17,18 +17,18 @@ export default (props: { experiment: NumberExperiment; onValueChanged(): void })
     const [state, setState] = useState(getDefaultValue());
 
     async function onChange(value: number) {
-        props.onValueChanged();
-
         if (value > experiment.spec.upper) {
             setState(experiment.spec.upper);
+            props.onValueChanged();
             return;
         } else if (value < experiment.spec.lower) {
             setState(experiment.spec.lower);
+            props.onValueChanged();
             return;
         }
 
         setState(value);
-        remoteConfig.setOverride(
+        await remoteConfig.setOverride(
             {
                 source: experiment.source,
                 name: experiment.name,
@@ -36,6 +36,8 @@ export default (props: { experiment: NumberExperiment; onValueChanged(): void })
             },
             value
         );
+        // Want to call this at the end because then we can check the value later
+        props.onValueChanged();
     }
 
     return (

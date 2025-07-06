@@ -1,21 +1,19 @@
 import "./settingComponent.css";
 
-import { TextInputComponent } from "@components";
-import { ISettingElementProps } from "@components/settings";
+import { SelectComponent, SelectOption } from "@components";
+import { ISettingElementProps } from "@components/settings/plugins";
 
 import { textToTitle } from "@utils/text";
-import { OptionType, PluginOptionNumber } from "@utils/types";
+import { PluginOptionSelect } from "@utils/types";
 import { React, Text } from "@webpack/common";
 
-const MAX_SAFE_NUMBER = BigInt(Number.MAX_SAFE_INTEGER);
-
-export default (props: ISettingElementProps<PluginOptionNumber>) => {
-    const [state, setState] = React.useState(`${props.pluginSettings[props.id] ?? props.setting.default ?? 0}`);
+export default (props: ISettingElementProps<PluginOptionSelect>) => {
+    const [state, setState] = React.useState(
+        props.pluginSettings[props.id] ?? props.setting.options?.find((o) => o.default)?.value ?? null
+    );
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => props.onError(error !== null), [error]);
-
-    const serialize = (v: any) => (props.setting.type === OptionType.BIGINT ? BigInt(v) : Number(v));
 
     const onChange = (v: any) => {
         const isValid = props.setting.isValid?.call(props.definedSettings, v) ?? true;
@@ -27,14 +25,8 @@ export default (props: ISettingElementProps<PluginOptionNumber>) => {
             setError(null);
         }
 
-        if (props.setting.type === OptionType.NUMBER && BigInt(v) >= MAX_SAFE_NUMBER) {
-            setState(`${Number.MAX_SAFE_INTEGER}`);
-            props.onChange(serialize(v));
-            return;
-        }
-
         setState(v);
-        props.onChange(serialize(v));
+        props.onChange(v);
     };
 
     return (
@@ -47,14 +39,12 @@ export default (props: ISettingElementProps<PluginOptionNumber>) => {
                     {props.setting.description}
                 </Text>
             </div>
-            <TextInputComponent
+            <SelectComponent
                 id={props.id}
                 className="ext-plugin-setting-element"
-                onChange={(v) => onChange(v)}
-                disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
-                value={state}
-                type="number"
-                placeholder="Enter a number"
+                value={props.setting.options?.find((v) => v.value === state)}
+                options={props.setting.options as SelectOption[]}
+                onSelect={(v) => onChange(v.value)}
             />
             {error && (
                 <Text as="span" semanticColor="textNegative">

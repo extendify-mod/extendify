@@ -1,4 +1,4 @@
-import { ISettingCustomElementProps } from "@components/settings";
+import { ISettingCustomElementProps } from "@components/settings/plugins";
 
 import { PluginOptionComponent } from "@utils/types";
 

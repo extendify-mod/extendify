@@ -1,21 +1,18 @@
 import "./settingComponent.css";
 
-import { SelectComponent, SelectOption } from "@components";
-import { ISettingElementProps } from "@components/settings";
+import { ISettingElementProps } from "@components/settings/plugins";
 
 import { textToTitle } from "@utils/text";
-import { PluginOptionSelect } from "@utils/types";
-import { React, Text } from "@webpack/common";
+import { PluginOptionBoolean } from "@utils/types";
+import { React, Text, Toggle } from "@webpack/common";
 
-export default (props: ISettingElementProps<PluginOptionSelect>) => {
-    const [state, setState] = React.useState(
-        props.pluginSettings[props.id] ?? props.setting.options?.find((o) => o.default)?.value ?? null
-    );
+export default (props: ISettingElementProps<PluginOptionBoolean>) => {
+    const [state, setState] = React.useState(props.pluginSettings[props.id] ?? props.setting.default ?? false);
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => props.onError(error !== null), [error]);
 
-    const onChange = (v: any) => {
+    const onChange = (v: boolean) => {
         const isValid = props.setting.isValid?.call(props.definedSettings, v) ?? true;
         if (typeof isValid === "string") {
             setError(isValid);
@@ -39,13 +36,14 @@ export default (props: ISettingElementProps<PluginOptionSelect>) => {
                     {props.setting.description}
                 </Text>
             </div>
-            <SelectComponent
-                id={props.id}
-                className="ext-plugin-setting-element"
-                value={props.setting.options?.find((v) => v.value === state)}
-                options={props.setting.options as SelectOption[]}
-                onSelect={(v) => onChange(v.value)}
-            />
+            {Toggle && (
+                <Toggle
+                    id={props.id}
+                    onSelected={(v) => onChange(v)}
+                    disabled={props.setting.disabled?.call(props.definedSettings) ?? false}
+                    value={state}
+                />
+            )}
             {error && (
                 <Text as="span" semanticColor="textNegative">
                     {error}

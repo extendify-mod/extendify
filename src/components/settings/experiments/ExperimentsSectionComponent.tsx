@@ -2,7 +2,7 @@ import "../settingsSection.css";
 
 import { ExperimentComponent } from "@components/settings/experiments";
 
-import { AnyExperiment } from "@utils/experiments";
+import { AnyExperiment, getLocalValue } from "@utils/experiments";
 import { Text, remoteConfig, useEffect, useState } from "@webpack/common";
 
 const InnerSection = (props: { title: string; values: AnyExperiment[]; onValueChanged(): void }) => {
@@ -40,13 +40,19 @@ export default (props: { searchQuery?: string }) => {
                 v.description.toLowerCase().includes(searchQuery)
         );
 
-        setExperiments(all.filter((v) => v.localValue === v.spec.defaultValue));
-        setOverridden(all.filter((v) => v.localValue !== v.spec.defaultValue));
+        const experiments: AnyExperiment[] = [];
+        const overridden: AnyExperiment[] = [];
+        all.forEach((v) => {
+            const localValue = getLocalValue(v.name);
+            localValue === v.spec.defaultValue ? experiments.push(v) : overridden.push(v);
+        });
+        setExperiments(experiments);
+        setOverridden(overridden);
     }
 
     useEffect(() => {
         initializeState();
-    });
+    }, []);
 
     return (
         <div className="ext-settings-section-layout">

@@ -17,9 +17,9 @@ export default (props: { experiment: SelectExperiment; onValueChanged(): void })
             : experiment.spec.values.map((v) => ({ label: v.toUpperCase(), value: v }) as SelectOption);
 
     function getDefaultValue(): any {
-        const value = experiment.localValue ?? (experiment as SelectExperiment).remoteValue;
+        const value = experiment.localValue;
         if (typeof value === "undefined") {
-            return experiment.spec.defaultValue;
+            return (experiment as SelectExperiment).spec.defaultValue;
         }
         return value;
     }
@@ -30,7 +30,7 @@ export default (props: { experiment: SelectExperiment; onValueChanged(): void })
         props.onValueChanged();
 
         setState(value);
-        remoteConfig.setOverride(
+        await remoteConfig.setOverride(
             {
                 source: experiment.source,
                 name: experiment.name,
