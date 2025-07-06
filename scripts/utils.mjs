@@ -32,6 +32,8 @@ export function getSpotifyPath() {
             );
         case "win32":
             return join(process.env.AppData, "Spotify");
+        case "darwin":
+            return "/Applications/Spotify.app/Contents/Resources";
         default:
             throw new Error(`Platform not implemented: ${process.platform}`);
     }
@@ -51,6 +53,8 @@ export function getCachePath() {
             );
         case "win32":
             return join(process.env.LocalAppData, "Spotify");
+        case "darwin":
+            return join(process.env.HOME, "Library/Application Support/Spotify/PersistentCache");
         default:
             throw new Error(`Platform not implemented: ${process.platform}`);
     }
@@ -62,6 +66,8 @@ export function killSpotify() {
             return execSync("killall spotify");
         case "win32":
             return execSync("taskkill /F /IM Spotify.exe /T");
+        case "darwin":
+            return execSync("killall Spotify && sleep 0.2");
         default:
             throw new Error(`Platform not implemented: ${process.platform}`);
     }
@@ -73,6 +79,8 @@ export function launchSpotify() {
             return execSync(hasArg("flatpak") ? "flatpak run com.spotify.Client" : "spotify-launcher");
         case "win32":
             return execFileSync(join(getSpotifyPath(), "Spotify.exe"));
+        case "darwin":
+            return execFileSync(join(getSpotifyPath(), "../MacOS/Spotify"));
         default:
             throw new Error(`Platform not implemented: ${process.platform}`);
     }
