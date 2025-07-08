@@ -36,18 +36,24 @@ function exposeModuleCache(content: string, requireName: string) {
  *       That means that if the variables change (like "o") between versions, it will only work for Windows and Mac, but not for Linux.
  */
 function exposePrivateModule(content: string, requireName: string) {
-    return replaceAdd(content, "var c={};(", `${requireName}.iife=`)
+    let exportsName: string | null = null;
+    return content
         .replace(
-            // Makes the wreq instance accessible to the private module
-            ".iife=()",
-            `.iife=(${requireName})`
+            // Assigns the whole private module as a property
+            // and makes the wreq instance accessible to the private module for when we manually call it later on from a different scope
+            /(var (__webpack_exports__|.{1,3})={};\()\(\)=>/,
+            (_, prefix, name) => {
+                exportsName = name;
+                logger.info(`Found exports name ${name}`);
+                return `${prefix}${requireName}.iife=(${requireName})=>`;
+            }
         )
         .replace(
             // Prevents the private iife module from being called.
             // We do this because we want to patch this module, but we can only patch it when our plugins have been initialized.
             // We prevent it from initializing at startup and then initialize it ourselves when we do our webpack patching.
-            `})(),c=${requireName}.`,
-            `}),c=${requireName}.`
+            `})(),${exportsName}=${requireName}.`,
+            `}),${exportsName}=${requireName}.`
         );
 }
 
