@@ -9,11 +9,20 @@ function replaceAdd(content: string, find: string, add: string) {
  * Exposes the webpack module cache.
  */
 function exposeModuleCache(content: string, requireName: string) {
+    if (content.includes("__webpack_module_cache__")) {
+        return replaceAdd(
+            content,
+            `${requireName}.m=__webpack_modules__,`,
+            `${requireName}.c=__webpack_module_cache__,`
+        );
+    }
+
     let globals = content.match(/,(.+?)={};/);
     if (!globals) {
         return content;
     }
     const globalNames = globals[1].split(",");
+
     return replaceAdd(
         content,
         `${requireName}.m=__webpack_modules__,`,
@@ -67,7 +76,7 @@ export async function loadEntrypoint(): Promise<boolean> {
 
     const requireName = getRequireName(text);
     if (!requireName) {
-        logger.error("Couldn't find require name in entry point");
+        logger.error("Couldn't find require name in entrypoint");
         return false;
     }
     logger.info(`Found require name ${requireName}`);
