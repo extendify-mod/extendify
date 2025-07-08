@@ -24,11 +24,7 @@ const logger = new Logger("WebpackInterceptor", "#8caaee");
 
 let webpackChunk: any[];
 
-loadEntrypoint().then((success) => {
-    success
-        ? logger.info("Loaded entrypoint")
-        : logger.error("Failed to load entrypoint, make sure you're manually updated to the latest Spotify version");
-});
+loadEntrypoint();
 
 Object.defineProperty(window, WEBPACK_CHUNK, {
     configurable: true,

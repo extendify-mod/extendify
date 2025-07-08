@@ -1,4 +1,5 @@
-import { ENTRYPOINT_SCRIPT } from "@utils/constants";
+import { ENTRYPOINT_SCRIPT, XPUI_SCRIPT } from "@utils/constants";
+import { Logger } from "@utils/logger";
 
 function replaceAdd(content: string, find: string, add: string) {
     return content.replace(find, find + add);
@@ -7,13 +8,17 @@ function replaceAdd(content: string, find: string, add: string) {
 /**
  * Exposes the webpack module cache.
  */
-function exposeModuleCache(content: string) {
+function exposeModuleCache(content: string, requireName: string) {
     let globals = content.match(/,(.+?)={};/);
     if (!globals) {
         return content;
     }
     const globalNames = globals[1].split(",");
-    return replaceAdd(content, "o.m=__webpack_modules__,", `o.c=${globalNames[globalNames.length - 1]},`);
+    return replaceAdd(
+        content,
+        `${requireName}.m=__webpack_modules__,`,
+        `${requireName}.c=${globalNames[globalNames.length - 1]},`
+    );
 }
 
 /**
@@ -21,49 +26,74 @@ function exposeModuleCache(content: string) {
  * NOTE: This might be broken for platforms like Linux, because their main release version is behind.
  *       That means that if the variables change (like "o") between versions, it will only work for Windows and Mac, but not for Linux.
  */
-function exposePrivateModule(content: string) {
-    return replaceAdd(content, "var c={};(", "o.iife=")
+function exposePrivateModule(content: string, requireName: string) {
+    return replaceAdd(content, "var c={};(", `${requireName}.iife=`)
         .replace(
             // Makes the wreq instance accessible to the private module
             ".iife=()",
-            ".iife=(o)"
+            `.iife=(${requireName})`
         )
         .replace(
             // Prevents the private iife module from being called.
             // We do this because we want to patch this module, but we can only patch it when our plugins have been initialized.
             // We prevent it from initializing at startup and then initialize it ourselves when we do our webpack patching.
-            "})(),c=o.",
-            "}),c=o."
+            `})(),c=${requireName}.`,
+            `}),c=${requireName}.`
         );
 }
 
+function getRequireName(content: string): string | undefined {
+    const match = content.match(/}(__webpack_require__|.{1,3})\.m=__webpack_modules__/);
+    return match?.[1];
+}
+
+const logger = new Logger("WebpackLoader", "#e28743");
+
 export async function loadEntrypoint(): Promise<boolean> {
-    let text: string;
-    try {
-        text = await (await fetch(ENTRYPOINT_SCRIPT)).text();
-    } catch {
+    let text: string | null = null;
+    let scriptUrl: string = "";
+    for (scriptUrl of [ENTRYPOINT_SCRIPT, XPUI_SCRIPT]) {
+        try {
+            text = await (await fetch(scriptUrl)).text();
+            logger.info(`Found entrypoint at ${scriptUrl}`);
+            break;
+        } catch {}
+    }
+
+    if (!text) {
+        logger.error("Failed to load entrypoint, make sure you're manually updated to the latest Spotify version");
         return false;
     }
-    let r = `// Original name: ${ENTRYPOINT_SCRIPT}\n${text}`;
 
-    [exposeModuleCache, exposePrivateModule].forEach((f) => (r = f(r)));
+    const requireName = getRequireName(text);
+    if (!requireName) {
+        logger.error("Couldn't find require name in entry point");
+        return false;
+    }
+    logger.info(`Found require name ${requireName}`);
+
+    let r = `// Original name: ${scriptUrl}\n${text}`;
+    [exposeModuleCache, exposePrivateModule].forEach((f) => (r = f(r, requireName)));
 
     if (IS_DEV) {
         const sourceMap = {
             version: 3,
-            file: ENTRYPOINT_SCRIPT,
-            sources: [ENTRYPOINT_SCRIPT],
+            file: scriptUrl,
+            sources: [scriptUrl],
             sourcesContent: [r],
             names: [],
             mappings: ""
         };
         const encodedMap = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
         r += `\n//# sourceMappingURL=data:application/json;base64,${encodedMap}`;
+        logger.debug("Generated source map for entrypoint");
     }
 
     const script = document.createElement("script");
     script.src = URL.createObjectURL(new Blob([r], { type: "script/js" }));
 
     document.body.appendChild(script);
+
+    logger.info("Successfully patched and loaded entrypoint");
     return true;
 }
