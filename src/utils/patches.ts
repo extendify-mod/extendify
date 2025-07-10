@@ -31,7 +31,9 @@ export const canonicalizeMatch = <T extends RegExp | string>(match: T): T => {
 export const canonicalizeReplace = <T extends string | ReplaceFn>(replace: T, pluginName: string): T => {
     const self = `Extendify.Plugins.plugins[${JSON.stringify(pluginName)}]`;
 
-    if (typeof replace !== "function") return replace.replaceAll("$self", self) as T;
+    if (typeof replace !== "function") {
+        return replace.replaceAll("$self", self) as T;
+    }
 
     return ((...args) => replace(...args).replaceAll("$self", self)) as T;
 };

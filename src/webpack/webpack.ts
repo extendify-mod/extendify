@@ -261,8 +261,9 @@ export const findBulk = (filterFns: FilterFn[]) => {
 export const findModuleId = (...code: CodeFilter) => {
     code = code.map(canonicalizeMatch);
 
-    for (const id in wreq.m) {
-        if (stringMatches(wreq.m[id].toString(), code)) {
+    const modules = getAllModules();
+    for (const id in modules) {
+        if (stringMatches(resolveModule(id).toString(), code)) {
             return;
         }
     }
@@ -286,7 +287,7 @@ export const findModuleFactory = (...code: CodeFilter) => {
     if (!id) {
         return null;
     }
-    return wreq.m[id];
+    return resolveModule(id);
 };
 
 /**
@@ -495,7 +496,7 @@ export const extractAndLoadChunks = async (code: CodeFilter, matcher: RegExp = D
         await Promise.all(chunkIds.map((id) => wreq.e(id)));
     }
 
-    if (wreq.m[entryPointId] === null) {
+    if (resolveModule(entryPointId) === null) {
         const err = new Error(
             "extractAndLoadChunks: Entry point is not loaded in the module factories, perhaps one of the chunks failed to load"
         );
@@ -575,6 +576,14 @@ export function waitForComponent<T extends React.ComponentType<any> = React.Comp
     return lazyComponent;
 }
 
+export function getAllModules() {
+    return { ...wreq.m, Private: wreq.iife };
+}
+
+export function resolveModule(id: string | number): Function {
+    return id.toString().toLowerCase() === "private" ? wreq.iife : (wreq.m[id] as Function);
+}
+
 /**
  * Search modules by keyword. This searches the factory methods,
  * meaning you can search all sorts of things, displayName, methodName, strings somewhere in the code, etc
@@ -585,10 +594,11 @@ export const search = (...code: CodeFilter) => {
     code = code.map(canonicalizeMatch);
 
     const results = {} as Record<number, Function>;
-    const factories = wreq.m;
+    const factories = getAllModules();
 
     for (const id in factories) {
-        const factory = factories[id].original ?? factories[id];
+        const resolved = resolveModule(id) as any;
+        const factory = resolved.original ?? resolved;
 
         if (stringMatches(factory.toString(), code)) {
             results[id] = factory;
@@ -607,7 +617,7 @@ export const search = (...code: CodeFilter) => {
  * @param id The id of the module to extract
  */
 export const extract = (id: string | number) => {
-    const mod = wreq.m[id] as Function;
+    const mod = resolveModule(id);
     if (!mod) {
         return null;
     }

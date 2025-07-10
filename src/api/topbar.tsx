@@ -3,8 +3,8 @@ import { Renderable } from "@utils/types";
 const topbarElements = new Map<string, Renderable>();
 
 export const _injectTopbarElements = (children: React.ReactNode[]) => {
-    for (const [id, Element] of topbarElements) {
-        children.push(<Element data-plugin={id} />);
+    for (const [_, Element] of topbarElements) {
+        children.push(<Element />);
     }
     return children;
 };

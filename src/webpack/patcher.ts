@@ -75,8 +75,10 @@ Object.defineProperty(Function.prototype, "m", {
                 Object.defineProperty(this, "iife", {
                     configurable: true,
                     set(this: WebpackInstance, v: WebpackInstance["iife"]) {
+                        const original = v;
                         v = patchModule(v, "Private");
                         v(this);
+                        (v as any).original = original;
 
                         Object.defineProperty(this, "iife", {
                             value: v,
@@ -129,10 +131,6 @@ const patchModule = (mod: any, id: string) => {
     const patchedBy = new Set();
 
     let code: string = "0," + mod.toString().replaceAll("\n", "");
-    // The check for "0" is so funny because we do "0,function(){}" so it became "function,function(){}"
-    // if (id !== "Private" && id !== "0") {
-    //     code = code.replace(id, "function");
-    // }
 
     for (let i = 0; i < patches.length; i++) {
         const patch = patches[i];

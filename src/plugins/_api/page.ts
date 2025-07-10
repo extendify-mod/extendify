@@ -17,7 +17,7 @@ export default definePlugin({
                     }
                 },
                 {
-                    match: /(children:\[)(\(0,.\.jsx\)\(..,{}\),)(\(0,.\.jsxs\)\("div",{className:"main-view-container",)/,
+                    match: /(children:\[)(\(0,\i\.jsx\)\(\i,{}\),)(\(0,\i\.jsxs\)\("div",{className:"main-view-container",)/,
                     replace: (_, prefix, __, suffix) => {
                         return `${prefix}${suffix}`;
                     }

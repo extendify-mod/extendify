@@ -23,7 +23,6 @@ export default definePlugin({
                 return platform;
             }
         });
-
         Object.defineProperty(window, "wreq", {
             get() {
                 return wreq;
