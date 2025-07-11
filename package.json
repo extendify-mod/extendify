@@ -6,7 +6,7 @@
     "scripts": {
         "build": "node scripts/build/build.mjs",
         "dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node scripts/build/build.mjs --dev --apply\"",
-        "devtools": "node scripts/setDevtools.mjs",
+        "devtools": "node scripts/enableDevtools.mjs",
         "patch": "node scripts/patch/applyPatch.mjs",
         "unpatch": "node scripts/patch/undoPatch.mjs"
     },

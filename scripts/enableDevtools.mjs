@@ -26,3 +26,7 @@ export async function enableDevtools() {
     await writeFile(bnkPath, buffer, "binary");
     console.log("Enabled devtools");
 }
+
+if (process.argv[1]?.endsWith("enableDevtools.mjs")) {
+    await enableDevtools();
+}

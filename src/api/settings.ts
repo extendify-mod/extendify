@@ -4,8 +4,6 @@
  *       https://github.com/Vendicated/Vencord/blob/main/src/utils/mergeDefaults.ts,
  *       https://github.com/Vendicated/Vencord/blob/main/src/shared/SettingsStore.ts
  */
-import { FileSelectResult } from "@components";
-
 import { SettingsStore as SettingsStoreClass } from "@api/settingsStore";
 import { CONFIG_KEY } from "@utils/constants";
 import { Logger } from "@utils/logger";
