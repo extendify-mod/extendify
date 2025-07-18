@@ -1,33 +1,35 @@
 import { ENTRYPOINT_SCRIPT, XPUI_SCRIPT } from "@utils/constants";
 import { Logger } from "@utils/logger";
 
-function replaceAdd(content: string, find: string, add: string) {
-    return content.replace(find, find + add);
+function replaceAdd(content: string, find: string | RegExp, add: string) {
+    return content.replace(find, (match) => match + add);
 }
 
 /**
  * Exposes the webpack module cache.
  */
 function exposeModuleCache(content: string, requireName: string) {
-    if (content.includes("__webpack_module_cache__")) {
-        return replaceAdd(
-            content,
-            `${requireName}.m=__webpack_modules__,`,
-            `${requireName}.c=__webpack_module_cache__,`
-        );
+    let debug = "";
+    if (IS_DEV) {
+        debug = "console.log(__webpack_modules__),";
+        content = content.replace(/return __webpack_modules__\[(.*?)\]/, (match, id) => {
+            return `console.log(${id}, __webpack_modules__[${id}]);${match}`;
+        });
     }
 
-    let globals = content.match(/,(.+?)={};/);
-    if (!globals) {
-        return content;
-    }
-    const globalNames = globals[1].split(",");
+    content = replaceAdd(content, /return __webpack_modules__\[(.*?)\]/, "?");
 
-    return replaceAdd(
-        content,
-        `${requireName}.m=__webpack_modules__,`,
-        `${requireName}.c=${globalNames[globalNames.length - 1]},`
-    );
+    let cacheName = "__webpack_module_cache__";
+    if (!content.includes("__webpack_module_cache__")) {
+        let globals = content.match(/,(.+?)={};/);
+        if (!globals) {
+            return content;
+        }
+        const globalNames = globals[1].split(",");
+        cacheName = globalNames[globalNames.length - 1];
+    }
+
+    return replaceAdd(content, `${requireName}.m=__webpack_modules__,`, `${requireName}.c=${cacheName},` + debug);
 }
 
 /**
