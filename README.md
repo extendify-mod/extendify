@@ -32,26 +32,39 @@ I also took inspiration from [Spicetify](https://spicetify.app). I just thought 
 If you're on Windows, Extendify requires installing Spotify from the installer. (**NOT THE MICROSOFT STORE!**)
 
 If you already have Spotify installed through this method, your install is probably not up to date, even if you're technically on the latest version.
-See the next section for info on how to manually update your install.
+Read the [Manual Updating](#manual-updating) section to learn how to update properly.
 
-Currently the [`applyPatch.mjs`](/scripts/patch/applyPatch.mjs) script supports Windows and Linux (tested on Arch + Hyprland).
+Currently the [`applyPatch.mjs`](/scripts/patch/applyPatch.mjs) script supports Windows, Linux and MacOS (tested on Win11, Arch and an arm Mac Mini).
 
 One thing is that for loading the entrypoint we reference [hardcoded variables](/src/webpack/loader.ts). Linux versions will always be behind MacOS and Windows, so if these change between versions it won't work on Linux until it's caught up. You can change these to test or make a fix for this but I don't have access to testing that stuff right now so I will leave it to someone else.
 
 ## Manual Updating
 
-The idea of manual updating is that you delete the `.spa` files in the `Apps` folder of the Spotify install and then re-run the installer.
+The idea of manual updating is that you delete the `.spa` files in the `Apps` folder of the Spotify install, and the Spotify executable, and then re-run the installer.
 This solves our problem of out of date archives 99.9% of the time.
 
-You can get the latest installer from [here (Windows + MacOS + Linux)](https://loadspot.pages.dev/) or [here (Windows only)](https://download.scdn.co/SpotifySetup.exe).
+We have a script for this which you can run:
+
+```bash
+npm run update
+```
+
+This script currently only supports Windows (tested on Win11).
+For more info on how to run scripts, read the [Scripts](#scripts) section.
+
+If you're not using Windows, or you want to do it manually, do the following
+
+- Delete the `xpui.spa` and `_xpui.spa` files from the `Spotify/Apps` directory,
+- Delete the Spotify executable (`Spotify.exe` on Windows) file from the `Spotify` folder,
+- Get the latest installer for your OS and architecture from [here](https://loadspot.pages.dev/),
+- Run the installer.
 
 ## Scripts:
 
-- `npm run dev`: Build, enable devtools and patch Spotify.
+- `npm run dev`: Build, enable devtools, patch and run Spotify.
 - `npm run build`: Build Extendify.
 - `npm run devtools`: Enable devtools for Spotify.
 - `npm run patch`: Patch Spotify.
-- `npm run unpatch`: Undo the patch.
 
 ## OPTIONAL Flags:
 
