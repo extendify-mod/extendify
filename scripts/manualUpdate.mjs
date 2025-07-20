@@ -11,7 +11,7 @@ await killSpotify();
 
 switch (process.platform) {
     case "win32":
-        for (const subPath of ["Spotify.exe", "Apps/xpui.spa"]) {
+        for (const subPath of ["Spotify.exe", "Apps/xpui.spa", "Apps/_xpui.spa"]) {
             const fullPath = path.join(root, subPath);
             await rm(fullPath, { force: true, recursive: true });
             console.log(`Deleted file ${fullPath}`);
@@ -37,7 +37,7 @@ switch (process.platform) {
     default:
         // If you want to implement your platform, it should do the following:
         // - Delete the Spotify executable file
-        // - Delete the 'xpui.spa' file (presumably in an 'Apps' folder)
+        // - Delete the 'xpui.spa' and '_xpui.spa' files (presumably in an 'Apps' folder)
         // - Download and run the latest Spotify installer, or copy official release files
         console.error(`Platform ${process.platform} isn't implemented in manual update script.`);
         break;

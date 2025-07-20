@@ -20,8 +20,7 @@ export async function applyPatch() {
         }
 
         const archive = await JSZip.loadAsync(await readFile(join(appsPath, "_xpui.spa"), "binary"));
-        const dist = await readdir("dist");
-        for (const fileName of dist) {
+        for (const fileName of await readdir("dist")) {
             archive.file(fileName, await readFile(join("dist", fileName)));
             console.log(`Copied ${fileName}`);
         }
