@@ -1,4 +1,4 @@
-import { exists, getSpotifyPath } from "../utils.mjs";
+import { exists, getSpotifyPath } from "./utils.mjs";
 
 import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";

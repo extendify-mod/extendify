@@ -3,8 +3,8 @@
  * Modified version of Vendicated's build.mjs
  * @link https://github.com/Vendicated/Vencord/blob/main/scripts/build/build.mjs
  */
+import { applyPatch } from "../applyPatch.mjs";
 import { enableDevtools } from "../enableDevtools.mjs";
-import { applyPatch } from "../patch/applyPatch.mjs";
 import { killSpotify, launchSpotify } from "../utils.mjs";
 import {
     BUILD_TIMESTAMP,
