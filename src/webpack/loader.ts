@@ -17,8 +17,6 @@ function exposeModuleCache(content: string, requireName: string) {
         });
     }
 
-    content = replaceAdd(content, /return __webpack_modules__\[(.*?)\]/, "?");
-
     let cacheName = "__webpack_module_cache__";
     if (!content.includes("__webpack_module_cache__")) {
         let globals = content.match(/,(.+?)={};/);
