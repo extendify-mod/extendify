@@ -15,7 +15,6 @@ export default (props: { experiment: AnyExperiment; onValueChanged(): void }) =>
     const [changed, setChanged] = useState(experiment.localValue !== experiment.spec.defaultValue);
 
     function onValueChanged() {
-        console.log(`Changed: ${experiment.spec.defaultValue === getLocalValue(experiment.name)}`);
         setChanged(experiment.spec.defaultValue === getLocalValue(experiment.name));
         props.onValueChanged();
     }
@@ -32,7 +31,6 @@ export default (props: { experiment: AnyExperiment; onValueChanged(): void }) =>
                             aria-label="Reset to default"
                             iconOnly={() => <GarbageIcon semanticColor="textSubdued" size="small" />}
                             onClick={async () => {
-                                console.log("Reset");
                                 props.onValueChanged();
                                 setChanged(false);
                                 await remoteConfig.setOverride(

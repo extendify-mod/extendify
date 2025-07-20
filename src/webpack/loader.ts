@@ -9,14 +9,6 @@ function replaceAdd(content: string, find: string | RegExp, add: string) {
  * Exposes the webpack module cache.
  */
 function exposeModuleCache(content: string, requireName: string) {
-    let debug = "";
-    if (IS_DEV) {
-        debug = "console.log(__webpack_modules__),";
-        content = content.replace(/return __webpack_modules__\[(.*?)\]/, (match, id) => {
-            return `console.log(${id}, __webpack_modules__[${id}]);${match}`;
-        });
-    }
-
     let cacheName = "__webpack_module_cache__";
     if (!content.includes("__webpack_module_cache__")) {
         let globals = content.match(/,(.+?)={};/);
@@ -27,7 +19,7 @@ function exposeModuleCache(content: string, requireName: string) {
         cacheName = globalNames[globalNames.length - 1];
     }
 
-    return replaceAdd(content, `${requireName}.m=__webpack_modules__,`, `${requireName}.c=${cacheName},` + debug);
+    return replaceAdd(content, `${requireName}.m=__webpack_modules__,`, `${requireName}.c=${cacheName},`);
 }
 
 /**
