@@ -1,6 +1,6 @@
 import { proxyLazy } from "@utils/lazy";
 import { StartAt } from "@utils/types";
-import { findByCode } from "@webpack";
+import { filters, findByCode, waitFor } from "@webpack";
 import {
     ConnectDevicesAPI,
     CosmosAPI,
@@ -8,7 +8,7 @@ import {
     PlaybackAPI,
     PlayerAPI,
     RemoteConfigDebugAPI,
-    RemoteConfiguration
+    SpotifyURI
 } from "@webpack/types";
 
 import { createEventListeners, startAllPlugins } from "plugins";
@@ -32,6 +32,9 @@ export const findApiLazy = <T>(name: string): T => {
 export const findService = <T>(id: string): T => {
     return findByCode(`SERVICE_ID="${id}"`) as T;
 };
+
+export let parseUri: (uri: string) => SpotifyURI;
+waitFor(filters.byCode("Argument `uri` must be a string"), (v) => (parseUri = v));
 
 export let platform: Platform;
 export let player = findApiLazy<PlayerAPI>("PlayerAPI");

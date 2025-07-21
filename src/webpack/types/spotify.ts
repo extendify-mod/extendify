@@ -244,3 +244,15 @@ export interface RemoteConfigDebugAPI {
         value: any
     ): Promise<void>;
 }
+
+export interface SpotifyURI {
+    type: string;
+    hasBase62Id: boolean;
+    id?: string;
+    toURI(): string;
+    toString(): string;
+    toURLPath(relative: boolean): string;
+    getPath(): string;
+    toURL(parent: string | undefined): string;
+    clone(): SpotifyURI;
+}
