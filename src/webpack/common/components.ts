@@ -1,8 +1,7 @@
 import { Renderable } from "@utils/types";
-import { filters, findComponentByCodeLazy, waitFor, waitForComponent } from "@webpack";
+import { filters, waitFor, waitForComponent } from "@webpack";
 
-import { ComponentProps, ComponentType, ElementType, PropsWithChildren, Ref } from "react";
-import { OmitDeep } from "type-fest";
+import { ComponentProps, ComponentType, ElementType, PropsWithChildren, ReactElement, Ref } from "react";
 
 export type SemanticColor =
     | "textBase"
@@ -44,9 +43,23 @@ export const ConfirmDialog = waitForComponent(
 );
 
 export const Menu = waitForComponent("Menu", filters.componentByCode("getInitialFocusElement", "children"));
-export const MenuItem = waitForComponent("MenuItem", filters.componentByCode("handleMouseEnter", "onClick"));
-export const MenuSubMenuItem = waitForComponent("MenuSubMenuItem", filters.componentByCode("subMenuIcon"));
-export const RightClickMenu = waitForComponent("RightClickMenu", filters.componentByCode("right-click", "contextName"));
+export const MenuItem = waitForComponent<
+    ComponentType<
+        PropsWithChildren<{
+            disabled?: boolean;
+            divider?: "before" | "after";
+            leadingIcon?: ReactElement;
+            trailingIcon?: ReactElement;
+            elementRef?: Ref<ComponentType<any>>;
+            /** @default true */
+            autoClose?: boolean;
+            semanticColor?: SemanticColor;
+            /** @default true */
+            implicitType?: boolean;
+            onClick?(): void;
+        }>
+    >
+>("MenuItem", filters.componentByCode("handleMouseEnter", "onClick", "leadingIcon"));
 
 export const RemoteConfigProvider = waitForComponent(
     "RemoteConfigProvider",

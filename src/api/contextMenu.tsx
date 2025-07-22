@@ -1,101 +1,151 @@
-import { Renderable } from "@utils/types";
-import { React, parseUri } from "@webpack/common";
+import { MenuItem, React, parseUri } from "@webpack/common";
 
 import { ComponentType } from "react";
 
-interface MenuFactory {
-    menu: { props: any };
-    children: Renderable[] | Renderable;
+export enum ContextMenuType {
+    ALBUM = "album",
+    ARTIST = "artist",
+    /** Local Files, Liked Songs (?) */
+    COLLECTION = "collection",
+    CHAPTER = "chapter",
+    FOLDER = "folder",
+    PLAYLIST = "playlist",
+    EPISODE = "episode",
+    SHOW = "show",
+    TRACK = "track",
+    USER = "user"
 }
 
-const enum MenuFactoryType {
-    FOLDER
+export interface ContextMenuSpec {
+    specType: string;
+    _parentAbsoluteLocation: {
+        locations: {
+            pathNodes: {
+                name: string;
+                identifier?: string;
+                uri?: string;
+            }[];
+            specMode: string[];
+            specVersion: string[];
+        }[];
+    };
+    _path: {
+        name: string;
+        uri: string;
+    }[];
 }
 
-function hasKeys(props: any, keys: string[]): boolean {
-    for (const key of keys) {
-        if (!Object.keys(props).includes(key)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function isUriType(props: any, type: string): boolean {
-    if (!props.uri) {
+function isUriType(spec: ContextMenuSpec, type: string): boolean {
+    if (!spec?._path) {
         return false;
     }
-    return parseUri(props.uri).type === type;
-}
 
-const factoryTypeFilters: Record<MenuFactoryType, (props: any) => boolean> = {
-    [MenuFactoryType.FOLDER](props) {
-        if (!props.spec?._path || !props.divider) {
-            return false;
+    for (const path of spec._path) {
+        if (!path.uri || !path.uri.length) {
+            continue;
         }
 
-        for (const path of props.spec._path) {
-            if (isUriType(path, "folder")) {
-                return true;
+        if (parseUri(path.uri).type === type) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const factoryTypeFilters: Record<ContextMenuType, (spec: ContextMenuSpec) => boolean> = {
+    [ContextMenuType.FOLDER](spec) {
+        return isUriType(spec, "folder");
+    },
+    [ContextMenuType.PLAYLIST](spec) {
+        return isUriType(spec, "playlist") || isUriType(spec, "playlist-v2");
+    },
+    [ContextMenuType.ALBUM](spec) {
+        return isUriType(spec, "album");
+    },
+    [ContextMenuType.ARTIST](spec) {
+        return isUriType(spec, "artist");
+    },
+    [ContextMenuType.SHOW](spec) {
+        return isUriType(spec, "show");
+    },
+    [ContextMenuType.COLLECTION](spec) {
+        return isUriType(spec, "collection");
+    },
+    [ContextMenuType.CHAPTER](spec) {
+        return isUriType(spec, "chapter");
+    },
+    [ContextMenuType.EPISODE](spec) {
+        return isUriType(spec, "episode");
+    },
+    [ContextMenuType.TRACK](spec) {
+        return isUriType(spec, "track");
+    },
+    [ContextMenuType.USER](spec) {
+        return isUriType(spec, "user");
+    }
+};
+
+const registeredEntries: {
+    [K in ContextMenuType]?: ComponentType<{ spec: ContextMenuSpec }>[];
+} = {};
+
+if (IS_DEV) {
+    for (const key of Object.values(ContextMenuType)) {
+        registeredEntries[key] = [
+            ({ spec }) => {
+                return (
+                    <MenuItem divider="before" onClick={() => console.log(spec)}>
+                        {key}
+                    </MenuItem>
+                );
             }
-        }
-
-        return false;
+        ];
     }
-};
-
-const registeredEntries: Record<MenuFactoryType, ComponentType<any>[]> = {
-    [MenuFactoryType.FOLDER]: [
-        (props: any) => {
-            console.log(props);
-            return <p>TESTTEST</p>;
-        }
-    ]
-};
+}
 
 export function injectEntries(factory: any): any {
-    if (!factory || typeof factory !== "object") {
-        return null;
+    if (!factory || !Array.isArray(factory)) {
+        return factory;
     }
 
-    checkComponent(factory);
-
-    function checkComponent(component: any, parent?: any) {
-        if (!component || typeof component !== "object") {
-            return;
+    for (const child of factory) {
+        if (!child || Array.isArray(child) || typeof child !== "object") {
+            continue;
         }
 
-        if (Array.isArray(component)) {
-            iterateComponents(component, parent);
-            return;
+        if (child.$$typeof !== Symbol.for("react.element")) {
+            continue;
         }
 
-        if (parent) {
-            for (const key in factoryTypeFilters) {
-                if (factoryTypeFilters[key](component.props)) {
-                    parent.props.children = parent.props.children.concat(
-                        registeredEntries[key].map((Entry: any) => <Entry {...component.props} />)
-                    );
+        if (!child.type || child.type === Symbol.for("react.fragment")) {
+            continue;
+        }
 
-                    break;
+        if (!child.props || !child.props.spec) {
+            continue;
+        }
+
+        const { spec }: { spec: ContextMenuSpec } = child.props;
+
+        for (const menuType in factoryTypeFilters) {
+            if (factoryTypeFilters[menuType](spec)) {
+                for (const Element of registeredEntries[menuType]) {
+                    factory.push(<Element spec={spec} />);
                 }
+
+                return factory;
             }
         }
-
-        if (component.props.children?.length) {
-            iterateComponents(component.props.children, component);
-        }
     }
 
-    function iterateComponents(components: any[], parent: any) {
-        for (const component of components) {
-            checkComponent(component, parent);
-        }
-    }
-
-    return React.cloneElement(factory, factory.props, factory.props.children);
+    return factory;
 }
 
-export function registerContextMenuEntry(type: MenuFactoryType, entry: Renderable) {
-    registeredEntries[type].push(entry);
+export function addContextMenuEntry(menuType: ContextMenuType, entry: ComponentType<{ spec: ContextMenuSpec }>) {
+    if (!registeredEntries[menuType]) {
+        registeredEntries[menuType] = [];
+    }
+
+    registeredEntries[menuType].push(entry);
 }

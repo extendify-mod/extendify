@@ -1,3 +1,4 @@
+import { ContextMenuType, addContextMenuEntry } from "@api/contextMenu";
 import { addPage, removePage } from "@api/page";
 import { Settings, SettingsStore } from "@api/settings";
 import { addTopbarElement, removeTopbarElement } from "@api/topbar";
@@ -236,8 +237,19 @@ export const startPlugin = (p: Plugin) => {
     }
 
     if (p.components) {
-        if (p.components.renderTopbar) {
-            addTopbarElement(name, p.components.renderTopbar);
+        const { renderTopbar, contextMenu } = p.components;
+        if (renderTopbar) {
+            addTopbarElement(name, renderTopbar);
+        }
+
+        if (contextMenu) {
+            Object.entries(contextMenu).forEach(([menuType, components]) => {
+                const items = Array.isArray(components) ? components : [components];
+
+                for (const component of items) {
+                    addContextMenuEntry(menuType as unknown as ContextMenuType, component);
+                }
+            });
         }
     }
 
