@@ -8,9 +8,9 @@ export default definePlugin({
     required: true,
     patches: [
         {
-            find: '\"right-start\",onOpenChange',
+            find: 'role:\"menu\"',
             replacement: {
-                match: /(depth:\i,children:)(\i)/,
+                match: /(,children:)(\i)/,
                 replace: (_, prefix, children) => {
                     return `${prefix}Extendify.Api.ContextMenu.injectEntries(${children})`;
                 }

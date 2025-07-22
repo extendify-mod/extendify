@@ -2,9 +2,11 @@
  * Modified version of Vendicated's types.ts
  * https://github.com/Vendicated/Vencord/blob/main/src/utils/types.ts
  */
+import { ContextMenuSpec, ContextMenuType } from "@api/contextMenu";
 import { PlayerState } from "@webpack/types";
 import { Song } from "@webpack/types";
 
+import { ComponentType, ReactElement } from "react";
 import { Promisable } from "type-fest";
 
 export type Renderable = () => React.ReactNode | React.JSX.Element | null;
@@ -101,6 +103,11 @@ export interface PluginDef {
     };
     components?: {
         renderTopbar?: Renderable;
+        contextMenu?: {
+            [K in ContextMenuType]?:
+                | ComponentType<{ spec: ContextMenuSpec }>
+                | ComponentType<{ spec: ContextMenuSpec }>[];
+        };
     };
     /**
      * Check that this returns true before allowing a save to complete.
