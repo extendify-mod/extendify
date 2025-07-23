@@ -1,6 +1,7 @@
+import { execSync } from "child_process";
 import { exists, getSpotifyPath } from "./utils.mjs";
 
-import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
+import { copyFile, readdir, readFile, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
 import { join } from "path";
 
@@ -20,7 +21,14 @@ export async function applyPatch() {
         }
 
         const archive = await JSZip.loadAsync(await readFile(join(appsPath, "_xpui.spa"), "binary"));
-        for (const fileName of await readdir("dist")) {
+
+        const distPresent = await exists("dist");
+        if (!distPresent) {
+            await execSync("node ./scripts/build/build.mjs");
+        }
+
+        const dist = await readdir("dist");
+        for (const fileName of dist) {
             archive.file(fileName, await readFile(join("dist", fileName)));
             console.log(`Copied ${fileName}`);
         }

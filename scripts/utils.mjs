@@ -66,7 +66,11 @@ export async function killSpotify() {
             (() => {
                 switch (process.platform) {
                     case "linux":
-                        return execSync("killall spotify");
+                        try { 
+                            return execSync("killall spotify");
+                        } catch {
+                            break 
+                        }
                     case "win32":
                         try {
                             return execSync("taskkill /F /IM Spotify.exe && sleep 0.5");
