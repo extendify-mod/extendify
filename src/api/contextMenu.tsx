@@ -104,13 +104,17 @@ if (IS_DEV) {
     }
 }
 
+function isObject(obj: any) {
+    return obj && !Array.isArray(obj) && typeof obj === "object";
+}
+
 export function injectEntries(factory: any): any {
     if (!factory || !Array.isArray(factory)) {
         return factory;
     }
 
     for (const child of factory) {
-        if (!child || Array.isArray(child) || typeof child !== "object") {
+        if (!isObject(child)) {
             continue;
         }
 
@@ -133,7 +137,7 @@ export function injectEntries(factory: any): any {
                 const entries = registeredEntries[menuType];
                 console.log(factory);
                 for (let i = 0; i < entries.length; i++) {
-                    if (factory.find((v) => v.key === `${i}`)) {
+                    if (factory.find((v) => isObject(v) && v.key === `${i}`)) {
                         continue;
                     }
                     const Element = entries[i];
