@@ -135,7 +135,7 @@ export function injectEntries(factory: any): any {
         for (const menuType in factoryTypeFilters) {
             if (factoryTypeFilters[menuType](spec)) {
                 const entries = registeredEntries[menuType];
-                console.log(factory);
+
                 for (let i = 0; i < entries.length; i++) {
                     if (factory.find((v) => isObject(v) && v.key === `${i}`)) {
                         continue;
