@@ -130,8 +130,14 @@ export function injectEntries(factory: any): any {
 
         for (const menuType in factoryTypeFilters) {
             if (factoryTypeFilters[menuType](spec)) {
-                for (const Element of registeredEntries[menuType]) {
-                    factory.push(<Element spec={spec} />);
+                const entries = registeredEntries[menuType];
+                console.log(factory);
+                for (let i = 0; i < entries.length; i++) {
+                    if (factory.find((v) => v.key === `${i}`)) {
+                        continue;
+                    }
+                    const Element = entries[i];
+                    factory.push(<Element key={i} spec={spec} />);
                 }
 
                 return factory;
