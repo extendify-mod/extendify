@@ -7,7 +7,7 @@
         "build": "node scripts/build/build.mjs",
         "dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node scripts/build/build.mjs --dev --apply\"",
         "devtools": "node scripts/enableDevtools.mjs",
-        "patch": "node scripts/patch/applyPatch.mjs",
+        "patch": "node scripts/applyPatch.mjs",
         "update": "node scripts/manualUpdate.mjs"
     },
     "author": "7elia",
