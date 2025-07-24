@@ -1,4 +1,4 @@
-# Ignore artifacts:
+# folders
 node_modules
 dist
 tsdist
