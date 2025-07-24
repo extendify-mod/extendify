@@ -1,9 +1,2 @@
 # folders
 node_modules/
-dist/
-tsdist/
-test/
-src/userplugins/
-
-# files
-package-lock.json

@@ -1,41 +1,10 @@
 {
-    "name": "extendify",
-    "version": "0.1.0",
-    "description": "Add extensions to your Spotify app",
-    "main": "dist/index.js",
-    "scripts": {
-        "build": "node scripts/build/build.mjs",
-        "dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node scripts/build/build.mjs --dev --apply\"",
-        "devtools": "node scripts/enableDevtools.mjs",
-        "patch": "node scripts/applyPatch.mjs",
-        "update": "node scripts/manualUpdate.mjs"
-    },
-    "author": "7elia",
-    "license": "MIT",
-    "dependencies": {
-        "@intrnl/xxhash64": "^0.1.2",
-        "acorn": "^8.15.0",
-        "acorn-class-fields": "^1.0.0",
-        "acorn-private-methods": "^1.0.0",
-        "diff": "^7.0.0"
-    },
-    "devDependencies": {
-        "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-        "@types/acorn": "^4.0.6",
-        "@types/diff": "^7.0.0",
-        "@types/history": "^4.7.11",
-        "@types/html-minifier-terser": "^7.0.2",
-        "@types/jszip": "^3.4.0",
-        "@types/node": "^22.12.0",
-        "@types/react": "^19.0.8",
-        "@types/react-dom": "^19.0.3",
-        "esbuild": "^0.25.5",
-        "html-minifier-terser": "^7.2.0",
-        "jszip": "^3.10.1",
-        "prettier": "3.5.1",
-        "tsc-watch": "^7.1.1",
-        "tsx": "^4.19.2",
-        "type-fest": "^4.33.0",
-        "typescript": "^5.7.3"
-    }
+  "name": "extendify",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
 }

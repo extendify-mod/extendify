@@ -1,42 +1,30 @@
 {
-    "compilerOptions": {
-        "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "allowJs": true,
-        "lib": ["DOM", "DOM.Iterable", "esnext", "esnext.array", "esnext.asynciterable", "esnext.symbol"],
-        "module": "esnext",
-        "moduleResolution": "node",
-        "strict": true,
-        "noImplicitAny": false,
-        "target": "ESNEXT",
-        "jsx": "preserve",
-        "baseUrl": "./src/",
-        "paths": {
-            "@api/*": ["./api/*"],
+  "compilerOptions": {
+    // Environment setup & latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "jsx": "preserve",
+    "allowJs": true,
 
-            "@components": ["./components"],
-            "@components/icons": ["./components/icons"],
-            "@components/settings": ["./components/settings"],
-            "@components/settings/plugins": ["./components/settings/plugins"],
-            "@components/settings/experiments": ["./components/settings/experiments"],
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
 
-            "@utils/*": ["./utils/*"],
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
 
-            "@webpack": ["./webpack/webpack"],
-            "@webpack/patcher": ["./webpack/patcher"],
-            "@webpack/loader": ["./webpack/loader"],
-            "@webpack/common": ["./webpack/common"],
-            "@webpack/types": ["./webpack/types"]
-        },
-        "plugins": [
-            {
-                "transform": "typescript-transform-paths",
-                "afterDeclarations": true
-            }
-        ],
-        "outDir": "tsdist"
-    },
-    "include": ["src/**/*", "scripts/**/*"]
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["src/**/*", "scripts/**/*"]
 }
