@@ -1,13 +1,17 @@
-import { execSync } from "child_process";
 import { exists, getSpotifyPath } from "./utils.mjs";
 
-import { copyFile, readdir, readFile, rm, writeFile } from "fs/promises";
+import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
 import { join } from "path";
 
 const appsPath = join(getSpotifyPath(), "Apps");
 
 export async function applyPatch() {
+    if (!(await exists("dist"))) {
+        console.error("Extendify has not been built yet");
+        return;
+    }
+
     const dir = await readdir(appsPath);
     if (dir.includes("xpui")) {
         await rm(join(appsPath, "xpui"), { recursive: true });
@@ -21,11 +25,6 @@ export async function applyPatch() {
         }
 
         const archive = await JSZip.loadAsync(await readFile(join(appsPath, "_xpui.spa"), "binary"));
-
-        const distPresent = await exists("dist");
-        if (!distPresent) {
-            await execSync("node ./scripts/build/build.mjs");
-        }
 
         const dist = await readdir("dist");
         for (const fileName of dist) {

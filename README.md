@@ -89,7 +89,7 @@ $ npm run dev
 To undo the patch, run:
 
 ```bash
-$ npm run unpatch
+$ npm run update
 ```
 
 # Running (Linux + flatpak)
@@ -101,7 +101,7 @@ $ npm --flatpak run dev
 To undo the patch, run:
 
 ```bash
-$ npm --flatpak run unpatch
+$ npm --flatpak run update
 ```
 
 # Screenshots
