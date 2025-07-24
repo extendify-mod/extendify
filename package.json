@@ -1,10 +1,20 @@
 {
   "name": "extendify",
   "private": true,
+  "scripts": {
+    "build": "bun --bun run scripts/build.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/bun": "latest",
+    "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "acorn-class-fields": "^1.0.0",
+    "acorn-private-methods": "^1.0.0"
   }
 }
