@@ -1,4 +1,4 @@
-import { getSpotifyPath, killSpotify } from "./utils.mjs";
+import { exists, getSpotifyPath, killSpotify } from "./utils.mjs";
 
 import { execFileSync } from "child_process";
 import { rm, writeFile } from "fs/promises";
@@ -13,8 +13,10 @@ switch (process.platform) {
     case "win32":
         for (const subPath of ["Spotify.exe", "Apps/xpui.spa", "Apps/_xpui.spa"]) {
             const fullPath = path.join(root, subPath);
-            await rm(fullPath, { force: true, recursive: true });
-            console.log(`Deleted file ${fullPath}`);
+            if (await exists(fullPath)) {
+                await rm(fullPath, { force: true, recursive: true });
+                console.log(`Deleted file ${fullPath}`);
+            }
         }
 
         const installerPath = path.join(tmpdir(), "SpotifyInstaller.exe");

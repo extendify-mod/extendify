@@ -64,23 +64,19 @@ export async function killSpotify() {
     return new Promise((resolve) => {
         resolve(
             (() => {
-                switch (process.platform) {
-                    case "linux":
-                        try { 
+                try {
+                    switch (process.platform) {
+                        case "linux":
                             return execSync("killall spotify");
-                        } catch {
-                            break 
-                        }
-                    case "win32":
-                        try {
+                        case "win32":
                             return execSync("taskkill /F /IM Spotify.exe && sleep 0.5");
-                        } catch {
-                            break;
-                        }
-                    case "darwin":
-                        return execSync("killall Spotify && sleep 0.2");
-                    default:
-                        throw new Error(`Platform not implemented: ${process.platform}`);
+                        case "darwin":
+                            return execSync("killall Spotify && sleep 0.2");
+                        default:
+                            throw new Error(`Platform not implemented: ${process.platform}`);
+                    }
+                } catch (e) {
+                    console.error(`Couldn't kill Spotify process: ${e}`);
                 }
             })()
         );
