@@ -30,6 +30,8 @@
         "baseUrl": ".",
         "paths": {
             "@shared/*": ["lib/shared/*"],
+
+            "@webpack": ["lib/webpack"],
             "@webpack/*": ["lib/webpack/*"]
         }
     },

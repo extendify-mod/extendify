@@ -34,12 +34,12 @@ export class Logger {
 
     constructor(name: string, color?: string) {
         this.name = name;
-        this.color = color ?? `hsl(${getNameHash(name) % 360}, 70%, 50%)`;
+        this.color = color ?? `hsl(${getNameHash(name) % 360}, 100%, 85%)`;
     }
 
     public log(level: LogLevel, args: any[]) {
         console[level](
-            `%c ${LOGGER_NAME} %c%c ${this.name}`,
+            `%c ${LOGGER_NAME} %c %c ${this.name} `,
             `${Logger.style} background: ${getLevelColor(level)};`,
             "",
             `${Logger.style} background: ${this.color}`,
