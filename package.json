@@ -1,20 +1,29 @@
 {
-  "name": "extendify",
-  "private": true,
-  "scripts": {
-    "build": "bun --bun run scripts/build.ts"
-  },
-  "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/bun": "latest",
-    "prettier": "^3.6.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "acorn": "^8.15.0",
-    "acorn-class-fields": "^1.0.0",
-    "acorn-private-methods": "^1.0.0"
-  }
+    "name": "extendify",
+    "private": true,
+    "scripts": {
+        "dev": "bun run build-dev && bun run kill-proc && bun run patch && bun run devtools && bun run start-proc",
+        "build": "bun run scripts/build.ts",
+        "build-dev": "bun run scripts/build.ts --dev",
+        "patch": "bun run scripts/patch.ts",
+        "devtools": "bun run scripts/devtools.ts",
+        "kill-proc": "bun run scripts/proc/kill.ts",
+        "start-proc": "bun run scripts/proc/start.ts"
+    },
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+        "@types/bun": "latest",
+        "@types/html-minifier-terser": "^7.0.2",
+        "html-minifier-terser": "^7.2.0",
+        "jszip": "^3.10.1",
+        "prettier": "^3.6.2"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "acorn": "^8.15.0",
+        "acorn-class-fields": "^1.0.0",
+        "acorn-private-methods": "^1.0.0"
+    }
 }

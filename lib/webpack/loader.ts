@@ -3,10 +3,6 @@ import { createLogger } from "@shared/logger";
 
 const logger = createLogger({ name: "WebpackLoader" });
 
-function replaceAdd(content: string, find: string | RegExp, add: string) {
-    return content.replace(find, (match) => `${match}${add}`);
-}
-
 /**
  * Exposes the webpack module cache, since Spotify's webpack configuration
  * disables this functionality. But webpack still generates it.
@@ -24,7 +20,10 @@ function exposeModuleCache(content: string, requireName: string) {
         cacheName = globalNames[globalNames.length - 1] ?? cacheName;
     }
 
-    return content.replace(`${requireName}.m=__webpack_modules__`, (match) => `${match}${requireName}.c=${cacheName},`);
+    return content.replace(
+        `${requireName}.m=__webpack_modules__,`,
+        (match) => `${match}${requireName}.c=${cacheName},`
+    );
 }
 
 /**
@@ -81,7 +80,9 @@ export async function loadEntrypoint() {
     }
 
     if (!text) {
-        logger.error("Failed to load entrypoint, make sure you're manually updated to the latest Spotify version");
+        logger.error(
+            "Failed to load entrypoint, make sure you're manually updated to the latest Spotify version"
+        );
         return;
     }
 
@@ -94,7 +95,9 @@ export async function loadEntrypoint() {
     }
 
     let script = `// Original name: ${scriptUrl}\n${text}`;
-    [exposeModuleCache, exposePrivateModule].forEach((patch) => (script = patch(script, requireName)));
+    [exposeModuleCache, exposePrivateModule].forEach(
+        (patch) => (script = patch(script, requireName))
+    );
 
     if (DEVELOPMENT) {
         script += generateSourceMap(script, scriptUrl);
