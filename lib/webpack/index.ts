@@ -4,5 +4,5 @@ export let wreq: WebpackRequire;
 export let moduleCache: WebpackRequire["c"];
 
 export function initializeWebpack(instance: WebpackRequire) {
-    wreq = instance;
+    wreq = window.wreq = instance;
 }

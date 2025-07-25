@@ -1,3 +1,5 @@
+import { wreq } from "@webpack";
+
 import {
     type BlockStatement,
     type ClassDeclaration,
@@ -59,6 +61,6 @@ export async function injectExporter() {
     if (arguments[2]?.d) {
         arguments[2].d(arguments[1], customExport);
     } else {
-        // TODO: wreq.d(arguments[1], customExport);
+        wreq.d(arguments[1], customExport);
     }
 }

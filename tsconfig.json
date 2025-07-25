@@ -31,7 +31,7 @@
         "paths": {
             "@shared/*": ["lib/shared/*"],
 
-            "@webpack": ["lib/webpack"],
+            "@webpack": ["lib/webpack/index.ts"],
             "@webpack/*": ["lib/webpack/*"]
         }
     },

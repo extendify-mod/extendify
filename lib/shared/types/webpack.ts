@@ -25,9 +25,9 @@ export type WebpackRequire = ((e: number) => unknown) & {
 };
 
 export type WebpackModule = (
-    wpModule: RawModule,
-    wpExports: typeof wpModule.exports,
-    wpRequire: WebpackRequire
+    module: RawModule,
+    exports: typeof module.exports,
+    require: WebpackRequire
 ) => void;
 
 export type WebpackChunk = [
