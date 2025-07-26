@@ -18,7 +18,7 @@ export interface RawModule<T = unknown> {
 export type WebpackRawModules = Record<string | number, RawModule>;
 
 export type WebpackRequire = ((e: number) => unknown) & {
-    c?: WebpackRawModules;
+    c: WebpackRawModules;
     d: (module: unknown, exports: Record<string, () => unknown>) => void;
     m: WebpackChunk[1];
     iife: ((wreq: WebpackRequire) => void) & { $$: WebpackRequire["iife"] };
@@ -27,7 +27,9 @@ export type WebpackRequire = ((e: number) => unknown) & {
 export type WebpackModule = (
     module: RawModule,
     exports: typeof module.exports,
-    require: WebpackRequire
+    require: WebpackRequire,
+    // This normally doesn't exist, but we can use it to pass our src
+    ...args: unknown[]
 ) => void;
 
 export type WebpackChunk = [

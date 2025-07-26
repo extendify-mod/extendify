@@ -1,7 +1,7 @@
 import { getCachePath } from "./utils";
 
-import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { readFile, writeFile } from "fs/promises";
+import { join } from "path";
 
 const bnkPath = join(getCachePath(), "offline.bnk");
 
