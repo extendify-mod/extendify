@@ -1,3 +1,5 @@
+import { exportFunction, registerPatch } from "@api/patch";
+import type { PatchDef } from "@shared/types/patch";
 import { wreq } from "@webpack";
 
 import {
@@ -13,6 +15,42 @@ import classFields from "acorn-class-fields";
 import privateMethods from "acorn-private-methods";
 
 const parser: typeof Parser = Parser.extend(classFields, privateMethods);
+
+registerPatch("WebpackExporter", {
+    all: true,
+    replacement: [
+        {
+            noWarn: true,
+            /**
+             * Turn every module into a function instead of an arrow function:
+             * 1111: (a, b, c) => {} -> 1111: function(a, b, c) {}
+             * 2222: (a, b) => {}    -> 2222: function(a, b) {}
+             * 3333: a => {}         -> 3333: function(a) {}
+             * 4444: module => {}    -> 4444: function(module) {}
+             * ^ there's one of these that exists where there is only one argument which has a full name (module)
+             * If the module is already a function, which there is at least one example of, this patch will not apply
+             */
+            match: /(function)?(?:\((.*?)\)|(.|module))=>{/,
+            replace(match, func, args1, args2) {
+                return func ? match : `function(${args1 ?? args2}){`;
+            }
+        },
+        {
+            // Inject the exporter at the very start of the function
+            match: "{",
+            // Pretty clever: we just pass a function that runs `eval` from the module's scope so that we can reference local variables from our exporter
+            replace: "{$exp.injectExporter(...arguments, (v)=>eval(v));"
+        }
+    ]
+} as PatchDef);
+
+registerPatch("WebpackExporter", {
+    find: "displayName=`profiler(${",
+    replacement: {
+        match: /return (\i)\.displayName=/,
+        replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
+    }
+});
 
 function parseScope(code: string, ev: (name: string) => any): any {
     const tree = parser.parse(code, {
@@ -49,7 +87,7 @@ function parseScope(code: string, ev: (name: string) => any): any {
     return customExport;
 }
 
-export async function injectExporter() {
+async function injectExporter() {
     const code: string = arguments[3];
 
     if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
@@ -64,3 +102,5 @@ export async function injectExporter() {
         wreq.d(arguments[1], customExport);
     }
 }
+
+exportFunction(injectExporter);

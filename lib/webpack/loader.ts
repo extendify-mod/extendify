@@ -5,7 +5,7 @@ const logger = createLogger({ name: "WebpackLoader" });
 
 /**
  * Exposes the webpack module cache, since Spotify's webpack configuration
- * disables this functionality. But webpack still generates it.
+ * disables this functionality, but webpack still generates and updates it
  */
 function exposeModuleCache(content: string, requireName: string) {
     let cacheName = "__webpack_module_cache__";
@@ -27,14 +27,14 @@ function exposeModuleCache(content: string, requireName: string) {
 }
 
 /**
- * Exposes the private iife module that's buried in Spotify's webpack initializer.
+ * Exposes the private iife module that's buried in Spotify's webpack initializer
  */
 function exposePrivateModule(content: string, requireName: string) {
     let exportsName: string | undefined;
 
     return content
         .replace(
-            // Assigns the whole private module as a property
+            // Assigns the whole private module as a property to the wreq instance,
             // and makes the wreq instance accessible to the private module for when we manually call it later on from a different scope
             /(var (__webpack_exports__|.{1,3})={};\()\(\)=>/,
             (_, prefix, name) => {

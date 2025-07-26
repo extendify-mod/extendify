@@ -1,9 +1,8 @@
 import { getKwarg, hasArg } from "./args";
 
-import { spawn } from "bun";
-import { exec, execFile, execFileSync, execSync } from "node:child_process";
-import { access, constants } from "node:fs/promises";
-import { join } from "node:path";
+import { spawn, spawnSync } from "bun";
+import { access, constants } from "fs/promises";
+import { join } from "path";
 
 // Linux has multiple install methods:
 // - spotify-launcher from aur (Implemented)
@@ -81,10 +80,11 @@ export async function killSpotify(): Promise<void> {
                 break;
             default:
                 reject(`Platform ${process.platform} not implemented`);
+                return;
         }
 
         try {
-            execSync(command + "&& sleep 0.5");
+            spawnSync({ cmd: command.split(" ") });
             resolve();
         } catch (e) {
             console.error(`Couldn't kill Spotify process: ${e}`);
@@ -95,13 +95,15 @@ export async function killSpotify(): Promise<void> {
 export function launchSpotify(): void {
     switch (process.platform) {
         case "win32":
-            spawn({ cmd: [join(getSpotifyPath(), "Spotify.exe")], stdout: "inherit" });
+            spawn({ cmd: [join(getSpotifyPath(), "Spotify.exe")] });
             break;
         case "linux":
-            execSync(usingFlatpak ? "flatpak run com.spotify.Client" : "spotify-launcher");
+            spawn({
+                cmd: usingFlatpak ? ["flatpak", "run", "com.spotify.Client"] : ["spotify-launcher"]
+            });
             break;
         case "darwin":
-            execFileSync(join(getSpotifyPath(), "../MacOS/Spotify"));
+            spawn({ cmd: [join(getSpotifyPath(), "../MacOS/Spotify")] });
             break;
     }
 }

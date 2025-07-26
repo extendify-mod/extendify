@@ -1,3 +1,5 @@
+export type PluginDef = Omit<Plugin, "started">;
+
 export interface Plugin {
     /**
      * The display name of the plugin.
@@ -16,4 +18,5 @@ export interface Plugin {
     enabledByDefault?: boolean;
     /** A callback for when the plugin is initialized */
     start?(): void;
+    started?: boolean;
 }

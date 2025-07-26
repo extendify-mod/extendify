@@ -1,5 +1,7 @@
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { minify as minifyHtml } from "html-minifier-terser";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { rolldown } from "rolldown";
+import { importGlobPlugin } from "rolldown/experimental";
 
 const DEVELOPMENT = Bun.argv.includes("--dev");
 
@@ -19,14 +21,33 @@ await writeFile(
     })
 );
 
-await Bun.build({
-    entrypoints: ["src/index.ts"],
-    outdir: "dist",
-    format: "iife",
-    minify: true,
-    sourcemap: "inline",
+const bundle = await rolldown({
+    input: "src/index.ts",
+    platform: "browser",
+    experimental: {
+        strictExecutionOrder: true
+    },
+    treeshake: true,
+    keepNames: true,
     define: {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT)
     },
-    external: ["react"]
+    plugins: [importGlobPlugin()],
+    resolve: {
+        tsconfigFilename: "tsconfig.json"
+    }
+    // jsx: {
+    //     factory: "ExtendifyCreateElement",
+    //     fragment: "ExtendifyFragment"
+    // }
+});
+
+await bundle.write({
+    minify: {
+        compress: false,
+        mangle: true
+    },
+    minifyInternalExports: true,
+    file: "dist/extendify.js",
+    format: "iife"
 });

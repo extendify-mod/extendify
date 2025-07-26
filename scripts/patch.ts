@@ -1,8 +1,8 @@
 import { exists, getAppsPath } from "./utils";
 
+import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
-import { copyFile, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join } from "path";
 
 if (!(await exists("dist"))) {
     throw new Error("Extendify has not been built yet");
