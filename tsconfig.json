@@ -29,6 +29,8 @@
         // Paths
         "baseUrl": ".",
         "paths": {
+            "@api/*": ["lib/api/*"],
+
             "@shared/*": ["lib/shared/*"],
 
             "@webpack": ["lib/webpack/index.ts"],
