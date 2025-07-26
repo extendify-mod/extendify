@@ -1,8 +1,10 @@
 import { registerPlugin } from "@api/plugin";
-import { DEVS } from "@shared/constants";
 
-const plugin = registerPlugin({
+registerPlugin({
     name: "Lpdeck",
     description: "Spotify integration with Lpdeck",
-    authors: [DEVS.elia]
+    authors: ["7elia"],
+    start() {
+        console.log("Started");
+    }
 });
