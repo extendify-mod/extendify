@@ -8,7 +8,8 @@
         "patch": "bun run scripts/patch.ts",
         "devtools": "bun run scripts/devtools.ts",
         "kill-proc": "bun run scripts/proc/kill.ts",
-        "start-proc": "bun run scripts/proc/start.ts"
+        "start-proc": "bun run scripts/proc/start.ts",
+        "update": "bun run scripts/update.ts"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",

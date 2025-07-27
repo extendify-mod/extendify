@@ -1,4 +1,3 @@
-import { startPlugins } from "@api/plugin";
 import type { WebpackRequire } from "@shared/types/webpack";
 
 export let wreq: WebpackRequire;
@@ -7,7 +6,6 @@ export let moduleCache: WebpackRequire["c"];
 export function initializeWebpack(instance: WebpackRequire) {
     wreq = instance;
     moduleCache = wreq.c;
-    startPlugins();
 }
 
 export function shouldIgnoreValue(value: any): boolean {

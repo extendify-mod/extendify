@@ -1,8 +1,10 @@
+import type { platform } from "@api/platform";
 import type { wreq } from "@webpack";
 
 declare global {
     interface Window {
-        werq: typeof wreq;
+        wreq: typeof wreq;
+        platform: typeof platform;
     }
 }
 

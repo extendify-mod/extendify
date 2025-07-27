@@ -1,3 +1,4 @@
+import { registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/patch";
 import type { PatchDef } from "@shared/types/patch";
 import { wreq } from "@webpack";
@@ -16,7 +17,9 @@ import privateMethods from "acorn-private-methods";
 
 const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
-registerPatch("WebpackExporter", {
+const { context } = registerContext({ name: "WebpackExporter" });
+
+registerPatch(context, {
     all: true,
     replacement: [
         {
@@ -39,16 +42,32 @@ registerPatch("WebpackExporter", {
             // Inject the exporter at the very start of the function
             match: "{",
             // Pretty clever: we just pass a function that runs `eval` from the module's scope so that we can reference local variables from our exporter
-            replace: "{$exp.injectExporter(...arguments, (v)=>eval(v));"
+            replace: "{$exp.injectExporter(...arguments,(v)=>eval(v));"
         }
     ]
 } as PatchDef);
 
-registerPatch("WebpackExporter", {
+registerPatch(context, {
     find: "displayName=`profiler(${",
     replacement: {
         match: /return (\i)\.displayName=/,
         replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
+    }
+});
+
+exportFunction(context, async function injectExporter() {
+    const code: string = arguments[3];
+
+    if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
+        return;
+    }
+
+    const customExport = parseScope(code, arguments[4]);
+
+    if (arguments[2]?.d) {
+        arguments[2].d(arguments[1], customExport);
+    } else {
+        wreq.d(arguments[1], customExport);
     }
 });
 
@@ -86,21 +105,3 @@ function parseScope(code: string, ev: (name: string) => any): any {
 
     return customExport;
 }
-
-async function injectExporter() {
-    const code: string = arguments[3];
-
-    if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
-        return;
-    }
-
-    const customExport = parseScope(code, arguments[4]);
-
-    if (arguments[2]?.d) {
-        arguments[2].d(arguments[1], customExport);
-    } else {
-        wreq.d(arguments[1], customExport);
-    }
-}
-
-exportFunction(injectExporter);
