@@ -5,7 +5,11 @@ declare global {
     export const DEVELOPMENT: boolean;
 
     interface Window {
-        exportedFunctions: { [name: string]: AnyFn };
+        exportedFunctions: {
+            [context: string]: {
+                [name: string]: AnyFn;
+            };
+        };
     }
 
     interface ImportMeta {

@@ -1,10 +1,10 @@
 export interface PlaybackAPI {
-    getPlaybackInfo(): Promise<PlaybackInfo>;
-    getVolume(): Promise<number>;
-    getVolumeInternal(): Promise<number>;
-    lowerVolume(): Promise<void>;
-    raiseVolume(): Promise<void>;
-    setVolume(value: number): Promise<void>;
+    async getPlaybackInfo(): Promise<PlaybackInfo>;
+    async getVolume(): Promise<number>;
+    async getVolumeInternal(): Promise<number>;
+    async lowerVolume(): Promise<void>;
+    async raiseVolume(): Promise<void>;
+    async setVolume(value: number): Promise<void>;
 }
 
 export interface PlaybackInfo {

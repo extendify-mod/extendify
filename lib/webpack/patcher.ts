@@ -1,4 +1,4 @@
-import { executePatch, findMatches, patches } from "@api/patch";
+import { executePatch, isMatch, patches } from "@api/patch";
 import { createLogger } from "@shared/logger";
 import type { WebpackModule } from "@shared/types/webpack";
 import { shouldIgnoreModule, wreq } from "@webpack";
@@ -92,7 +92,7 @@ export function patchModule<T>(module: T, id: string): T {
         return module;
     }
 
-    const patchedBy = new Set();
+    const patchedBy: Set<string> = new Set();
     let src = "0," + module.toString().replaceAll("\n", "");
 
     for (let i = 0; i < patches.length; i++) {
@@ -106,7 +106,7 @@ export function patchModule<T>(module: T, id: string): T {
             continue;
         }
 
-        if (!findMatches(src, patch.find)) {
+        if (!isMatch(src, patch.find)) {
             continue;
         }
 
@@ -122,12 +122,20 @@ export function patchModule<T>(module: T, id: string): T {
                 continue;
             }
 
+            const originalSrc = src;
+            const originalModule = module;
+
             try {
-                const newSrc = executePatch(src, replacement.match, replacement.replace);
+                const newSrc = executePatch(
+                    patch.owner,
+                    src,
+                    replacement.match,
+                    replacement.replace
+                );
 
                 if (newSrc === src && !patch.noWarn && !replacement.noWarn) {
                     logger.warn(
-                        `Patch by ${patch.owner} had no effect (Module id is ${id}): ${replacement.match}`
+                        `Patch by ${patch.owner.name} had no effect (Module id is ${id}): ${replacement.match}`
                     );
 
                     if (DEVELOPMENT) {
@@ -137,7 +145,7 @@ export function patchModule<T>(module: T, id: string): T {
                     continue;
                 }
 
-                patchedBy.add(patch.owner);
+                patchedBy.add(patch.owner.name);
 
                 const header = `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}`;
                 const footer = `//# sourceURL=https://xpui.app.spotify.com/modules/WebpackModule${id}.js`;
@@ -145,16 +153,23 @@ export function patchModule<T>(module: T, id: string): T {
 
                 src = newSrc;
             } catch (e) {
+                src = originalSrc;
+                module = originalModule;
+
+                patchedBy.delete(patch.owner.name);
+
+                if (patch.noError || replacement.noError) {
+                    continue;
+                }
+
                 logger.error(
-                    `Patch by ${patch.owner} errored (Module id is ${id}): ${replacement.match}\n`,
+                    `Patch by ${patch.owner.name} errored (Module id is ${id}): ${replacement.match}\n`,
                     e
                 );
 
                 if (DEVELOPMENT) {
                     logger.debug("Function source:\n", src);
                 }
-
-                patchedBy.delete(patch.owner);
             }
         }
 

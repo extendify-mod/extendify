@@ -107,3 +107,7 @@ export function launchSpotify(): void {
             break;
     }
 }
+
+export function getTimeDifference(timestamp: DOMHighResTimeStamp): string {
+    return (performance.now() - timestamp).toFixed(2);
+}

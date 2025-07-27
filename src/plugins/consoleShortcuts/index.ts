@@ -1,16 +1,22 @@
+import { platform } from "@api/platform";
 import { registerPlugin } from "@api/plugin";
 import { wreq } from "@webpack";
 
-registerPlugin({
+const { logger } = registerPlugin({
     name: "ConsoleShortcuts",
     description: "Expose internal APIs to the window object",
     authors: ["7elia"],
     required: DEVELOPMENT,
     start() {
-        Object.defineProperty(window, "wreq", {
-            get() {
-                return wreq;
+        Object.defineProperties(window, {
+            wreq: {
+                get: () => wreq
+            },
+            platform: {
+                get: () => platform
             }
         });
+
+        logger.info("Defined shortcuts");
     }
 });
