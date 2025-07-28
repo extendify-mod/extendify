@@ -1,3 +1,4 @@
+import type { PlayerEventType } from "@api/platform";
 import type { Identifiable, LoggingParams } from "@shared/types/spotify";
 import type { QueueAction, QueueState } from "@shared/types/spotify/queue";
 
@@ -162,14 +163,4 @@ export interface PlayerCapabilities {
     canPlayMultipleContextPages: boolean;
     hasDecoratedQueue: boolean;
     maxNextTracks: number;
-}
-
-export enum PlayerEventType {
-    UPDATE = "update",
-    ERROR = "error",
-    ACTION = "action",
-    QUEUE_ACTION = "queue_action",
-    QUEUE_ACTION_COMPLETE = "queue_action_complete",
-    QUEUE_UPDATE = "queue_update",
-    CONTEXT_WRAPAROUND = "context_wraparound"
 }

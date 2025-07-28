@@ -127,7 +127,7 @@ export function patchModule<T>(module: T, id: string): T {
 
             try {
                 const newSrc = executePatch(
-                    patch.owner,
+                    patch.context,
                     src,
                     replacement.match,
                     replacement.replace
@@ -135,7 +135,7 @@ export function patchModule<T>(module: T, id: string): T {
 
                 if (newSrc === src && !patch.noWarn && !replacement.noWarn) {
                     logger.warn(
-                        `Patch by ${patch.owner.name} had no effect (Module id is ${id}): ${replacement.match}`
+                        `Patch by ${patch.context.name} had no effect (Module id is ${id}): ${replacement.match}`
                     );
 
                     if (DEVELOPMENT) {
@@ -145,7 +145,7 @@ export function patchModule<T>(module: T, id: string): T {
                     continue;
                 }
 
-                patchedBy.add(patch.owner.name);
+                patchedBy.add(patch.context.name);
 
                 const header = `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}`;
                 const footer = `//# sourceURL=https://xpui.app.spotify.com/modules/WebpackModule${id}.js`;
@@ -156,14 +156,14 @@ export function patchModule<T>(module: T, id: string): T {
                 src = originalSrc;
                 module = originalModule;
 
-                patchedBy.delete(patch.owner.name);
+                patchedBy.delete(patch.context.name);
 
                 if (patch.noError || replacement.noError) {
                     continue;
                 }
 
                 logger.error(
-                    `Patch by ${patch.owner.name} errored (Module id is ${id}): ${replacement.match}\n`,
+                    `Patch by ${patch.context.name} errored (Module id is ${id}): ${replacement.match}\n`,
                     e
                 );
 

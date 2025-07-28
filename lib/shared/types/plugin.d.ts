@@ -1,8 +1,8 @@
-import type { ContextOwner } from "@shared/types/context";
+import type { Context } from "@shared/types/context";
 
 export type PluginDef = Omit<Plugin, "started">;
 
-export interface Plugin extends ContextOwner {
+export interface Plugin extends Context {
     /** A description of the plugin */
     description: string;
     /** The plugin's authors as GitHub usernames */
