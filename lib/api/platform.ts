@@ -1,6 +1,6 @@
 import { registerContext } from "@api/context";
+import { EventType, emitEvent } from "@api/event";
 import { exportFunction, registerPatch } from "@api/patch";
-import { startPlugins } from "@api/plugin";
 import { createLazy } from "@shared/lazy";
 import type { Platform } from "@shared/types/spotify";
 import type { PlaybackAPI } from "@shared/types/spotify/playback";
@@ -23,7 +23,7 @@ registerPatch(context, {
 exportFunction(context, function loadPlatform(value: Platform): Platform {
     platform = value;
 
-    startPlugins();
+    emitEvent(EventType.PLATFORM_LOADED);
 
     return value;
 });
@@ -34,4 +34,14 @@ export function resolveApi<T>(key: string): T | undefined {
             return platform.getRegistry().resolve(Symbol.for(key));
         }
     });
+}
+
+export enum PlayerEventType {
+    UPDATE = "update",
+    ERROR = "error",
+    ACTION = "action",
+    QUEUE_ACTION = "queue_action",
+    QUEUE_ACTION_COMPLETE = "queue_action_complete",
+    QUEUE_UPDATE = "queue_update",
+    CONTEXT_WRAPAROUND = "context_wraparound"
 }

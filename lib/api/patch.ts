@@ -1,5 +1,5 @@
 import { IDENTIFIER_REGEX } from "@shared/constants";
-import type { ContextOwner } from "@shared/types/context";
+import type { Context } from "@shared/types/context";
 import type { AnyFn, Match, MultiMatch, Patch, PatchDef, ReplaceFn } from "@shared/types/patch";
 
 export const patches: Patch[] = [];
@@ -11,13 +11,13 @@ window.exportedFunctions = {};
  * This makes sure the patches are clearly separated by category which
  * makes your plugin's code 10x more readable.
  */
-export function registerPatch(owner: ContextOwner, ...newPatches: PatchDef[]) {
+export function registerPatch(owner: Context, ...newPatches: PatchDef[]) {
     for (const patch of newPatches) {
-        patches.push({ owner, ...patch });
+        patches.push({ context: owner, ...patch });
     }
 }
 
-export function exportFunction(context: ContextOwner, fn: AnyFn) {
+export function exportFunction(context: Context, fn: AnyFn) {
     if (!fn.name?.length) {
         throw new Error("Exported functions must have a name");
     }
@@ -59,7 +59,7 @@ export function isMatch(src: string, match: Patch["find"]): boolean {
 }
 
 export function executePatch(
-    context: ContextOwner,
+    context: Context,
     src: string,
     match: Match,
     replace: string | ReplaceFn

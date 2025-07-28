@@ -1,4 +1,4 @@
-import type { ContextOwner } from "@shared/types/context";
+import type { Context } from "@shared/types/context";
 import type { Plugin } from "@shared/types/plugin";
 
 export type Match = string | RegExp;
@@ -23,8 +23,8 @@ export interface PatchConditions {
 }
 
 export interface Patch extends PatchConditions {
-    /** The name of the context that owns the patch */
-    owner: ContextOwner;
+    /** The context that owns the patch */
+    context: Context;
     /** A unique match to find the correct module */
     find: Match | MultiMatch;
     /** The actual replacement(s) the patch executes */
@@ -36,11 +36,11 @@ export interface Patch extends PatchConditions {
     all?: boolean;
 }
 
-export type PatchDef = Omit<Patch, "owner">;
+export type PatchDef = Omit<Patch, "context">;
 
 export type ReplaceFn = (match: string, ...groups: string[]) => string;
 
-/** A glorified String.prototype.replace */
+/** A glorified String.replace */
 export interface PatchReplacement extends PatchConditions {
     /**
      * A string or regular expression to search for.

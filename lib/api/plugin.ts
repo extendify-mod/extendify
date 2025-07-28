@@ -1,6 +1,9 @@
 import { registerContext } from "@api/context";
+import { EventType, registerEventListener } from "@api/event";
 import type { Logger } from "@shared/logger";
 import type { Plugin, PluginDef } from "@shared/types/plugin";
+
+const { context, logger } = registerContext({ name: "Plugins" });
 
 export const plugins: Plugin[] = [];
 
@@ -9,15 +12,17 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
 
     plugins.push(plugin);
 
+    logger.debug(`Plugin ${plugin.name} registered`);
+
     return { plugin, logger };
 }
 
+// TODO: Settings. Also don't check enabledByDefault here but in the settings themselves.
 export function isPluginEnabled(plugin: Plugin): boolean {
-    // TODO: Settings. Also don't check enabledByDefault here but in the settings.
     return plugin.required || plugin.enabledByDefault || false;
 }
 
-export function startPlugins() {
+function startPlugins() {
     for (const plugin of plugins) {
         if (!isPluginEnabled(plugin) || plugin.started) {
             continue;
@@ -25,5 +30,9 @@ export function startPlugins() {
 
         plugin.start?.();
         plugin.started = true;
+
+        logger.debug(`Started plugin ${plugin.name}`);
     }
 }
+
+registerEventListener(context, EventType.PLATFORM_LOADED, startPlugins);

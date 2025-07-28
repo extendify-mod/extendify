@@ -1,4 +1,4 @@
-export interface ContextOwner {
+export interface Context {
     /**
      * The display name of the context.
      * Should be PascalCase with no spaces.
