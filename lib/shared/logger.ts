@@ -2,19 +2,12 @@ import { LOGGER_NAME } from "./constants";
 
 type LogLevel = "error" | "warn" | "info" | "debug";
 
-function getLevelColor(level: LogLevel) {
-    switch (level) {
-        default:
-        case "info":
-            return "#2596be";
-        case "error":
-            return "#e81c1c";
-        case "warn":
-            return "#e8801c";
-        case "debug":
-            return "#9c139a";
-    }
-}
+const levelColors: Record<LogLevel, string> = {
+    info: "#2596be",
+    error: "#e81c1c",
+    warn: "#e8801c",
+    debug: "#b57af5"
+};
 
 function getNameHash(name: string): number {
     let hash = 0;
@@ -40,7 +33,7 @@ export class Logger {
     public log(level: LogLevel, args: any[]) {
         console[level](
             `%c ${LOGGER_NAME} %c %c ${this.name} `,
-            `${Logger.style} background: ${getLevelColor(level)};`,
+            `${Logger.style} background: ${levelColors[level]};`,
             "",
             `${Logger.style} background: ${this.color}`,
             ...args
