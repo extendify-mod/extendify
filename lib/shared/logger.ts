@@ -1,4 +1,4 @@
-import { LOGGER_NAME } from "./constants";
+import { LOGGER_NAME } from "@shared/constants";
 
 type LogLevel = "error" | "warn" | "info" | "debug";
 
@@ -22,6 +22,7 @@ function getNameHash(name: string): number {
 
 export class Logger {
     static style = "color: black; font-weight: bold; border-radius: 5px;";
+
     private readonly name: string;
     private readonly color: string;
 
