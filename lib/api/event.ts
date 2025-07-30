@@ -7,7 +7,7 @@ const { logger } = registerContext({ name: "Events" });
 const registeredListeners: Record<
     Context["name"],
     {
-        [K in EventType]: Set<EventListener<K>>;
+        [K in EventType]?: Set<EventListener<K>>;
     }
 > = {};
 
@@ -16,18 +16,18 @@ export function registerEventListener<E extends EventType>(
     event: E,
     callback: EventListener<E>
 ): RegisteredListener<E> | undefined {
-    if (!Object.keys(registeredListeners).includes(context.name)) {
-        registeredListeners[context.name] = {
-            pause: new Set(),
-            platformLoaded: new Set(),
-            play: new Set(),
-            queueAdded: new Set(),
-            queueRemoved: new Set(),
-            songChanged: new Set()
-        };
+    let contextListeners = registeredListeners[context.name];
+
+    if (!contextListeners) {
+        contextListeners = registeredListeners[context.name] = {};
     }
 
-    registeredListeners[context.name]?.[event].add(callback);
+    if (!contextListeners[event]) {
+        // @ts-ignore: Why is this even giving an error
+        contextListeners[event] = new Set();
+    }
+
+    contextListeners[event]?.add(callback);
 
     logger.debug(`Context ${context.name} registered new event listener for ${event}`);
 
@@ -45,7 +45,7 @@ export function removeEventListener<E extends EventType>(
         return;
     }
 
-    registeredListeners[context.name]?.[event.type].delete(event.callback);
+    registeredListeners[context.name]?.[event.type]?.delete(event.callback);
 }
 
 export async function emitEvent<E extends EventType>(event: E, ...args: EventArgs[E]) {
