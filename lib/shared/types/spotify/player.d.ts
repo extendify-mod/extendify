@@ -1,4 +1,3 @@
-import type { PlayerEventType } from "@api/platform";
 import type { Identifiable, LoggingParams } from "@shared/types/spotify";
 import type { QueueAction, QueueState } from "@shared/types/spotify/queue";
 
@@ -83,6 +82,15 @@ export enum Repeat {
     CONTEXT = 1,
     SONG = 2
 }
+
+export type PlayerEventType =
+    | "update"
+    | "error"
+    | "action"
+    | "queue_action"
+    | "queue_action_complete"
+    | "queue_update"
+    | "context_wraparound";
 
 export interface PlayerEvents {
     emitPauseSync(): any;

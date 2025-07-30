@@ -21,7 +21,7 @@
         "rolldown": "^1.0.0-beta.29"
     },
     "peerDependencies": {
-        "typescript": "^5"
+        "typescript": "^5.8.3"
     },
     "dependencies": {
         "@types/history": "^5.0.0",

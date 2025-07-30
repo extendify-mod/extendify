@@ -3,7 +3,10 @@ import type { Context } from "@shared/types/context";
 
 const contexts: Set<string> = new Set();
 
-export function registerContext(context: Context): { context: Context; logger: Logger } {
+export function registerContext(context: Context): {
+    context: Context;
+    logger: Logger;
+} {
     if (contexts.has(context.name)) {
         throw new Error(`Context with name ${context.name} already registered`);
     }
