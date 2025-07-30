@@ -13,7 +13,10 @@ export interface Plugin extends Context {
     hidden?: boolean;
     /** Whether or not the plugin should be enabled before the user has configured it */
     enabledByDefault?: boolean;
-    /** A callback for when the plugin is initialized */
+    /** A callback for when the plugin is enabled or initialized */
     start?(): void;
+    /** A callback for when the plugin gets disabled */
+    stop?(): void;
+    /** Whether or not the plugin's start method passed (or true if there is none) */
     started?: boolean;
 }

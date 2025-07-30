@@ -47,11 +47,11 @@ const bundle = await rolldown({
     plugins: [importGlobPlugin()],
     resolve: {
         tsconfigFilename: "tsconfig.json"
+    },
+    jsx: {
+        factory: "ExtendifyCreateElement",
+        fragment: "ExtendifyFragment"
     }
-    // jsx: {
-    //     factory: "ExtendifyCreateElement",
-    //     fragment: "ExtendifyFragment"
-    // }
 });
 console.log(`Created bundle (${getTimeDifference(bundleStart)} ms)`);
 

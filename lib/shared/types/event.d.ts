@@ -1,13 +1,25 @@
-import type { EventType } from "@api/event";
 import type { Song } from "@shared/types/spotify/player";
 
+export type EventType =
+    | "platformLoaded"
+    | "play"
+    | "pause"
+    | "songChanged"
+    | "queueAdded"
+    | "queueRemoved";
+
 export interface EventArgs {
-    [EventType.PLATFORM_LOADED]: [];
-    [EventType.PLAY]: [state: PlayerState];
-    [EventType.PAUSE]: [state: PlayerState];
-    [EventType.SONG_CHANGED]: [newSong: Song, state: PlayerState];
-    [EventType.QUEUE_ADDED]: [songs: Song[], state: PlayerState];
-    [EventType.QUEUE_REMOVED]: [songs: Song[], state: PlayerState];
+    platformLoaded: [];
+    play: [state: PlayerState];
+    pause: [state: PlayerState];
+    songChanged: [newSong: Song, state: PlayerState];
+    queueAdded: [songs: Song[], state: PlayerState];
+    queueRemoved: [songs: Song[], state: PlayerState];
 }
 
 export type EventListener<E extends EventType> = (...args: EventArgs[E]) => void;
+
+export interface RegisteredListener<E extends EventType> {
+    type: E;
+    callback: EventListener;
+}

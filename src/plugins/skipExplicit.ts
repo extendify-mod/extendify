@@ -1,4 +1,4 @@
-import { EventType, registerEventListener } from "@api/event";
+import { registerEventListener } from "@api/event";
 import { player } from "@api/platform";
 import { registerPlugin } from "@api/plugin";
 
@@ -8,7 +8,7 @@ const { plugin, logger } = registerPlugin({
     authors: ["7elia"]
 });
 
-registerEventListener(plugin, EventType.SONG_CHANGED, (song) => {
+registerEventListener(plugin, "songChanged", (song) => {
     if (!player || !song.isExplicit) {
         return;
     }
