@@ -4,7 +4,10 @@ import { registerPlugin } from "@api/plugin";
 const { plugin } = registerPlugin({
     name: "NoMusicVideos",
     description: "Removes all mentions of music videos",
-    authors: ["7elia"]
+    authors: ["7elia"],
+    start() {
+        console.log(<></>);
+    }
 });
 
 // Remove the "Switch to video" button
@@ -62,9 +65,7 @@ registerPatch(
         noError: true,
         replacement: {
             match: /(isVideo:)\i(?:\|\|\i)?([,}])/g,
-            replace(_, key, suffix) {
-                return `${key}false${suffix}`;
-            }
+            replace: "$1false$2"
         }
     },
     {
@@ -86,5 +87,5 @@ registerPatch(plugin, {
 });
 
 exportFunction(plugin, function getEmptyElement() {
-    return "";
+    return <></>;
 });

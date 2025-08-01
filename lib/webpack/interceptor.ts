@@ -12,13 +12,11 @@ Object.defineProperty(window, WEBPACK_CHUNK, {
     configurable: true,
     get: () => webpackChunk,
     set(chunk) {
-        if (chunk?.push && !chunk.push.$$extendifyOriginal) {
+        if (chunk?.push && !chunk.push.$$) {
             patchPush(chunk);
             logger.info(`Patched ${WEBPACK_CHUNK}.push`);
 
-            // @ts-ignore
             delete window[WEBPACK_CHUNK];
-            // @ts-ignore
             window[WEBPACK_CHUNK] = chunk;
         }
 
