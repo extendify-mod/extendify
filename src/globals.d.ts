@@ -1,10 +1,16 @@
+import type { WEBPACK_CHUNK } from "@shared/constants";
 import type { AnyFn } from "@shared/types/patch";
-import type { WebpackRequire } from "@shared/types/webpack";
+import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
 declare global {
     export const DEVELOPMENT: boolean;
 
     interface Window {
+        [WEBPACK_CHUNK]?: WebpackChunkGlobal;
+
+        ExtendifyFragment: Symbol;
+        ExtendifyCreateElement: (...args: unknown[]) => any;
+
         exportedFunctions: {
             [context: string]: {
                 [name: string]: AnyFn;

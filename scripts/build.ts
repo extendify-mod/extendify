@@ -49,6 +49,7 @@ const bundle = await rolldown({
         tsconfigFilename: "tsconfig.json"
     },
     jsx: {
+        mode: "classic",
         factory: "ExtendifyCreateElement",
         fragment: "ExtendifyFragment"
     }
@@ -61,6 +62,7 @@ await bundle.write({
         compress: false,
         mangle: true
     },
+    globals: {},
     minifyInternalExports: true,
     sourcemap: DEVELOPMENT ? "inline" : "hidden",
     file: "dist/extendify.js",
