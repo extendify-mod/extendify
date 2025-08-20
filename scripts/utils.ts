@@ -12,7 +12,7 @@ const flatpakPath =
     ".local/share/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify";
 const flatpakCachePath = ".var/app/com.spotify.Client/cache/spotify";
 const spotifyLauncherPath = ".local/share/spotify-launcher/install/usr/share/spotify";
-const spotifyLauncherCachePath = ".cache/spotify";
+const spotifyCachePath = ".cache/spotify";
 
 const usingFlatpak = hasArg("flatpak");
 
@@ -50,10 +50,7 @@ export function getCachePath(): string {
         case "win32":
             return join(process.env.LocalAppData!, "Spotify");
         case "linux":
-            return join(
-                process.env.HOME!,
-                usingFlatpak ? flatpakCachePath : spotifyLauncherCachePath
-            );
+            return join(process.env.HOME!, usingFlatpak ? flatpakCachePath : spotifyCachePath);
         case "darwin":
             return join(process.env.HOME!, "Library/Application SUpport/Spotify/PersistentCache");
         default:
