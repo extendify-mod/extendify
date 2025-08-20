@@ -1,5 +1,3 @@
-import { launchSpotify } from "scripts/utils";
+import { launchSpotify } from "../utils";
 
 launchSpotify();
-
-// process.exit(0);
