@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        // Environment setup & latest features
         "lib": ["DOM", "ESNext"],
         "target": "ESNext",
         "module": "Preserve",
@@ -8,28 +7,26 @@
         "jsx": "preserve",
         "allowJs": true,
 
-        // Bundler mode
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "noEmit": true,
 
-        // Best practices
         "strict": true,
         "skipLibCheck": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
         "noImplicitOverride": true,
 
-        // Some stricter flags (disabled by default)
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false,
 
-        // Paths
         "baseUrl": ".",
         "paths": {
             "@api/*": ["lib/api/*"],
+
+            "@inject": ["lib/inject/index.ts"],
 
             "@shared/*": ["lib/shared/*"],
 

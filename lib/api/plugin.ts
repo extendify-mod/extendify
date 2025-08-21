@@ -1,9 +1,29 @@
-import { registerContext } from "@api/context";
+import { type Context, registerContext } from "@api/context";
 import { registerEventListener } from "@api/event";
 import type { Logger } from "@shared/logger";
-import type { Plugin, PluginDef } from "@shared/types/plugin";
 
 const { context, logger: contextLogger } = registerContext({ name: "Plugins" });
+
+export type PluginDef = Omit<Plugin, "started">;
+
+export interface Plugin extends Context {
+    /** A description of the plugin */
+    description: string;
+    /** The plugin's authors as GitHub usernames */
+    authors: string[];
+    /** Whether or not the plugin should be enabled regardless of the user's configuration */
+    required?: boolean;
+    /** Whether or not the plugin will show up in the plugin configuration screen */
+    hidden?: boolean;
+    /** Whether or not the plugin should be enabled before the user has configured it */
+    enabledByDefault?: boolean;
+    /** A callback for when the plugin is enabled or initialized */
+    start?(): void;
+    /** A callback for when the plugin gets disabled */
+    stop?(): void;
+    /** Whether or not the plugin's start method passed (or true if there is none) */
+    started?: boolean;
+}
 
 export const plugins: Plugin[] = [];
 
@@ -16,8 +36,7 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
     return { plugin, logger };
 }
 
-// TODO: Settings.
-// Also don't check enabledByDefault here but in the settings themselves.
+// TODO: Settings. And don't check enabledByDefault here but in the settings themselves.
 export function isPluginEnabled(plugin: Plugin | string): boolean {
     if (typeof plugin === "string") {
         const entry = plugins.find((v) => v.name === plugin);

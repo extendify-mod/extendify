@@ -1,6 +1,57 @@
-import { IDENTIFIER_REGEX } from "@shared/constants";
-import type { Context } from "@shared/types/context";
-import type { AnyFn, Match, MultiMatch, Patch, PatchDef, ReplaceFn } from "@shared/types/patch";
+import { type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
+
+import type { Context } from "./context";
+
+export interface PatchConditions {
+    /**
+     * A callback which returns whether or not the patch should be executed.
+     * Used for stuff like settings that enable/disable patches.
+     */
+    predicate?(): boolean;
+    /** Whether or not the patch should execute in the private iife module */
+    excludePrivateModule?: boolean;
+    /** Whether or not you'll be warned when the patch has no effect */
+    noWarn?: boolean;
+    /** Whether or not you'll be warned when the patch errors */
+    noError?: boolean;
+}
+
+export interface Patch extends PatchConditions {
+    /** The context that owns the patch */
+    context: Context;
+    /** A unique match to find the correct module */
+    find: Match | MultiMatch;
+    /** The actual replacement(s) the patch executes */
+    replacement: PatchReplacement | PatchReplacement[];
+    /**
+     * Whether or not all found modules should be
+     * patched instead of just the initial module
+     */
+    all?: boolean;
+}
+
+export type PatchDef = Omit<Patch, "context">;
+
+export type ReplaceFn = (match: string, ...groups: string[]) => string;
+
+/** A glorified String.replace */
+export interface PatchReplacement extends PatchConditions {
+    /**
+     * A string or regular expression to search for.
+     *
+     * You can use `\i` in your regex to match variable names and keywords.
+     */
+    match: Match;
+    /**
+     * A string or callback function containing the text to replace.
+     *
+     * You can use `$exp.functionName` in your string to reference functions your plugin
+     * exported to the registry.
+     * */
+    replace: string | ReplaceFn;
+}
+
+export type AnyFn = ((...args: any[]) => any) & { name: string };
 
 export const patches: Patch[] = [];
 window.exportedFunctions = {};
@@ -30,32 +81,6 @@ export function exportFunction(context: Context, fn: AnyFn) {
 
     contextExports[fn.name] = fn;
     window.exportedFunctions[context.name] = contextExports;
-}
-
-function createComplexRegExp(regex: RegExp) {
-    return new RegExp(regex.source.replaceAll("\\i", IDENTIFIER_REGEX), regex.flags);
-}
-
-export function isMatch(src: string, match: Patch["find"]): boolean {
-    // If the patch doesn't specify the 'find' propery,
-    // we'll asssume it wants to patch every module.
-    if (!match) {
-        return true;
-    }
-
-    if (typeof match === "string") {
-        return src.includes(match);
-    }
-
-    function test(filter: string | RegExp): boolean {
-        if (typeof filter === "string") {
-            return src.includes(filter);
-        }
-        return createComplexRegExp(filter).test(src);
-    }
-
-    const { mode, matches } = match as MultiMatch;
-    return mode === "all" ? matches.every(test) : matches.some(test);
 }
 
 export function executePatch(
