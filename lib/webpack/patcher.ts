@@ -1,6 +1,7 @@
-import { executePatch, isMatch, patches } from "@api/patch";
+import { executePatch, patches } from "@api/patch";
 import { isPluginEnabled } from "@api/plugin";
 import { createLogger } from "@shared/logger";
+import { srcMatches } from "@shared/match";
 import type { WebpackModule } from "@shared/types/webpack";
 import { shouldIgnoreModule, wreq } from "@webpack";
 
@@ -113,7 +114,7 @@ export function patchModule<T>(module: T, id: string): T {
             continue;
         }
 
-        if (!isMatch(src, patch.find)) {
+        if (!srcMatches(src, patch.find)) {
             continue;
         }
 

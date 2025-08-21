@@ -1,5 +1,6 @@
-import type { AdManagers, SettingsAPI, User } from "@shared/types/spotify";
+import type { AdManagers, SettingsAPI } from "@shared/types/spotify";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
+import type { User } from "@shared/types/spotify/user";
 
 import type { History } from "history";
 
@@ -25,44 +26,8 @@ export interface Platform {
     };
     /**
      * This API accesses your friends' listening status.
-     * This has complicated pubsub stuff. I suggest using `getBuddyFeedLegacyAPI().buddyFetchApi.getBuddyFeed()` instead.
      */
     getBuddyFeedAPI(): any;
-    /**
-     * This API accesses your friends' listening status. (Legacy API, endpoints might break at any time)
-     */
-    getBuddyFeedLegacyAPI(): {
-        buddyFetchApi: {
-            /**
-             * @deprecated This endpoint is no longer available.
-             */
-            getBuddyActivity(): any;
-            getBuddyFeed(): {
-                body: {
-                    friends: {
-                        timestamp: number;
-                        track: {
-                            album: Identifiable;
-                            artist: Identifiable;
-                            context: Identifiable;
-                            imageUrl: string;
-                            name: string;
-                            uri: string;
-                        };
-                        user: {
-                            imageUrl: string;
-                            name: string;
-                            uri: string;
-                        };
-                    }[];
-                };
-                retries: {
-                    count: number;
-                };
-                status: number;
-            };
-        };
-    };
     getCollectionPlatformAPI(): any;
     /**
      * This API configures the in-app audio equalizer.
@@ -80,6 +45,9 @@ export interface Platform {
             setItem(key: string, value: any): void;
         };
     };
+    /**
+     * I'm pretty sure this is what allows communication from the renderer to the main process.
+     */
     getEventSender(): any;
     /**
      * Maybe this is a wrapper for Apple's External Accessory Framework.
@@ -97,17 +65,6 @@ export interface Platform {
      * Data harvesting shenanigans.
      */
     getPlatformData(): PlatformData;
-    getPlaybackFiltersAPI(): {
-        disableNormalizationOverride(): void;
-        getDevices(): Promise<any[]>;
-        getFilterState(): Promise<any>;
-        getFiltersEvents(): any;
-        getSavedDevices(): any[];
-        isAvailable(): boolean;
-        isNormalizationOverriden(): boolean; // Typo is intentional
-        removeCurrentDevice(): void;
-        setCurrentDevice(): Promise<void>;
-    };
     getRegistry(): {
         _map: Map<Symbol, any>;
         resolve<T>(key: Symbol): T;
@@ -127,10 +84,9 @@ export interface Platform {
      */
     getSingAlongAPI(): any;
     getTranslations(): Record<string, string>;
+    /** Stuff with communication */
     getTransport(): any;
-    /**
-     * This has something to do with analytics.
-     */
+    /** This has something to do with analytics. */
     getUBILogger(): any;
     getUrlDispenserServiceClient(): {
         getShortUrl(
@@ -143,7 +99,7 @@ export interface Platform {
             spotify_uri: string;
         }>;
     };
-    initialProductState: any;
+    initialProductState: ProductStateAPI["productStateApi"]["options"];
     initialUser: User;
     isDeveloperMode: boolean;
     isVideoSupported: boolean;

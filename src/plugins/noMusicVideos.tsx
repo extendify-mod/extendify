@@ -7,7 +7,8 @@ const { plugin } = registerPlugin({
     authors: ["7elia"],
     start() {
         console.log(<></>);
-    }
+    },
+    enabledByDefault: true
 });
 
 // Remove the "Switch to video" button

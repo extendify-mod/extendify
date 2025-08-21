@@ -1,7 +1,16 @@
 import { Logger, createLogger } from "@shared/logger";
-import type { Context } from "@shared/types/context";
 
 const contexts: Set<string> = new Set();
+
+export interface Context {
+    /**
+     * The display name of the context.
+     * Should be PascalCase with no spaces.
+     */
+    name: string;
+    /** The color used by the context's logger */
+    loggerColor?: string;
+}
 
 export function registerContext(context: Context): {
     context: Context;

@@ -1,8 +1,31 @@
-import { registerContext } from "@api/context";
-import type { Context } from "@shared/types/context";
-import type { EventArgs, EventListener, EventType, RegisteredListener } from "@shared/types/event";
+import { type Context, registerContext } from "@api/context";
+import type { PlayerState, Song } from "@shared/types/spotify/player";
 
 const { logger } = registerContext({ name: "Events" });
+
+export type EventType =
+    | "platformLoaded"
+    | "play"
+    | "pause"
+    | "songChanged"
+    | "queueAdded"
+    | "queueRemoved";
+
+export interface EventArgs {
+    platformLoaded: [];
+    play: [state: PlayerState];
+    pause: [state: PlayerState];
+    songChanged: [newSong: Song, state: PlayerState];
+    queueAdded: [songs: Song[], state: PlayerState];
+    queueRemoved: [songs: Song[], state: PlayerState];
+}
+
+export type EventListener<E extends EventType> = (...args: EventArgs[E]) => void;
+
+export interface RegisteredListener<E extends EventType> {
+    type: E;
+    callback: EventListener<E>;
+}
 
 const registeredListeners: Record<
     Context["name"],

@@ -36,13 +36,21 @@ Object.defineProperty(Function.prototype, "m", {
 
         patchFactories(modules);
 
-        // NOTE: This removes one layer, from the original patcher, which might break it.
+        /**
+         * Spotify only has 1 webpack instance, which means we can skip the step
+         * other webpack interceptors use where they check if the "p" property
+         * is equal to the app's main url.
+         */
+
         Object.defineProperty(this, "iife", {
             configurable: true,
             set(this: WebpackRequire, iife: WebpackRequire["iife"]) {
-                // Now that we've found the private iife module, which is assigned to the
-                // wreq instance as 'iife' via a patch (check loader.ts), we can patch it
-                // with our plugin patches and then initialize it ourselves.
+                /**
+                 * Now that we've found the private iife module, which is assigned to the
+                 * wreq instance as "iife" via a patch (check loader.ts), we can patch it
+                 * with our plugin patches and then initialize it ourselves.
+                 */
+
                 const original = iife;
                 iife = patchModule(iife, "Private");
                 iife.$$ = original;
