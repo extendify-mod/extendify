@@ -34,9 +34,11 @@ exportFunction(context, function loadPlatform(value: Platform): Platform {
 
 export function resolveApi<T>(key: string): T | undefined {
     return createLazy(() => {
-        if (platform) {
-            return platform.getRegistry().resolve(Symbol.for(key));
+        if (!platform) {
+            return;
         }
+
+        return platform.getRegistry().resolve(Symbol.for(key));
     });
 }
 

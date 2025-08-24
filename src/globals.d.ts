@@ -2,6 +2,8 @@ import type { WEBPACK_CHUNK } from "@shared/constants";
 import type { AnyFn } from "@shared/types/patch";
 import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
+import type { createElement } from "react";
+
 declare global {
     export const DEVELOPMENT: boolean;
 
@@ -9,7 +11,7 @@ declare global {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
 
         ExtendifyFragment: Symbol;
-        ExtendifyCreateElement: (...args: unknown[]) => any;
+        ExtendifyCreateElement: ((...args: unknown[]) => void) | typeof createElement;
 
         exportedFunctions: {
             [context: string]: {

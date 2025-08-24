@@ -13,15 +13,25 @@ export function createComplexRegExp(regex: RegExp) {
     return new RegExp(regex.source.replaceAll("\\i", IDENTIFIER_REGEX), regex.flags);
 }
 
-export function srcMatches(src: string, match: AnyMatch): boolean {
-    // If the patch doesn't specify the 'find' propery,
-    // we'll asssume it wants to patch every module.
+export function srcMatches(
+    src: string,
+    match: AnyMatch,
+    { allowEmptyMatch }: { allowEmptyMatch?: boolean } = {}
+): boolean {
+    /**
+     * If the patch doesn't specify the 'find' propery,
+     * we'll asssume it wants to patch every module.
+     */
     if (!match) {
-        return true;
+        return allowEmptyMatch ?? false;
     }
 
     if (typeof match === "string") {
         return src.includes(match);
+    }
+
+    if (match instanceof RegExp) {
+        return match.test(src);
     }
 
     function test(filter: string | RegExp): boolean {
@@ -32,6 +42,6 @@ export function srcMatches(src: string, match: AnyMatch): boolean {
         return createComplexRegExp(filter).test(src);
     }
 
-    const { mode, matches } = match as MultiMatch;
+    const { mode, matches } = match;
     return mode === "all" ? matches.every(test) : matches.some(test);
 }

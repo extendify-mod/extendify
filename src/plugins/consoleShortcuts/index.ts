@@ -1,6 +1,7 @@
 import { platform } from "@api/platform";
 import { registerPlugin } from "@api/plugin";
 import { wreq } from "@webpack";
+import { exportFilters, findModule, findModuleExport } from "@webpack/module";
 
 const { logger } = registerPlugin({
     name: "ConsoleShortcuts",
@@ -14,8 +15,14 @@ const { logger } = registerPlugin({
             },
             platform: {
                 get: () => platform
+            },
+            exportFilters: {
+                get: () => exportFilters
             }
         });
+
+        window.findModuleExport = findModuleExport;
+        window.findModule = findModule;
 
         logger.info("Defined shortcuts");
     }

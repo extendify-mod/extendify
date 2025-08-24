@@ -26,6 +26,8 @@
         "paths": {
             "@api/*": ["lib/api/*"],
 
+            "@components/*": ["lib/components/*"],
+
             "@inject": ["lib/inject/index.ts"],
 
             "@shared/*": ["lib/shared/*"],
