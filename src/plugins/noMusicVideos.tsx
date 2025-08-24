@@ -4,11 +4,7 @@ import { registerPlugin } from "@api/plugin";
 const { plugin } = registerPlugin({
     name: "NoMusicVideos",
     description: "Removes all mentions of music videos",
-    authors: ["7elia"],
-    start() {
-        console.log(<></>);
-    },
-    enabledByDefault: true
+    authors: ["7elia"]
 });
 
 // Remove the "Switch to video" button

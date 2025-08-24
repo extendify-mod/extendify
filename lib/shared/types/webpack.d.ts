@@ -9,10 +9,10 @@ export type ModuleExports =
 export type ModuleExportsWithProps<P extends string> = Record<P, unknown> &
     Record<PropertyKey, unknown>;
 
-export interface RawModule<T = unknown> {
+export interface RawModule {
     id: number;
     loaded: boolean;
-    exports: T;
+    exports: Record<string, any>;
 }
 
 export type WebpackRawModules = Record<string | number, RawModule>;
@@ -21,16 +21,16 @@ export type WebpackRequire = ((e: number) => unknown) & {
     c: WebpackRawModules;
     d: (module: unknown, exports: Record<string, () => unknown>) => void;
     m: WebpackChunk[1];
-    iife: ((wreq: WebpackRequire) => void) & { $$: WebpackRequire["iife"] };
+    iife: ((wreq: WebpackRequire) => void) & { $$: Omit<WebpackRequire["iife"], "$$"> };
 };
 
-export type WebpackModule = (
+export type WebpackModule = ((
     module: RawModule,
     exports: typeof module.exports,
     require: WebpackRequire,
     // This normally doesn't exist, but we can use it to pass our src
     ...args: unknown[]
-) => void;
+) => void) & { $$?: Omit<WebpackModule, "$$"> };
 
 export type WebpackChunk = [
     Array<symbol | number>,

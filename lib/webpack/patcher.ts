@@ -2,8 +2,10 @@ import { executePatch, patches } from "@api/patch";
 import { isPluginEnabled } from "@api/plugin";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
-import type { WebpackModule } from "@shared/types/webpack";
+import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";
 import { shouldIgnoreModule, wreq } from "@webpack";
+
+import { onModuleLoaded } from "./module";
 
 const logger = createLogger({ name: "WebpackPatcher" });
 
@@ -39,7 +41,11 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
 
         const originalMod = mod;
 
-        const factory = (factories[id] = function (module, exports, require) {
+        const factory = (factories[id] = function (
+            module,
+            exports: typeof module.exports,
+            require: WebpackRequire
+        ) {
             if (!mod) {
                 return;
             }
@@ -76,11 +82,9 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
                 });
                 return;
             }
-        } as {
-            (...args: any[]): void;
-            $$: any;
-            toString: () => string;
-        });
+
+            onModuleLoaded(module);
+        } as WebpackModule);
 
         factory.$$ = originalMod;
         factory.toString = originalMod.toString.bind(originalMod);
@@ -114,7 +118,7 @@ export function patchModule<T>(module: T, id: string): T {
             continue;
         }
 
-        if (!srcMatches(src, patch.find)) {
+        if (!srcMatches(src, patch.find, { allowEmptyMatch: true })) {
             continue;
         }
 
