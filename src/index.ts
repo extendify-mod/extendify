@@ -1,7 +1,7 @@
 import "@inject";
 import "@webpack/exporter";
 import "@webpack/interceptor";
-import { loadEntrypoint } from "@webpack/loader";
+import "@webpack/loader";
 
 /**
  * This imports plugins with any of the following file structures:
@@ -26,5 +26,3 @@ import.meta.glob(
         eager: true
     }
 );
-
-loadEntrypoint();
