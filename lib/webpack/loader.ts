@@ -71,7 +71,7 @@ function generateSourceMap(content: string, scriptUrl: string) {
     return `\n//# sourceMappingURL=data:application/json;base64,${encodedMap}`;
 }
 
-export async function loadEntrypoint() {
+async function loadEntrypoint() {
     let text: string | undefined;
 
     /**
@@ -127,3 +127,5 @@ export async function loadEntrypoint() {
     logger.info("Successfully patched and loaded entrypoint");
     return;
 }
+
+loadEntrypoint();
