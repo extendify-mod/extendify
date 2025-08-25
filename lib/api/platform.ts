@@ -1,6 +1,6 @@
 import { registerContext } from "@api/context";
-import { emitEvent } from "@api/event";
-import { exportFunction, registerPatch } from "@api/patch";
+import { emitEvent } from "@api/context/event";
+import { exportFunction, registerPatch } from "@api/context/patch";
 import { createLazy } from "@shared/lazy";
 import type { Platform } from "@shared/types/spotify";
 import type { PlaybackAPI } from "@shared/types/spotify/playback";

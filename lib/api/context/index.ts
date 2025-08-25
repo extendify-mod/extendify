@@ -10,6 +10,8 @@ export interface Context {
     name: string;
     /** The color used by the context's logger */
     loggerColor?: string;
+    /** The prefixed used by the context's logger */
+    loggerPrefix?: string;
 }
 
 export function registerContext(context: Context): {
@@ -25,7 +27,7 @@ export function registerContext(context: Context): {
     return {
         context,
         logger: createLogger({
-            name: context.name,
+            name: `${context.loggerPrefix ?? "Context"}/${context.name}`,
             color: context.loggerColor
         })
     };

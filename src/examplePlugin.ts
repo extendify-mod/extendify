@@ -1,5 +1,5 @@
-import { exportFunction, registerPatch } from "@api/patch";
-import { registerPlugin } from "@api/plugin";
+import { exportFunction, registerPatch } from "@api/context/patch";
+import { registerPlugin } from "@api/context/plugin";
 
 /**
  * This is how you register a plugin. It returns a logger and the plugin object.

@@ -1,5 +1,5 @@
 import { type Context, registerContext } from "@api/context";
-import { registerEventListener } from "@api/event";
+import { registerEventListener } from "@api/context/event";
 import type { Logger } from "@shared/logger";
 
 const { context, logger: contextLogger } = registerContext({ name: "Plugins" });
@@ -28,7 +28,10 @@ export interface Plugin extends Context {
 export const plugins: Plugin[] = [];
 
 export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Logger } {
-    const { logger } = registerContext(plugin);
+    const { logger } = registerContext({
+        ...plugin,
+        loggerPrefix: plugin.loggerPrefix ?? "Plugin"
+    });
 
     plugins.push(plugin);
     contextLogger.debug(`Plugin ${plugin.name} registered`);

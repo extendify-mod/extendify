@@ -1,0 +1,17 @@
+import { registerContext } from "@api/context";
+import { redirectTo, registerPage } from "@api/page";
+import { registerTopbarElement } from "@api/topbar";
+import { PrimaryButton } from "@components/spotify";
+
+const { context } = registerContext({ name: "Core" });
+
+registerTopbarElement(context, () => (
+    <PrimaryButton size="small" onClick={() => redirectTo("/extendify")}>
+        Extendify
+    </PrimaryButton>
+));
+
+registerPage(context, {
+    route: "/extendify",
+    component: () => <div></div>
+});

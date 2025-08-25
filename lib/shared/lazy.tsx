@@ -23,8 +23,14 @@ export function createLazy<T>(getter: () => T): T {
     ) as T;
 }
 
-export function createLazyComponent<T extends object = {}>(filter: ExportFilter): ComponentType<T> {
-    return (props: T) => {
+type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
+
+export function createLazyComponent<T extends object = any>(
+    filter: ExportFilter
+): LazyComponent<T> {
+    let hasResolved = false;
+
+    const Lazy = (props: T) => {
         const [Component, setComponent] = useState<ComponentType<T> | undefined>();
 
         useEffect(() => {
@@ -36,6 +42,7 @@ export function createLazyComponent<T extends object = {}>(filter: ExportFilter)
                 }
 
                 setComponent(moduleExport);
+                hasResolved = true;
             });
 
             return () => {
@@ -45,4 +52,12 @@ export function createLazyComponent<T extends object = {}>(filter: ExportFilter)
 
         return Component ? <Component {...props} /> : <></>;
     };
+
+    Object.defineProperty(Lazy, "hasResolved", {
+        get() {
+            return hasResolved;
+        }
+    });
+
+    return Lazy as LazyComponent<T>;
 }

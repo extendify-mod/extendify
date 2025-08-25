@@ -1,5 +1,5 @@
-import { executePatch, patches } from "@api/patch";
-import { isPluginEnabled } from "@api/plugin";
+import { executePatch, patches } from "@api/context/patch";
+import { isPluginEnabled } from "@api/context/plugin";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
 import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";

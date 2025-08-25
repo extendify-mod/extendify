@@ -1,6 +1,6 @@
 import { type AnyMatch, srcMatches } from "@shared/match";
 import type { RawModule } from "@shared/types/webpack";
-import { wreq } from "@webpack";
+import { shouldIgnoreValue, wreq } from "@webpack";
 
 export type ExportFilter = (moduleExport: any) => boolean;
 
@@ -59,7 +59,7 @@ export const exportFilters = {
         };
     },
     byEncoreName(name: string): ExportFilter {
-        const filter = exportFilters.byCode!(
+        const filter = exportFilters.byCode(
             new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[{,]`)
         );
 
@@ -74,7 +74,7 @@ export const exportFilters = {
 };
 
 function checkExport(moduleExport: any, filter: ExportFilter): boolean {
-    if (typeof moduleExport !== "function") {
+    if (shouldIgnoreValue(moduleExport)) {
         return false;
     }
 
