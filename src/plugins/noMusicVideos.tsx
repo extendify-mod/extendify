@@ -1,5 +1,5 @@
-import { exportFunction, registerPatch } from "@api/patch";
-import { registerPlugin } from "@api/plugin";
+import { exportFunction, registerPatch } from "@api/context/patch";
+import { registerPlugin } from "@api/context/plugin";
 
 const { plugin } = registerPlugin({
     name: "NoMusicVideos",

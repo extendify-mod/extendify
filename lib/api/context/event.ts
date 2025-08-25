@@ -73,7 +73,7 @@ export function removeEventListener<E extends EventType>(
 
 export async function emitEvent<E extends EventType>(event: E, ...args: EventArgs[E]) {
     // Need to do this because of circular import issues
-    const { isPluginEnabled } = await import("@api/plugin");
+    const { isPluginEnabled } = await import("@api/context/plugin");
 
     for (const context in registeredListeners) {
         // If the context is a plugin, check if the plugin is enabled.

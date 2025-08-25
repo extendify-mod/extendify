@@ -1,6 +1,6 @@
-import { registerEventListener } from "@api/event";
+import { registerEventListener } from "@api/context/event";
+import { registerPlugin } from "@api/context/plugin";
 import { player } from "@api/platform";
-import { registerPlugin } from "@api/plugin";
 
 const { plugin, logger } = registerPlugin({
     name: "SkipExplicit",

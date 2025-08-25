@@ -1,5 +1,5 @@
+import { registerPlugin } from "@api/context/plugin";
 import { platform } from "@api/platform";
-import { registerPlugin } from "@api/plugin";
 import { wreq } from "@webpack";
 import { exportFilters, findModule, findModuleExport } from "@webpack/module";
 

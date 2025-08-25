@@ -1,5 +1,5 @@
 import { registerContext } from "@api/context";
-import { type PatchDef, exportFunction, registerPatch } from "@api/patch";
+import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
 import { wreq } from "@webpack";
 
 import {

@@ -1,6 +1,5 @@
+import type { Context } from "@api/context";
 import { type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
-
-import type { Context } from "./context";
 
 export interface PatchConditions {
     /**
