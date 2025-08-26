@@ -10,6 +10,7 @@ declare global {
         exportFilters: typeof exportFilters;
         findModuleExport: typeof findModuleExport;
         findModule: typeof findModule;
+        getExportedComponents: () => Promise<Record<string, any>>;
     }
 }
 

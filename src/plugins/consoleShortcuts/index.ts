@@ -8,7 +8,7 @@ const { logger } = registerPlugin({
     description: "Expose internal APIs to the window object",
     authors: ["7elia"],
     required: DEVELOPMENT,
-    start() {
+    async start() {
         Object.defineProperties(window, {
             wreq: {
                 get: () => wreq
@@ -18,11 +18,23 @@ const { logger } = registerPlugin({
             },
             exportFilters: {
                 get: () => exportFilters
+            },
+            exportedComponents: {
+                async get() {}
             }
         });
 
         window.findModuleExport = findModuleExport;
         window.findModule = findModule;
+
+        window.getExportedComponents = async () => {
+            const result: Record<string, any> = {};
+            const components = (await import("@components/spotify")) as any;
+            for (const component in components) {
+                result[component] = components[component];
+            }
+            return result;
+        };
 
         logger.info("Defined shortcuts");
     }

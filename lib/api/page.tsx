@@ -40,10 +40,9 @@ exportFunction(context, function injectPages(children: any[]) {
 
     for (const page of registeredPages) {
         const { route, component: Component } = page;
+        const key = (route.startsWith("/") ? route.substring(1) : route).replaceAll("/", "-");
 
-        children.push(
-            <Route key={route.replaceAll("/", "_")} path={route} element={<Component />} />
-        );
+        children.push(<Route key={key} path={route} element={<Component />} />);
     }
 
     return children;

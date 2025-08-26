@@ -39,15 +39,12 @@ const bundle = await rolldown({
         strictExecutionOrder: true
     },
     treeshake: true,
-    // This is important for the $exp exporting stuff
-    keepNames: true,
+    keepNames: false,
     define: {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT)
     },
     plugins: [importGlobPlugin()],
-    resolve: {
-        tsconfigFilename: "tsconfig.json"
-    },
+    tsconfig: "tsconfig.json",
     jsx: {
         mode: "classic",
         factory: "ExtendifyCreateElement",
@@ -60,9 +57,9 @@ const bundleWriteStart = performance.now();
 await bundle.write({
     minify: {
         compress: false,
-        mangle: true
+        // Having this set to false is important for the $exp exporting stuff
+        mangle: false
     },
-    globals: {},
     minifyInternalExports: true,
     sourcemap: DEVELOPMENT ? "inline" : "hidden",
     file: "dist/extendify.js",
