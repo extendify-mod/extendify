@@ -1,6 +1,9 @@
+import { useEffect, useState } from "@api/react";
 import { type AnyMatch, srcMatches } from "@shared/match";
 import type { RawModule } from "@shared/types/webpack";
 import { shouldIgnoreValue, wreq } from "@webpack";
+
+import type { ComponentType } from "react";
 
 export type ExportFilter = (moduleExport: any) => boolean;
 
@@ -14,8 +17,8 @@ interface ModuleSubscription<T = Record<string, any>> {
     callback: (module: T) => void;
 }
 
-const exportSubscriptions: ExportSubscription[] = [];
-const moduleSubscriptions: ModuleSubscription[] = [];
+const exportSubscriptions: Set<ExportSubscription> = new Set();
+const moduleSubscriptions: Set<ModuleSubscription> = new Set();
 
 export const exportFilters = {
     byProps(...props: string[]): ExportFilter {
@@ -46,13 +49,13 @@ export const exportFilters = {
                 return false;
             }
 
+            if (moduleExport.render) {
+                return filter(moduleExport.render);
+            }
+
             const { type: moduleType } = moduleExport;
             if (moduleType) {
                 return moduleType.render ? filter(moduleType.render) : filter(moduleType);
-            }
-
-            if (moduleExport.render) {
-                return filter(moduleExport.render);
             }
 
             return false;
@@ -60,7 +63,7 @@ export const exportFilters = {
     },
     byEncoreName(name: string): ExportFilter {
         const filter = exportFilters.byCode(
-            new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[{,]`)
+            new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[},]`)
         );
 
         return (moduleExport) => {
@@ -82,19 +85,14 @@ function checkExport(moduleExport: any, filter: ExportFilter): boolean {
 }
 
 export function onModuleLoaded(module: RawModule) {
-    for (let i = 0; i < exportSubscriptions.length; i++) {
-        const subscription = exportSubscriptions[i];
-        if (!subscription) {
-            continue;
-        }
-
+    for (const subscription of exportSubscriptions) {
         function checkSubscription(moduleExport: any): boolean {
             if (!subscription || !checkExport(moduleExport, subscription.filter)) {
                 return false;
             }
 
             subscription.callback(moduleExport);
-            exportSubscriptions.splice(i--, 1);
+            exportSubscriptions.delete(subscription);
 
             return true;
         }
@@ -112,12 +110,7 @@ export function onModuleLoaded(module: RawModule) {
         }
     }
 
-    for (let i = 0; i < moduleSubscriptions.length; i++) {
-        const subscription = moduleSubscriptions[i];
-        if (!subscription) {
-            continue;
-        }
-
+    for (const subscription of moduleSubscriptions) {
         if (typeof module.exports !== "object") {
             continue;
         }
@@ -125,7 +118,7 @@ export function onModuleLoaded(module: RawModule) {
         const exportKeys = Object.keys(module.exports);
         if (subscription.props.every((prop) => exportKeys.includes(prop))) {
             subscription.callback(module.exports);
-            moduleSubscriptions.splice(i--, 1);
+            moduleSubscriptions.delete(subscription);
         }
     }
 }
@@ -133,7 +126,7 @@ export function onModuleLoaded(module: RawModule) {
 export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
     function createPromise(): Promise<T> {
         return new Promise((resolve) => {
-            exportSubscriptions.push({
+            exportSubscriptions.add({
                 filter,
                 callback: (moduleExport) => resolve(moduleExport as T)
             });
@@ -172,7 +165,7 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
 export async function findModule<T = Record<string, any>>(...props: string[]): Promise<T> {
     function createPromise(): Promise<T> {
         return new Promise((resolve) => {
-            moduleSubscriptions.push({
+            moduleSubscriptions.add({
                 props,
                 callback: (module) => resolve(module as T)
             });
@@ -199,4 +192,43 @@ export async function findModule<T = Record<string, any>>(...props: string[]): P
     }
 
     return createPromise();
+}
+
+type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
+
+export function findModuleComponent<T extends object = any>(
+    filter: ExportFilter
+): LazyComponent<T> {
+    let hasResolved = false;
+    const componentPromise = findModuleExport<ComponentType<T>>(filter);
+
+    const Lazy = (props: T) => {
+        const [Component, setComponent] = useState<ComponentType<T>>();
+
+        useEffect(() => {
+            let mounted = true;
+
+            componentPromise.then((moduleExport) => {
+                if (!mounted) {
+                    return;
+                }
+
+                setComponent(moduleExport);
+            });
+
+            return () => {
+                mounted = false;
+            };
+        }, [filter]);
+
+        return Component ? <Component {...props} /> : <></>;
+    };
+
+    Object.defineProperty(Lazy, "hasResolved", {
+        get() {
+            return hasResolved;
+        }
+    });
+
+    return Lazy as LazyComponent<T>;
 }

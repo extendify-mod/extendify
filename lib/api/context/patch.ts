@@ -1,5 +1,5 @@
 import type { Context } from "@api/context";
-import { type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
+import { type AnyMatch, type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
 
 export interface PatchConditions {
     /**
@@ -19,7 +19,7 @@ export interface Patch extends PatchConditions {
     /** The context that owns the patch */
     context: Context;
     /** A unique match to find the correct module */
-    find: Match | MultiMatch;
+    find: AnyMatch;
     /** The actual replacement(s) the patch executes */
     replacement: PatchReplacement | PatchReplacement[];
     /**

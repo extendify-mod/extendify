@@ -31,7 +31,7 @@ export function srcMatches(
     }
 
     if (match instanceof RegExp) {
-        return match.test(src);
+        return createComplexRegExp(match).test(src);
     }
 
     function test(filter: string | RegExp): boolean {
