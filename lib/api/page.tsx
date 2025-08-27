@@ -1,8 +1,8 @@
 import { type Context, registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
+import { platform } from "@api/platform";
+import { React } from "@api/react";
 import { Route } from "@components/spotify";
-
-import { platform } from "./platform";
 
 import type { ComponentType } from "react";
 
@@ -42,7 +42,12 @@ exportFunction(context, function injectPages(children: any[]) {
         const { route, component: Component } = page;
         const key = (route.startsWith("/") ? route.substring(1) : route).replaceAll("/", "-");
 
-        children.push(<Route key={key} path={route} element={<Component />} />);
+        // @ts-ignore
+        children.push(Route({ key, path: route, element: <Component /> }));
+
+        // children.push(<Route key={key} path={route} element={<Component />} />);
+
+        // children.push(React.createElement(Component, { key, path: route, element: <Component /> }));
     }
 
     return children;
