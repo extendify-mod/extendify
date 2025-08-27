@@ -1,5 +1,7 @@
 {
     "name": "extendify",
+    "version": "0.0.1",
+    "module": "./src/index.ts",
     "private": true,
     "scripts": {
         "dev": "bun run build-dev && bun run kill-proc && bun run patch && bun run devtools && bun run start-proc",
@@ -10,7 +12,8 @@
         "devtools": "bun run scripts/devtools.ts",
         "kill-proc": "bun run scripts/proc/kill.ts",
         "start-proc": "bun run scripts/proc/start.ts",
-        "update": "bun run scripts/update.ts"
+        "update": "bun run scripts/update.ts",
+        "postinstall": "bun2nix -o bun.nix"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",

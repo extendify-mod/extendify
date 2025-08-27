@@ -3,3 +3,6 @@ node_modules/
 dist/
 userplugins/
 test/
+
+# nix build artifacts
+result/
