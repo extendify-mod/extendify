@@ -199,34 +199,20 @@ type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
 export function findModuleComponent<T extends object = any>(
     filter: ExportFilter
 ): LazyComponent<T> {
-    let hasResolved = false;
-    const componentPromise = findModuleExport<ComponentType<T>>(filter);
+    let Component: ComponentType<T> | undefined;
+
+    findModuleExport<ComponentType<T>>(filter).then((moduleExport) => {
+        Component = moduleExport;
+    });
 
     const Lazy = (props: T) => {
-        const [Component, setComponent] = useState<ComponentType<T>>();
-
-        useEffect(() => {
-            let mounted = true;
-
-            componentPromise.then((moduleExport) => {
-                if (!mounted) {
-                    return;
-                }
-
-                setComponent(moduleExport);
-            });
-
-            return () => {
-                mounted = false;
-            };
-        }, [filter]);
-
+        console.log(Component, props);
         return Component ? <Component {...props} /> : <></>;
     };
 
     Object.defineProperty(Lazy, "hasResolved", {
         get() {
-            return hasResolved;
+            return typeof Component !== "undefined";
         }
     });
 
