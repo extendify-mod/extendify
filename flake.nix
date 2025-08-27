@@ -1,33 +1,40 @@
 {
-    description = "Extendify dev flake";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    bun2nix.url = "github:baileyluTCD/bun2nix";
+    bun2nix.inputs.nixpkgs.follows = "nixpkgs";
+  };
 
-    inputs = {
-        nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    };
+  outputs = {
+    self,
+    nixpkgs,
+    bun2nix,
+  }: let
+    systems = ["x86_64-linux"];
+    forEachSystem = nixpkgs.lib.genAttrs systems;
+  in {
+    packages = forEachSystem (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: pkgs.lib.getName pkg == "spotify";
+      };
+    in {
+      default = pkgs.callPackage ./nix/package.nix {
+        inherit (bun2nix.lib.${system}) mkBunDerivation;
+      };
+    });
 
-    outputs = { nixpkgs, ... }:
-        let
-            pkgs = import nixpkgs {
-                system = "x86_64-linux";
-                config.allowUnfree = true;
-            };
-        in
-        {
-            devShells.${pkgs.system}.default = pkgs.mkShell {
-                nativeBuildInputs = with pkgs; [ bun ];
-                packages = with pkgs; [
-                    bun
-                    spotify.overrideAttrs (old: {
-                        patchPhase = ''
-                            ${old.patchPhase or ""}
-                            bun run build-dev
-                            bun run kill-proc
-                            bun run patch --spotifyPath="${pkgs.spotify}"
-                            bun run devtools
-                            bun run start-proc
-                        '';
-                    })
-                ];
-            };
-        };
+    devShells = forEachSystem (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: pkgs.lib.getName pkg == "spotify";
+      };
+    in {
+      default = pkgs.callPackage ./nix/shell.nix {
+        bun2nixPkg = bun2nix.packages.${system}.default;
+      };
+    });
+
+    hydraJobs = self.packages;
+  };
 }
