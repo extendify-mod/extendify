@@ -14,8 +14,5 @@ registerTopbarElement(context, () => (
 
 registerPage(context, {
     route: "/extendify",
-    component(props) {
-        console.log(props);
-        return <ExtendifyPage />;
-    }
+    component: () => <ExtendifyPage />
 });
