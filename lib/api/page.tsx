@@ -33,6 +33,19 @@ registerPatch(context, {
     ]
 });
 
+registerPatch(context, {
+    find: "React Router",
+    replacement: {
+        /**
+         * This patch skips the check that makes sure the type is the actual Route component,
+         * and since we don't pass the Route component, but instead a wrapper component,
+         * this always fails, which throws an error.
+         */
+        match: /\i\.type!==\i/,
+        replace: "false"
+    }
+});
+
 exportFunction(context, function injectPages(children: any[]) {
     if (!Route.hasResolved) {
         return children;
@@ -42,12 +55,7 @@ exportFunction(context, function injectPages(children: any[]) {
         const { route, component: Component } = page;
         const key = (route.startsWith("/") ? route.substring(1) : route).replaceAll("/", "-");
 
-        // @ts-ignore
-        children.push(Route({ key, path: route, element: <Component /> }));
-
-        // children.push(<Route key={key} path={route} element={<Component />} />);
-
-        // children.push(React.createElement(Component, { key, path: route, element: <Component /> }));
+        children.push(<Route key={key} path={route} element={<Component />} />);
     }
 
     return children;

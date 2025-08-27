@@ -206,7 +206,6 @@ export function findModuleComponent<T extends object = any>(
     });
 
     const Lazy = (props: T) => {
-        console.log(Component, props);
         return Component ? <Component {...props} /> : <></>;
     };
 
