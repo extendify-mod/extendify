@@ -4,6 +4,8 @@ import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
 import type { createElement } from "react";
 
+declare module "*.css";
+
 declare global {
     export const DEVELOPMENT: boolean;
 

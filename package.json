@@ -12,7 +12,7 @@
         "devtools": "bun run scripts/devtools.ts",
         "kill-proc": "bun run scripts/proc/kill.ts",
         "start-proc": "bun run scripts/proc/start.ts",
-        "update": "bun run scripts/update.ts",
+        "update": "bun run kill-proc && bun run scripts/update.ts",
         "postinstall": "bun2nix -o bun.nix"
     },
     "devDependencies": {
