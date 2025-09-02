@@ -1,4 +1,4 @@
-import type { platform } from "@api/platform";
+import type { platform, resolveApi } from "@api/platform";
 import type { wreq } from "@webpack";
 import type { exportFilters, findModule, findModuleExport } from "@webpack/module";
 
@@ -11,6 +11,10 @@ declare global {
         findModuleExport: typeof findModuleExport;
         findModule: typeof findModule;
         getExportedComponents: () => Promise<Record<string, any>>;
+
+        resolveApi: typeof resolveApi;
+
+        setSpotifyLogLevel: (level: string) => void;
     }
 }
 

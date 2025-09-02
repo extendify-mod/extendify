@@ -1,0 +1,16 @@
+.ext-plugin-setting-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.ext-plugin-setting-metadata {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.ext-plugin-setting-element {
+    width: 50%;
+}

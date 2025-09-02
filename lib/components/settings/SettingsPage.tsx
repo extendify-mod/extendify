@@ -1,3 +1,5 @@
+import "@components/settings/settingsPage.css";
+
 import { useRef, useState } from "@api/react";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
 
@@ -11,7 +13,9 @@ function SettingsHeaderChip(props: { label: string; selected: boolean; onClick: 
                 selectedColorSet="invertedLight"
                 selected={props.selected}
                 onClick={props.onClick}
-            />
+            >
+                {props.label}
+            </Chip>
         </div>
     );
 }

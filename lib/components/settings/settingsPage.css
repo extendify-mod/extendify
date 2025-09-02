@@ -1,0 +1,45 @@
+.ext-settings-section-layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 32px 16px 32px;
+    gap: var(--encore-spacing-base);
+}
+
+.ext-settings-header-chips,
+.ext-settings-header-title {
+    display: flex;
+    flex-direction: row;
+}
+
+.ext-settings-header-chips {
+    gap: var(--encore-spacing-tighter-2);
+}
+
+.ext-settings-header-title {
+    justify-content: space-between;
+}
+
+.ext-settings-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+}
+
+.ext-settings-container {
+    background-color: var(--background-tinted-base);
+    height: 100%;
+    width: 100%;
+    border-radius: var(--encore-corner-radius-larger-2);
+    /* display: block;
+    box-sizing: border-box; */
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease;
+    padding: 12px;
+}
+
+.ext-settings-container:hover {
+    background-color: hsla(0, 0%, 100%, 0.2);
+}

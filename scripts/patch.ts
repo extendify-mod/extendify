@@ -1,5 +1,6 @@
 import { exists, getAppsPath } from "./utils";
 
+import { lstat } from "fs/promises";
 import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
 import { join } from "path";
@@ -28,9 +29,20 @@ if (!apps.includes("_xpui.spa")) {
 }
 
 const archive = await JSZip.loadAsync(await readFile(join(appsPath, "_xpui.spa"), "binary"));
-const dist = await readdir("dist");
-for (const fileName of dist) {
-    archive.file(fileName, await readFile(join("dist", fileName)));
+
+const dist = await readdir("dist", { recursive: true });
+for (const relativePath of dist) {
+    const fullPath = join("dist", relativePath);
+
+    if ((await lstat(fullPath)).isDirectory()) {
+        continue;
+    }
+
+    const fileName = fullPath
+        .substring(fullPath.lastIndexOf("\\") + 1)
+        .substring(fullPath.lastIndexOf("/") + 1);
+
+    archive.file(fileName, await readFile(fullPath));
     console.log(`Copied ${fileName}`);
 }
 
