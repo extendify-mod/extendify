@@ -1,5 +1,6 @@
-import { type Context, registerContext } from "@api/context";
+import { type Context, isContextEnabled, registerContext } from "@api/context";
 import { registerEventListener } from "@api/context/event";
+import { plugins } from "@api/registry";
 import type { Logger } from "@shared/logger";
 
 const { context, logger: contextLogger } = registerContext({ name: "Plugins" });
@@ -25,34 +26,21 @@ export interface Plugin extends Context {
     started?: boolean;
 }
 
-export const plugins: Plugin[] = [];
-
 export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Logger } {
     const { logger } = registerContext({
         ...plugin,
         loggerPrefix: plugin.loggerPrefix ?? "Plugin"
     });
 
-    plugins.push(plugin);
+    plugins.add(plugin);
     contextLogger.debug(`Plugin ${plugin.name} registered`);
 
     return { plugin, logger };
 }
 
-// TODO: Settings. And don't check enabledByDefault here but in the settings themselves.
-export function isPluginEnabled(plugin: Plugin | string): boolean {
-    if (typeof plugin === "string") {
-        const entry = plugins.find((v) => v.name === plugin);
-        // If there is no entry, it's probably a plain context, which means it's always enabled
-        return entry ? isPluginEnabled(entry) : true;
-    }
-
-    return plugin.required || plugin.enabledByDefault || false;
-}
-
 function startPlugins() {
     for (const plugin of plugins) {
-        if (!isPluginEnabled(plugin) || plugin.started) {
+        if (!isContextEnabled(plugin) || plugin.started) {
             continue;
         }
 

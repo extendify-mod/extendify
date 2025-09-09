@@ -3,7 +3,7 @@ import { getCachePath } from "./utils";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 
-const bnkPath = join(getCachePath(), "offline.bnk");
+const bnkPath = join(await getCachePath(), "offline.bnk");
 
 const content = await readFile(bnkPath, "binary");
 const buffer = Buffer.from(content, "binary");

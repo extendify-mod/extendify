@@ -1,5 +1,5 @@
+import { isContextEnabled } from "@api/context";
 import { executePatch, patches } from "@api/context/patch";
-import { isPluginEnabled } from "@api/context/plugin";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
 import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";
@@ -110,7 +110,7 @@ export function patchModule<T>(module: T, id: string): T {
 
         // If it's a plain context this will always pass.
         // We do the same check for event listeners, maybe there's a better way?
-        if (!isPluginEnabled(patch.context.name)) {
+        if (!isContextEnabled(patch.context.name)) {
             continue;
         }
 
