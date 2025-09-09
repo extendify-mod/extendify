@@ -9,7 +9,7 @@ if (!(await exists("dist"))) {
     throw new Error("Extendify has not been built yet");
 }
 
-const appsPath = getAppsPath();
+const appsPath = await getAppsPath();
 const apps = await readdir(appsPath);
 
 // Using xpui folder instead of archive (Likely from Spicetify installation)

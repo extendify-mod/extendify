@@ -1,6 +1,7 @@
+import type { Plugin } from "@api/context/plugin";
+import { isPluginEnabled } from "@api/context/plugin/settings";
+import { contexts, plugins } from "@api/registry";
 import { Logger, createLogger } from "@shared/logger";
-
-const contexts: Set<string> = new Set();
 
 export interface Context {
     /**
@@ -31,4 +32,23 @@ export function registerContext(context: Context): {
             color: context.loggerColor
         })
     };
+}
+
+/**
+ * @param context can either be a context's or plugin's name, a plain context, or a plugin.
+ * @returns a boolean indicating whether the passed context is considered enabled.
+ *          This is always `true` for plain contexts, and depends on the user's settings for plugins.
+ */
+export function isContextEnabled(context: Context | Plugin | string): boolean {
+    if (typeof context === "string") {
+        const entry = plugins.values().find((v) => v.name === context);
+        // If there is no entry, it's probably a plain context, which means it's always enabled
+        return entry ? isContextEnabled(entry) : true;
+    }
+
+    if ("description" in context) {
+        return isPluginEnabled(context);
+    }
+
+    return false;
 }
