@@ -8,7 +8,7 @@ import path from "path";
 
 await killSpotify();
 
-const root = getSpotifyPath();
+const root = await getSpotifyPath();
 
 switch (process.platform) {
     case "win32":
