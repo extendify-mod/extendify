@@ -1,1 +1,1 @@
-import "@components/settings/plugins/optionTypes/optionType.css";
+import "./optionType.css";

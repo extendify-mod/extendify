@@ -29,7 +29,7 @@ await writeFile(
         useShortDoctype: true
     })
 );
-console.log(`Wrote & minified index.html (${getTimeDifference(minifyStart)} ms)`);
+console.log(`Minified & wrote index.html (${getTimeDifference(minifyStart)} ms)`);
 
 const bundleStart = performance.now();
 const bundle = await rolldown({

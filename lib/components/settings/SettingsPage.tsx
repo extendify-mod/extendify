@@ -1,4 +1,4 @@
-import "@components/settings/settingsPage.css";
+import "./settingsPage.css";
 
 import { useRef, useState } from "@api/react";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
