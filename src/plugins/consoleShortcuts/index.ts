@@ -1,4 +1,5 @@
 import { registerPlugin } from "@api/context/plugin";
+import { pluginOptions, settingsValues } from "@api/context/plugin/settings";
 import { platform, resolveApi } from "@api/platform";
 import { wreq } from "@webpack";
 import { exportFilters, findModule, findModuleExport } from "@webpack/module";
@@ -19,8 +20,11 @@ const { logger } = registerPlugin({
             exportFilters: {
                 get: () => exportFilters
             },
-            exportedComponents: {
-                async get() {}
+            pluginOptions: {
+                get: () => pluginOptions
+            },
+            settingsValues: {
+                get: () => settingsValues
             }
         });
 
