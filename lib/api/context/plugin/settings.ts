@@ -1,5 +1,7 @@
 import type { Plugin } from "@api/context/plugin";
+import { pluginOptions, plugins, settingsValues } from "@api/registry";
 import { CONFIG_KEY } from "@shared/constants";
+import { createLogger } from "@shared/logger";
 
 export type PluginOptionType = "string" | "number" | "boolean" | "select" | "slider";
 
@@ -10,6 +12,7 @@ export interface PluginOption<T extends PluginOptionType, R = any> {
     restartNeeded?: boolean;
     hidden?: boolean;
     onChange?(newValue: R): void;
+    isValid?(value: R): boolean;
 }
 
 export interface SelectPluginOption extends PluginOption<"select", string> {
@@ -35,21 +38,57 @@ export type AnyPluginOption =
 export type PluginOptions = Record<string, AnyPluginOption>;
 export type PluginSettings = Record<string, any> & { enabled: boolean };
 
-export const pluginOptions: Map<string, PluginOptions> = new Map();
-export const settingsValues: Map<string, PluginSettings> = loadSettings();
+const logger = createLogger({ name: "Settings" });
+
+function createDefaultMap(): Map<string, PluginSettings> {
+    const map = new Map<string, PluginSettings>();
+
+    for (const plugin of plugins) {
+        map.set(
+            plugin.name,
+            createSettingsProxy(plugin.name, {
+                enabled: isPluginEnabled(plugin)
+            })
+        );
+    }
+
+    return map;
+}
 
 function loadSettings(): Map<string, PluginSettings> {
     const settings = localStorage.getItem(`${CONFIG_KEY}.plugins`);
     if (!settings) {
-        return new Map();
+        return createDefaultMap();
     }
 
     const parsed = JSON.parse(settings);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-        return new Map();
+        return createDefaultMap();
     }
 
-    return new Map(Object.entries(parsed));
+    const savedMap = new Map(
+        Object.entries(parsed).map(([plugin, saved]) => [
+            plugin,
+            createSettingsProxy(plugin, saved as PluginSettings)
+        ])
+    );
+    const defaultMap = createDefaultMap();
+
+    for (const [plugin, settings] of defaultMap) {
+        if (savedMap.has(plugin)) {
+            continue;
+        }
+
+        savedMap.set(plugin, settings);
+    }
+
+    return savedMap;
+}
+
+function initializeSettings() {
+    for (const [key, value] of loadSettings()) {
+        settingsValues.set(key, value);
+    }
 }
 
 function saveSettings() {
@@ -64,9 +103,6 @@ function saveSettings() {
 
 function createSettingsProxy(plugin: string, settings: PluginSettings): PluginSettings {
     const options = pluginOptions.get(plugin);
-    if (!options) {
-        throw new Error(`Tried to create proxy for non-existent plugin ${plugin}`);
-    }
 
     function getOptionOrThrow(key: string) {
         const option = options?.[key];
@@ -89,6 +125,8 @@ function createSettingsProxy(plugin: string, settings: PluginSettings): PluginSe
         },
         set(target, key: string, value) {
             if (key === "enabled") {
+                logger.debug(`${value ? "Enabled" : "Disabled"} plugin ${plugin}`);
+
                 target.enabled = value;
                 saveSettings();
 
@@ -96,6 +134,8 @@ function createSettingsProxy(plugin: string, settings: PluginSettings): PluginSe
             }
 
             const option = getOptionOrThrow(key);
+
+            logger.debug(`Set ${key} to ${value} for plugin ${plugin}`);
 
             target[key] = value;
             saveSettings();
@@ -114,6 +154,8 @@ export function registerPluginOptions<
         [K in keyof T]: T[K]["default"];
     }
 >(plugin: Plugin, options: T): R {
+    initializeSettings();
+
     if (pluginOptions.has(plugin.name)) {
         throw new Error(`Plugin ${plugin.name} tried to register options twice`);
     }
@@ -126,7 +168,9 @@ export function registerPluginOptions<
 
     let state = settingsValues.get(plugin.name);
     if (!state) {
-        state = createSettingsProxy(plugin.name, { enabled: plugin.enabledByDefault ?? false });
+        state = createSettingsProxy(plugin.name, {
+            enabled: isPluginEnabled(plugin)
+        });
         settingsValues.set(plugin.name, state);
     }
 
@@ -140,4 +184,30 @@ export function isPluginEnabled(plugin: Plugin): boolean {
         plugin.enabledByDefault ??
         false
     );
+}
+
+export function setPluginEnabled(plugin: Plugin, value: boolean = true) {
+    initializeSettings();
+
+    const settings = settingsValues.get(plugin.name);
+
+    if (!settings) {
+        throw new Error(`Tried to enable non-existent plugin ${plugin.name}`);
+    }
+
+    if (value && !plugin.started) {
+        plugin.start?.();
+        plugin.started = true;
+    }
+
+    if (!value && plugin.started) {
+        plugin.stop?.();
+        plugin.started = false;
+    }
+
+    settings.enabled = value;
+}
+
+export function pluginHasOptions(plugin: Plugin): boolean {
+    return pluginOptions.has(plugin.name);
 }

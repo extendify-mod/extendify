@@ -1,7 +1,13 @@
 import type { pluginOptions, settingsValues } from "@api/context/plugin/settings";
 import type { platform, resolveApi } from "@api/platform";
 import type { wreq } from "@webpack";
-import type { exportFilters, findModule, findModuleExport } from "@webpack/module";
+import type {
+    exportFilters,
+    findAllModuleExports,
+    findModule,
+    findModuleComponent,
+    findModuleExport
+} from "@webpack/module";
 
 declare global {
     interface Window {
@@ -10,6 +16,8 @@ declare global {
 
         exportFilters: typeof exportFilters;
         findModuleExport: typeof findModuleExport;
+        findAllModuleExports: typeof findAllModuleExports;
+        findModuleComponent: typeof findModuleComponent;
         findModule: typeof findModule;
         getExportedComponents: () => Promise<Record<string, any>>;
 
