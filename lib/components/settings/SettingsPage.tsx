@@ -1,9 +1,15 @@
 import "./settingsPage.css";
 
 import { useRef, useState } from "@api/react";
+import DebugPage from "@components/settings/DebugPage";
+import PluginsSection from "@components/settings/plugins/PluginsSection";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
 
 import type { ReactElement, RefObject } from "react";
+
+export interface SettingsSectionProps {
+    searchQuery?: string;
+}
 
 function SettingsHeaderChip(props: { label: string; selected: boolean; onClick: () => void }) {
     return (
@@ -25,8 +31,9 @@ export function ExtendifyPage() {
     const outerRef: RefObject<any> = useRef(null);
 
     const pages: Record<string, ReactElement> = {
-        Plugins: <></>,
-        Experiments: <></>
+        Plugins: <PluginsSection searchQuery={searchQuery} />,
+        Experiments: <></>,
+        Debug: <DebugPage />
     };
     const [activePage, setActivePage] = useState(Object.keys(pages)[0]);
 

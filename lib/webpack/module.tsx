@@ -162,6 +162,39 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
     return createPromise();
 }
 
+export function findAllModuleExports(filter: ExportFilter): any[] {
+    const results: any[] = [];
+
+    if (!wreq?.c) {
+        return results;
+    }
+
+    for (const module of Object.values(wreq.c)) {
+        if (!module?.loaded || !module.exports) {
+            continue;
+        }
+
+        if (checkExport(module.exports, filter)) {
+            results.push(module.exports);
+            continue;
+        }
+
+        if (typeof module.exports !== "object") {
+            continue;
+        }
+
+        for (const child of Object.values(module.exports)) {
+            if (!checkExport(child, filter)) {
+                continue;
+            }
+
+            results.push(child);
+        }
+    }
+
+    return results;
+}
+
 export async function findModule<T = Record<string, any>>(...props: string[]): Promise<T> {
     function createPromise(): Promise<T> {
         return new Promise((resolve) => {
@@ -194,7 +227,7 @@ export async function findModule<T = Record<string, any>>(...props: string[]): P
     return createPromise();
 }
 
-type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
+export type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
 
 export function findModuleComponent<T extends object = any>(
     filter: ExportFilter

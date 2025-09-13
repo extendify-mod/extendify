@@ -1,8 +1,14 @@
 import { registerPlugin } from "@api/context/plugin";
-import { pluginOptions, settingsValues } from "@api/context/plugin/settings";
 import { platform, resolveApi } from "@api/platform";
+import { pluginOptions, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
-import { exportFilters, findModule, findModuleExport } from "@webpack/module";
+import {
+    exportFilters,
+    findAllModuleExports,
+    findModule,
+    findModuleComponent,
+    findModuleExport
+} from "@webpack/module";
 
 const { logger } = registerPlugin({
     name: "ConsoleShortcuts",
@@ -29,6 +35,8 @@ const { logger } = registerPlugin({
         });
 
         window.findModuleExport = findModuleExport;
+        window.findAllModuleExports = findAllModuleExports;
+        window.findModuleComponent = findModuleComponent;
         window.findModule = findModule;
         window.getExportedComponents = async () => {
             const result: Record<string, any> = {};

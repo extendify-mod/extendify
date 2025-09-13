@@ -1,0 +1,25 @@
+.ext-plugin-modal-description {
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+.ext-plugin-modal-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ext-plugin-modal-slider-container {
+    display: flex;
+    width: 50%;
+    height: 28px;
+    margin-top: auto;
+    vertical-align: middle;
+    gap: 4px;
+}
+
+.ext-plugin-modal-slider-container > span {
+    position: relative;
+    bottom: 4px;
+    width: 30px;
+}
