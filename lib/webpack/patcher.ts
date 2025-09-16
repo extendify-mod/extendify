@@ -108,10 +108,6 @@ export function patchModule<T>(module: T, id: string): T {
             continue;
         }
 
-        if (patch.platforms && !patch.platforms.includes(PLATFORM)) {
-            continue;
-        }
-
         // If it's a plain context this will always pass.
         // We do the same check for event listeners, maybe there's a better way?
         if (!isContextEnabled(patch.context.name)) {

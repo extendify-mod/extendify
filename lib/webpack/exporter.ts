@@ -14,9 +14,7 @@ import {
     type Identifier,
     Parser
 } from "acorn";
-// @ts-expect-error
 import classFields from "acorn-class-fields";
-// @ts-expect-error
 import privateMethods from "acorn-private-methods";
 
 const parser: typeof Parser = Parser.extend(classFields, privateMethods);
@@ -92,6 +90,7 @@ function parseScope(code: string, ev: (name: string) => any): any {
     for (let element of (tree.body[0] as BlockStatement).body) {
         if (["FunctionDeclaration", "ClassDeclaration"].includes(element.type)) {
             element = element as FunctionDeclaration | ClassDeclaration;
+
             if (element.id && element.id.name) {
                 addExport(element.id.name);
             }

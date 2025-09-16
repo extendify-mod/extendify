@@ -64,5 +64,5 @@ export function isContextEnabled(context: Context | Plugin | string): boolean {
         return isPluginEnabled(context);
     }
 
-    return false;
+    return true;
 }
