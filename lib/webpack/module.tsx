@@ -1,4 +1,3 @@
-import { useEffect, useState } from "@api/react";
 import { type AnyMatch, srcMatches } from "@shared/match";
 import type { RawModule } from "@shared/types/webpack";
 import { shouldIgnoreValue, wreq } from "@webpack";

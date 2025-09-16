@@ -12,7 +12,10 @@ export let platform: Platform | undefined;
 export let player = resolveApi<PlayerAPI>("PlayerAPI");
 export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
 
-const { context, logger } = registerContext({ name: "Platform" });
+const { context, logger } = registerContext({
+    name: "Platform",
+    platforms: ["desktop"]
+});
 
 registerPatch(context, {
     find: "const{createPlatformDesktop:",

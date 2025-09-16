@@ -2,7 +2,7 @@ import { isContextEnabled } from "@api/context";
 import { executePatch, patches } from "@api/context/patch";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
-import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";
+import type { WebpackModule, WebpackRequire } from "@shared/types/webpack";
 import { shouldIgnoreModule, wreq } from "@webpack";
 
 import { onModuleLoaded } from "./module";
@@ -105,6 +105,10 @@ export function patchModule<T>(module: T, id: string): T {
         const patch = patches[i];
 
         if (!patch || (patch.predicate && !patch.predicate())) {
+            continue;
+        }
+
+        if (patch.platforms && !patch.platforms.includes(PLATFORM)) {
             continue;
         }
 

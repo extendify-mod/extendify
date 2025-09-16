@@ -3,12 +3,16 @@ import { isPluginEnabled } from "@api/context/plugin/settings";
 import { contexts, plugins } from "@api/registry";
 import { Logger, createLogger } from "@shared/logger";
 
+export type TargetPlatform = "desktop" | "webos";
+
 export interface Context {
     /**
      * The display name of the context.
      * Should be PascalCase with no spaces.
      */
     name: string;
+    /** The target platforms */
+    platforms: TargetPlatform[];
     /** The color used by the context's logger */
     loggerColor?: string;
     /** The prefixed used by the context's logger */
@@ -19,11 +23,11 @@ export function registerContext(context: Context): {
     context: Context;
     logger: Logger;
 } {
-    if (contexts.has(context.name)) {
+    if (contexts.values().find((c) => c.name === context.name)) {
         throw new Error(`Context with name ${context.name} already registered`);
     }
 
-    contexts.add(context.name);
+    contexts.add(context);
 
     return {
         context,
@@ -41,9 +45,19 @@ export function registerContext(context: Context): {
  */
 export function isContextEnabled(context: Context | Plugin | string): boolean {
     if (typeof context === "string") {
-        const entry = plugins.values().find((v) => v.name === context);
-        // If there is no entry, it's probably a plain context, which means it's always enabled
-        return entry ? isContextEnabled(entry) : true;
+        const entry =
+            plugins.values().find((p) => p.name === context) ??
+            contexts.values().find((c) => c.name === context);
+
+        if (!entry) {
+            throw new Error(`Couldn't find plugin or context entry ${context}`);
+        }
+
+        return isContextEnabled(entry);
+    }
+
+    if (!context.platforms.includes(PLATFORM)) {
+        return false;
     }
 
     if ("description" in context) {

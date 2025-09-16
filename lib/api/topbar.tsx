@@ -3,7 +3,10 @@ import { exportFunction, registerPatch } from "@api/context/patch";
 
 import type { ComponentType } from "react";
 
-const { context, logger } = registerContext({ name: "Topbar" });
+const { context, logger } = registerContext({
+    name: "Topbar",
+    platforms: ["desktop"]
+});
 
 const topbarElements: Map<string, ComponentType<any>> = new Map();
 

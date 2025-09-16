@@ -7,7 +7,8 @@ const { plugin } = registerPlugin({
     name: "Fixes",
     description: "Provides some fixes for Spotify",
     authors: ["7elia"],
-    enabledByDefault: true
+    enabledByDefault: true,
+    platforms: ["desktop"]
 });
 
 /**

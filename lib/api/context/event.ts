@@ -1,7 +1,10 @@
 import { type Context, isContextEnabled, registerContext } from "@api/context";
 import type { PlayerState, Song } from "@shared/types/spotify/player";
 
-const { logger } = registerContext({ name: "Events" });
+const { logger } = registerContext({
+    name: "Events",
+    platforms: ["desktop", "webos"]
+});
 
 export type EventType =
     | "platformLoaded"

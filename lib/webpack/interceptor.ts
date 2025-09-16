@@ -1,4 +1,3 @@
-import { WEBPACK_CHUNK } from "@shared/constants";
 import { createLogger } from "@shared/logger";
 import type { WebpackRequire } from "@shared/types/webpack";
 import { initializeWebpack, wreq } from "@webpack";

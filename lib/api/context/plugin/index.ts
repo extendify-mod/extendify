@@ -3,7 +3,10 @@ import { registerEventListener } from "@api/context/event";
 import { plugins } from "@api/registry";
 import type { Logger } from "@shared/logger";
 
-const { context, logger: contextLogger } = registerContext({ name: "Plugins" });
+const { context, logger: contextLogger } = registerContext({
+    name: "Plugins",
+    platforms: ["desktop", "webos"]
+});
 
 export type PluginDef = Omit<Plugin, "started">;
 

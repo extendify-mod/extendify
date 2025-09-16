@@ -16,7 +16,10 @@ import privateMethods from "acorn-private-methods";
 
 const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
-const { context } = registerContext({ name: "WebpackExporter" });
+const { context } = registerContext({
+    name: "WebpackExporter",
+    platforms: ["desktop", "webos"]
+});
 
 registerPatch(context, {
     all: true,
