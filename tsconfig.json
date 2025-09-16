@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "lib": ["DOM", "ESNext"],
+        "lib": ["DOM", "ESNext", "ESNext.Iterator"],
         "target": "ESNext",
         "module": "Preserve",
         "moduleDetection": "force",
@@ -36,5 +36,5 @@
             "@webpack/*": ["lib/webpack/*"]
         }
     },
-    "include": ["src/**/*", "lib/**/*", "scripts/**/*", "globals.d.ts"]
+    "include": ["src/**/*", "lib/**/*", "scripts/**/*"]
 }

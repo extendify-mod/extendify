@@ -1,4 +1,3 @@
-import { ENTRYPOINT_SCRIPT, XPUI_SCRIPT } from "@shared/constants";
 import { createLogger } from "@shared/logger";
 
 const logger = createLogger({ name: "WebpackLoader" });
@@ -88,7 +87,7 @@ async function loadEntrypoint() {
      * This may be removed later on.
      */
     let scriptUrl: string = "";
-    for (scriptUrl of [ENTRYPOINT_SCRIPT, XPUI_SCRIPT]) {
+    for (scriptUrl of ENTRYPOINTS) {
         try {
             text = await (await fetch(scriptUrl)).text();
             logger.info(`Found entrypoint at ${scriptUrl}`);

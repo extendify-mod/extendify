@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "bun run build-dev && bun run kill-proc && bun run patch && bun run devtools && bun run start-proc",
         "prod": "bun run build && bun run kill-proc && bun run patch && bun run start-proc",
-        "build": "bun run scripts/build.ts",
+        "build": "bun run scripts/build",
         "build-dev": "bun run scripts/build.ts --dev",
         "patch": "bun run scripts/patch.ts",
         "devtools": "bun run scripts/devtools.ts",
@@ -18,8 +18,6 @@
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
         "@types/bun": "latest",
-        "@types/html-minifier-terser": "^7.0.2",
-        "html-minifier-terser": "^7.2.0",
         "jszip": "^3.10.1",
         "prettier": "^3.6.2",
         "rolldown": "1.0.0-beta.36"

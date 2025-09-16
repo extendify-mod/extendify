@@ -14,7 +14,10 @@ interface Page {
 
 type PageDef = Omit<Page, "context">;
 
-const { context, logger } = registerContext({ name: "Page" });
+const { context, logger } = registerContext({
+    name: "Page",
+    platforms: ["desktop"]
+});
 
 const registeredPages: Page[] = [];
 

@@ -1,3 +1,4 @@
+import type { TargetPlatform } from "@api/context";
 import type { WEBPACK_CHUNK } from "@shared/constants";
 import type { AnyFn } from "@shared/types/patch";
 import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
@@ -8,6 +9,9 @@ declare module "*.css";
 
 declare global {
     export const DEVELOPMENT: boolean;
+    export const PLATFORM: TargetPlatform;
+    export const ENTRYPOINTS: string[];
+    export const WEBPACK_CHUNK: string;
 
     interface Window {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;

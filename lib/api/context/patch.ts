@@ -1,4 +1,4 @@
-import type { Context } from "@api/context";
+import type { Context, TargetPlatform } from "@api/context";
 import { type AnyMatch, type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
 
 export interface PatchConditions {
@@ -27,6 +27,11 @@ export interface Patch extends PatchConditions {
      * patched instead of just the initial module
      */
     all?: boolean;
+    /**
+     * The platforms to which the patch will be applied.
+     * Will always apply if there are no platforms specified.
+     */
+    platforms?: TargetPlatform[];
 }
 
 export type PatchDef = Omit<Patch, "context">;
