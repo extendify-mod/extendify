@@ -102,7 +102,9 @@ async function loadEntrypoint() {
         return;
     }
 
-    const requireName = text.match(/}(__webpack_require__|.{1,3})\.m=__webpack_modules__/)?.[1];
+    const requireName = text.match(
+        /}(__webpack_require__|.{1,3})\.m=(?:__webpack_modules__|.{1,3})/
+    )?.[1];
     if (!requireName) {
         logger.error("Couldn't find require name in entrypoint");
         return;

@@ -13,14 +13,12 @@ export default function ({ searchQuery }: SettingsSectionProps) {
         needRestart.push(plugin);
     }
 
-    const filteredPlugins = plugins
-        .values()
-        .filter(
-            (plugin) =>
-                !searchQuery?.length ||
-                plugin.name.toLowerCase().includes(searchQuery) ||
-                plugin.description.toLowerCase().includes(searchQuery)
-        );
+    const filteredPlugins = Array.from(plugins.values()).filter(
+        (plugin) =>
+            !searchQuery?.length ||
+            plugin.name.toLowerCase().includes(searchQuery) ||
+            plugin.description.toLowerCase().includes(searchQuery)
+    );
 
     return (
         <>
