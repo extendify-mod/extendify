@@ -7,7 +7,7 @@
         "dev": "bun run build-dev && bun run kill-proc && bun run patch && bun run devtools && bun run start-proc",
         "prod": "bun run build && bun run kill-proc && bun run patch && bun run start-proc",
         "build": "bun run scripts/build",
-        "build-dev": "bun run scripts/build.ts --dev",
+        "build-dev": "bun run scripts/build --dev",
         "patch": "bun run scripts/patch.ts",
         "devtools": "bun run scripts/devtools.ts",
         "kill-proc": "bun run scripts/proc/kill.ts",

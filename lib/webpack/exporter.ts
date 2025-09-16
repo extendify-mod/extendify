@@ -1,3 +1,8 @@
+// @ts-nocheck
+/**
+ * We can use nocheck because this doesn't need to target early ES versions,
+ * since it's only available on desktop.
+ */
 import { registerContext } from "@api/context";
 import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
 import { wreq } from "@webpack";
@@ -18,7 +23,7 @@ const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
 const { context } = registerContext({
     name: "WebpackExporter",
-    platforms: ["desktop", "webos"]
+    platforms: ["desktop"]
 });
 
 registerPatch(context, {

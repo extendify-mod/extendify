@@ -1,8 +1,7 @@
 import { getKwarg, hasArg } from "./args";
 
 import { spawn, spawnSync } from "bun";
-import { readdir } from "fs/promises";
-import { access, constants } from "fs/promises";
+import { access, constants, readdir } from "fs/promises";
 import { join } from "path";
 
 const winAppId = "SpotifyAB.SpotifyMusic";

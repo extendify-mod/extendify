@@ -8,7 +8,7 @@ import type { ComponentType } from "react";
 
 export default function () {
     const icons: ComponentType<Icon>[] = [
-        ...new Set(findAllModuleExports(exportFilters.byCode("svgContent:")))
+        ...Array.from(new Set(findAllModuleExports(exportFilters.byCode("svgContent:"))).values())
     ];
 
     return (

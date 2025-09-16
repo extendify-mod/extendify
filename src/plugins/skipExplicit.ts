@@ -5,7 +5,8 @@ import { player } from "@api/platform";
 const { plugin, logger } = registerPlugin({
     name: "SkipExplicit",
     description: "Automatically skip explicit songs",
-    authors: ["7elia"]
+    authors: ["7elia"],
+    platforms: ["desktop", "webos"]
 });
 
 registerEventListener(plugin, "songChanged", (song) => {

@@ -1,35 +1,30 @@
-import type { TargetPlatform } from "@api/context";
-
+import { getKwarg } from "../args";
 import { exists, getTimeDifference } from "../utils";
 import { entrypoints, webpackChunkName } from "./config";
 
-import { mkdir } from "fs/promises";
-import { readdir } from "fs/promises";
-import { copyFile } from "fs/promises";
-import { rm } from "fs/promises";
+import { copyFile, mkdir, readdir, rm } from "fs/promises";
 import { join } from "path";
 import { rolldown } from "rolldown";
 import { importGlobPlugin } from "rolldown/experimental";
-import { getKwarg } from "scripts/args";
+
+export type TargetPlatform = "desktop" | "webos";
 
 const DEVELOPMENT = Bun.argv.includes("--dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
 
 const start = performance.now();
 
-if (!(await exists("dist"))) {
-    await mkdir("dist", { recursive: true });
-    console.log(`Created dist folder (${getTimeDifference(start)} ms)`);
-} else {
+try {
     await rm("dist", { recursive: true, force: true });
-    console.log(`Deleted dist folder (${getTimeDifference(start)} ms)`);
-}
+} catch {}
+await mkdir("dist", { recursive: true });
+console.log(`Created dist folder (${getTimeDifference(start)} ms)`);
 
 const assetsCopyStart = performance.now();
 for (const fileName of await readdir(`src/targets/${PLATFORM}`, { recursive: true })) {
     try {
         await copyFile(join("src/targets", PLATFORM, fileName), join("dist", fileName));
-    } catch {
+    } catch (e) {
         await mkdir(join("dist", fileName), { recursive: true });
     }
 }
@@ -46,9 +41,9 @@ const bundle = await rolldown({
     keepNames: false,
     define: {
         DEVELOPMENT: JSON.stringify(DEVELOPMENT),
-        PLATFORM,
+        PLATFORM: JSON.stringify(PLATFORM),
         ENTRYPOINTS: JSON.stringify(entrypoints[PLATFORM]),
-        WEBPACK_CHUNK: webpackChunkName[PLATFORM]
+        WEBPACK_CHUNK: JSON.stringify(webpackChunkName[PLATFORM])
     },
     plugins: [importGlobPlugin()],
     tsconfig: "tsconfig.json",

@@ -8,7 +8,7 @@ export type PluginOptionType = "string" | "number" | "boolean" | "select" | "sli
 export interface PluginOption<T extends PluginOptionType, R = any> {
     type: T;
     description: string;
-    default?: R;
+    default: R;
     restartNeeded?: boolean;
     hidden?: boolean;
     onChange?(newValue: R): void;
@@ -43,7 +43,7 @@ const logger = createLogger({ name: "Settings" });
 function createDefaultMap(): Map<string, PluginSettings> {
     const map = new Map<string, PluginSettings>();
 
-    for (const plugin of plugins) {
+    for (const plugin of Array.from(plugins.values())) {
         map.set(
             plugin.name,
             createSettingsProxy(plugin.name, {
@@ -74,7 +74,7 @@ function loadSettings(): Map<string, PluginSettings> {
     );
     const defaultMap = createDefaultMap();
 
-    for (const [plugin, settings] of defaultMap) {
+    for (const [plugin, settings] of Array.from(defaultMap.entries())) {
         if (savedMap.has(plugin)) {
             continue;
         }
@@ -86,7 +86,7 @@ function loadSettings(): Map<string, PluginSettings> {
 }
 
 function initializeSettings() {
-    for (const [key, value] of loadSettings()) {
+    for (const [key, value] of Array.from(loadSettings().entries())) {
         settingsValues.set(key, value);
     }
 }
@@ -94,7 +94,7 @@ function initializeSettings() {
 function saveSettings() {
     const plain: Record<string, any> = {};
 
-    for (const [plugin, state] of settingsValues.entries()) {
+    for (const [plugin, state] of Array.from(settingsValues.entries())) {
         plain[plugin] = { ...state };
     }
 
