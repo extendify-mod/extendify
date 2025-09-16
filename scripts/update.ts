@@ -1,8 +1,7 @@
 import { exists, getSpotifyPath, killSpotify } from "./utils";
 
 import { spawnSync } from "bun";
-import { writeFile } from "fs/promises";
-import { rm } from "fs/promises";
+import { rm, writeFile } from "fs/promises";
 import { tmpdir } from "os";
 import path from "path";
 

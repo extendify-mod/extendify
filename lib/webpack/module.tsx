@@ -83,20 +83,23 @@ function checkExport(moduleExport: any, filter: ExportFilter): boolean {
     return filter(moduleExport);
 }
 
+function checkSubscription(
+    subscription: ExportSubscription<unknown> | undefined,
+    moduleExport: any
+): boolean {
+    if (!subscription || !checkExport(moduleExport, subscription.filter)) {
+        return false;
+    }
+
+    subscription.callback(moduleExport);
+    exportSubscriptions.delete(subscription);
+
+    return true;
+}
+
 export function onModuleLoaded(module: RawModule) {
-    for (const subscription of exportSubscriptions) {
-        function checkSubscription(moduleExport: any): boolean {
-            if (!subscription || !checkExport(moduleExport, subscription.filter)) {
-                return false;
-            }
-
-            subscription.callback(moduleExport);
-            exportSubscriptions.delete(subscription);
-
-            return true;
-        }
-
-        if (checkSubscription(module.exports)) {
+    for (const subscription of Array.from(exportSubscriptions.values())) {
+        if (checkSubscription(subscription, module.exports)) {
             continue;
         }
 
@@ -105,11 +108,11 @@ export function onModuleLoaded(module: RawModule) {
         }
 
         for (const child of Object.values(module.exports)) {
-            checkSubscription(child);
+            checkSubscription(subscription, child);
         }
     }
 
-    for (const subscription of moduleSubscriptions) {
+    for (const subscription of Array.from(moduleSubscriptions.values())) {
         if (typeof module.exports !== "object") {
             continue;
         }

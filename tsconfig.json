@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "lib": ["DOM", "ESNext", "ESNext.Iterator"],
-        "target": "ESNext",
-        "module": "Preserve",
+        "target": "es5",
+        "module": "preserve",
         "moduleDetection": "force",
         "jsx": "preserve",
         "allowJs": true,
@@ -36,5 +36,5 @@
             "@webpack/*": ["lib/webpack/*"]
         }
     },
-    "include": ["src/**/*", "lib/**/*", "scripts/**/*"]
+    "include": ["src/**/*", "lib/**/*"]
 }

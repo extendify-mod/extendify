@@ -1,4 +1,4 @@
-import type { TargetPlatform } from "@api/context";
+import type { TargetPlatform } from ".";
 
 export const entrypoints: Record<TargetPlatform, string[]> = {
     desktop: ["xpui-snapshot.js", "xpui.js"],

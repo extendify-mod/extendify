@@ -87,7 +87,7 @@ export async function emitEvent<E extends EventType>(event: E, ...args: EventArg
             continue;
         }
 
-        for (const callback of listeners) {
+        for (const callback of Array.from(listeners.values())) {
             callback(...args);
         }
     }

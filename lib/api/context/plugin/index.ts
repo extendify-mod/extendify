@@ -42,7 +42,7 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
 }
 
 function startPlugins() {
-    for (const plugin of plugins) {
+    for (const plugin of Array.from(plugins.values())) {
         if (!isContextEnabled(plugin) || plugin.started) {
             continue;
         }

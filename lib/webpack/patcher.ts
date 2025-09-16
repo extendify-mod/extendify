@@ -163,7 +163,7 @@ export function patchModule<T>(module: T, id: string): T {
 
                 patchedBy.add(patch.context.name);
 
-                const header = `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}`;
+                const header = `// Webpack Module ${id} - Patched by ${[...Array.from(patchedBy.values())].join(", ")}`;
                 const footer = `//# sourceURL=https://xpui.app.spotify.com/modules/WebpackModule${id}.js`;
                 module = (0, eval)(`${header}\n${newSrc}\n${footer}`);
 
