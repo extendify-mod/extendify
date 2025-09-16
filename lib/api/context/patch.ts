@@ -68,6 +68,10 @@ window.exportedFunctions = {};
  */
 export function registerPatch(owner: Context, ...newPatches: PatchDef[]) {
     for (const patch of newPatches) {
+        if (patch.platforms && !patch.platforms.includes(PLATFORM)) {
+            continue;
+        }
+
         patches.push({ context: owner, ...patch });
     }
 }
