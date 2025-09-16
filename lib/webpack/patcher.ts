@@ -108,6 +108,10 @@ export function patchModule<T>(module: T, id: string): T {
             continue;
         }
 
+        if (patch.platforms && !patch.platforms.includes(PLATFORM)) {
+            continue;
+        }
+
         // If it's a plain context this will always pass.
         // We do the same check for event listeners, maybe there's a better way?
         if (!isContextEnabled(patch.context.name)) {
@@ -127,6 +131,10 @@ export function patchModule<T>(module: T, id: string): T {
             : [patch.replacement];
         for (const replacement of replacements) {
             if (replacement.predicate && !replacement.predicate()) {
+                continue;
+            }
+
+            if (replacement.platforms && !replacement.platforms.includes(PLATFORM)) {
                 continue;
             }
 

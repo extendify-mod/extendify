@@ -53,6 +53,11 @@ export interface PatchReplacement extends PatchConditions {
      * exported to the registry.
      * */
     replace: string | ReplaceFn;
+    /**
+     * The platforms to which the replacement will be applied.
+     * Will always apply if there are no platforms specified.
+     */
+    platforms?: TargetPlatform[];
 }
 
 export type AnyFn = ((...args: any[]) => any) & { name: string };
@@ -68,10 +73,6 @@ window.exportedFunctions = {};
  */
 export function registerPatch(owner: Context, ...newPatches: PatchDef[]) {
     for (const patch of newPatches) {
-        if (patch.platforms && !patch.platforms.includes(PLATFORM)) {
-            continue;
-        }
-
         patches.push({ context: owner, ...patch });
     }
 }

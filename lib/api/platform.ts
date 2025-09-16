@@ -14,15 +14,18 @@ export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
 
 const { context, logger } = registerContext({
     name: "Platform",
-    platforms: ["desktop"]
+    platforms: ["desktop", "webos"]
 });
 
 registerPatch(context, {
     find: "const{createPlatformDesktop:",
-    replacement: {
-        match: /(;const \i=)(await async function\(\){.*?}}\(\))/,
-        replace: "$1$exp.loadPlatform($2)"
-    }
+    replacement: [
+        {
+            match: /(;const \i=)(await async function\(\){.*?}}\(\))/,
+            replace: "$1$exp.loadPlatform($2)",
+            platforms: ["desktop"]
+        }
+    ]
 });
 
 exportFunction(context, function loadPlatform(value: Platform): Platform {
