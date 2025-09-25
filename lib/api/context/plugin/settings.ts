@@ -47,7 +47,7 @@ function createDefaultMap(): Map<string, PluginSettings> {
         map.set(
             plugin.name,
             createSettingsProxy(plugin.name, {
-                enabled: isPluginEnabled(plugin)
+                enabled: plugin.enabledByDefault ?? false
             })
         );
     }
@@ -178,6 +178,8 @@ export function registerPluginOptions<
 }
 
 export function isPluginEnabled(plugin: Plugin): boolean {
+    initializeSettings();
+
     return (
         plugin.required ??
         settingsValues.get(plugin.name)?.enabled ??

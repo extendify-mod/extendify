@@ -13,8 +13,8 @@ const topbarElements: Map<string, ComponentType<any>> = new Map();
 registerPatch(context, {
     find: '"data-testid":"top-bar-back-button"',
     replacement: {
-        match: /(globalNavBarHistoryButtonsContainer\),children:)(\[.*?\])(}\))/,
-        replace: "$1$exp.injectTopbarElements($2)$3"
+        match: /(,children:)(\[\(0,\i\.\i\)\(\i\.\i\,{label:\i\.\i\.get\("navbar.go-back"\),.*?}\)}\)])/,
+        replace: "$1$exp.injectTopbarElements($2)"
     }
 });
 
