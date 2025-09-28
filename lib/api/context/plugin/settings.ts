@@ -58,11 +58,13 @@ function createDefaultMap(): Map<string, PluginSettings> {
 function loadSettings(): Map<string, PluginSettings> {
     const settings = localStorage.getItem(`${CONFIG_KEY}.plugins`);
     if (!settings) {
+        logger.info("Creating plugins config");
         return createDefaultMap();
     }
 
     const parsed = JSON.parse(settings);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        logger.warn("Invalid config format was parsed");
         return createDefaultMap();
     }
 

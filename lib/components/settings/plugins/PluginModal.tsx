@@ -2,9 +2,20 @@ import "./plugin.css";
 import "./pluginModal.css";
 
 import type { Plugin } from "@api/context/plugin";
-import Modal from "@components/modal/Modal";
-import ModalFooter from "@components/modal/ModalFooter";
+import { type PluginOptionType, pluginHasOptions } from "@api/context/plugin/settings";
+import { pluginOptions, settingsValues } from "@api/registry";
+import { Modal, ModalFooter } from "@components/modal";
+import {
+    OptionBoolean,
+    OptionNumber,
+    OptionSelect,
+    OptionSlider,
+    OptionString,
+    type OptionTypeProps
+} from "@components/settings/plugins/optionTypes";
 import { Link, Text, Tooltip } from "@components/spotify";
+
+import type { ComponentType } from "react";
 
 interface Props {
     plugin: Plugin;
@@ -13,7 +24,17 @@ interface Props {
     onRestartNeeded(): void;
 }
 
+const componentMap: Record<PluginOptionType, ComponentType<OptionTypeProps<any>>> = {
+    boolean: OptionBoolean,
+    number: OptionNumber,
+    select: OptionSelect,
+    slider: OptionSlider,
+    string: OptionString
+};
+
 export default function (props: Props) {
+    const options = pluginOptions.get(props.plugin.name);
+
     return (
         <Modal
             id={`modal-${props.plugin.name}`}
@@ -47,7 +68,38 @@ export default function (props: Props) {
             <Text as="span" variant="titleSmall" semanticColor="textBase">
                 Settings
             </Text>
-            <div className="ext-plugin-modal-settings"></div>
+            <div className="ext-plugin-modal-settings">
+                {options ? (
+                    Object.entries(options).map(([key, option]) => {
+                        if (option.hidden) {
+                            return <></>;
+                        }
+
+                        const Component = componentMap[option.type];
+                        return (
+                            <Component
+                                id={key}
+                                key={key}
+                                schema={option}
+                                onChange={(value) => {
+                                    if (!settingsValues || !settingsValues.has(props.plugin.name)) {
+                                        return;
+                                    }
+
+                                    settingsValues.get(props.plugin.name)![key] = value;
+                                }}
+                                value={
+                                    settingsValues.get(props.plugin.name)?.[key] ?? option.default
+                                }
+                            />
+                        );
+                    })
+                ) : (
+                    <Text as="span" variant="bodyMedium" semanticColor="textSubdued">
+                        This plugin has no settings.
+                    </Text>
+                )}
+            </div>
 
             <ModalFooter onConfirm={props.onClose} onCancel={props.onClose} />
         </Modal>
