@@ -1,11 +1,11 @@
 import { isContextEnabled } from "@api/context";
-import { executePatch, patches } from "@api/context/patch";
+import { executePatch } from "@api/context/patch";
+import { patches } from "@api/registry";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
 import type { WebpackModule, WebpackRequire } from "@shared/types/webpack";
 import { shouldIgnoreModule, wreq } from "@webpack";
-
-import { onModuleLoaded } from "./module";
+import { onModuleLoaded } from "@webpack/module";
 
 const logger = createLogger({ name: "WebpackPatcher" });
 

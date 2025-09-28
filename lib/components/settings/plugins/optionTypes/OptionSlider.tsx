@@ -20,7 +20,7 @@ export default function (props: OptionTypeProps<SliderPluginOption>) {
     const [error, setError] = useState<string | undefined>();
 
     function getRealValue(progress: number) {
-        return progress * props.schema.max + props.schema.min;
+        return props.schema.min + (props.schema.max - props.schema.min) * progress;
     }
 
     function onSliderChange(progress: number) {
@@ -38,8 +38,8 @@ export default function (props: OptionTypeProps<SliderPluginOption>) {
     function onChange(value: number) {
         const isValid =
             (props.schema.isValid?.(value) ?? true) &&
-            value < props.schema.max &&
-            value > props.schema.min;
+            value <= props.schema.max &&
+            value >= props.schema.min;
 
         if (!isValid) {
             setError(INVALID_INPUT);

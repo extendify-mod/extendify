@@ -7,10 +7,11 @@ import type { SettingsSectionProps } from "@components/settings/SettingsPage";
 import Plugin from "@components/settings/plugins/Plugin";
 
 export default function ({ searchQuery }: SettingsSectionProps) {
-    const [needRestart, _] = useState<string[]>([]);
+    const [needRestart, setNeedRestart] = useState<string[]>([]);
 
     function onRestartNeeded(plugin: string) {
         needRestart.push(plugin);
+        setNeedRestart(needRestart);
     }
 
     const filteredPlugins = Array.from(plugins.values()).filter(
