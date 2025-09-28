@@ -13,7 +13,7 @@
         "kill-proc": "bun run scripts/proc/kill.ts",
         "start-proc": "bun run scripts/proc/start.ts",
         "update": "bun run kill-proc && bun run scripts/update.ts",
-        "postinstall": "bun2nix -o bun.nix"
+        "postinstall": "bun run scripts/postinstall.ts"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -31,6 +31,7 @@
         "acorn": "^8.15.0",
         "acorn-class-fields": "^1.0.0",
         "acorn-private-methods": "^1.0.0",
+        "classnames": "^2.5.1",
         "diff": "^8.0.2"
     }
 }

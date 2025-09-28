@@ -19,7 +19,7 @@
 
 .ext-modal-content {
     display: flex;
-    gap: 10px;
+    gap: 20px;
     flex-direction: column;
     padding: 10px 24px 24px 24px;
     border-top: 2px solid var(--text-base);

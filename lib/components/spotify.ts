@@ -1,7 +1,6 @@
+import type { Icon } from "@components/icons";
 import { exportFilters } from "@webpack/module";
 import { findModuleComponent } from "@webpack/module";
-
-import type { Icon } from "./icons";
 
 import type {
     ComponentProps,
@@ -56,6 +55,30 @@ export const Toggle = findModuleComponent<ToggleProps>(
         matches: ['type:"checkbox"', "onChange", "condensed"],
         mode: "all"
     })
+);
+
+type SliderProps = Omit<ComponentProps<"input">, "onDragStart" | "onDragEnd" | "value"> & {
+    value?: number;
+    max?: number;
+    step?: number;
+    labelText?: string;
+    /** @default true */
+    isInteractive?: boolean;
+    forceActiveStyles?: boolean;
+    saberConfig?: any;
+    isPlayingStrangerThings?: boolean;
+    isAttackOnTitanEasterEggActive?: boolean;
+    direction?: "horizontal";
+    enableAnimation?: boolean;
+    updateFrequency?: number;
+    offFrequencyUpdate?: unknown;
+    showValueAsTimeOverHandle?: boolean;
+    onDragStart?(progress: number): void;
+    onDragMove?(progress: number): void;
+    onDragEnd?(progress: number): void;
+};
+export const Slider = findModuleComponent<SliderProps>(
+    exportFilters.byEncoreName("progress-bar-saber-overlay")
 );
 
 type EncoreButton = ComponentProps<"button"> &

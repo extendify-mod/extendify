@@ -61,9 +61,13 @@ export const exportFilters = {
         };
     },
     byEncoreName(name: string): ExportFilter {
-        const filter = exportFilters.byCode(
-            new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[},]`)
-        );
+        const filter = exportFilters.byCode({
+            matches: [
+                new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[},]`),
+                new RegExp(String.raw`"data-testid":"${name}"`)
+            ],
+            mode: "any"
+        });
 
         return (moduleExport) => {
             if (moduleExport.displayName === name) {
