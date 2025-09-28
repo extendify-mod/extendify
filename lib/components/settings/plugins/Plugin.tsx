@@ -1,6 +1,7 @@
 import "../settingsPage.css";
 import "./plugin.css";
 
+import { contextHasPatches } from "@api/context/patch";
 import type { Plugin } from "@api/context/plugin";
 import { isPluginEnabled, pluginHasOptions, setPluginEnabled } from "@api/context/plugin/settings";
 import { useState } from "@api/react";
@@ -47,6 +48,10 @@ export default function (props: Props) {
                     onSelected={(value) => {
                         setEnabled(value);
                         setPluginEnabled(props.plugin, value);
+
+                        if (contextHasPatches(props.plugin.name)) {
+                            props.onRestartNeeded?.(props.plugin.name);
+                        }
                     }}
                 />
             </div>

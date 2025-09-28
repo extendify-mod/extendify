@@ -1,5 +1,6 @@
 import type { Context, TargetPlatform } from "@api/context";
-import { type AnyMatch, type Match, type MultiMatch, createComplexRegExp } from "@shared/match";
+import { patches } from "@api/registry";
+import { type AnyMatch, type Match, createComplexRegExp } from "@shared/match";
 
 export interface PatchConditions {
     /**
@@ -62,7 +63,6 @@ export interface PatchReplacement extends PatchConditions {
 
 export type AnyFn = ((...args: any[]) => any) & { name: string };
 
-export const patches: Patch[] = [];
 window.exportedFunctions = {};
 
 /**
@@ -114,4 +114,8 @@ export function executePatch(
     // @ts-ignore
     // There are multiple overloads here that conflict which causes an error when having 'string | ReplaceFn'
     return src.replace(match, replace);
+}
+
+export function contextHasPatches(contextName: string): boolean {
+    return patches.filter((patch) => patch.context.name === contextName).length >= 1;
 }
