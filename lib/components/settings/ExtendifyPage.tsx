@@ -1,9 +1,11 @@
-import "./settingsPage.css";
+import "./extendifyPage.css";
 
 import { useRef, useState } from "@api/react";
-import DebugPage from "@components/settings/DebugPage";
-import PluginsSection from "@components/settings/plugins/PluginsSection";
+import { DebugPage } from "@components/settings";
+import { PluginsPage } from "@components/settings/plugins";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
+
+import { ExperimentsPage } from "./experiments";
 
 import type { ReactElement, RefObject } from "react";
 
@@ -26,15 +28,19 @@ function SettingsHeaderChip(props: { label: string; selected: boolean; onClick: 
     );
 }
 
-export function ExtendifyPage() {
+export default function () {
     const [searchQuery, setSearchQuery] = useState("");
     const outerRef: RefObject<any> = useRef(null);
 
     const pages: Record<string, ReactElement> = {
-        Plugins: <PluginsSection searchQuery={searchQuery} />,
-        Experiments: <></>,
-        Debug: <DebugPage />
+        Plugins: <PluginsPage searchQuery={searchQuery} />,
+        Experiments: <ExperimentsPage searchQuery={searchQuery} />
     };
+
+    if (DEVELOPMENT) {
+        pages["Debug"] = <DebugPage />;
+    }
+
     const [activePage, setActivePage] = useState(Object.keys(pages)[0]);
 
     return (

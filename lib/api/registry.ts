@@ -8,3 +8,4 @@ export const plugins: Set<Plugin> = new Set();
 export const pluginOptions: Map<string, PluginOptions> = new Map();
 export const settingsValues: Map<string, PluginSettings> = new Map();
 export const patches: Patch[] = [];
+export const moduleCache: Function[] = [];

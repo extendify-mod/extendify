@@ -1,4 +1,4 @@
-import "../settingsPage.css";
+import "../extendifyPage.css";
 import "./plugin.css";
 
 import { contextHasPatches } from "@api/context/patch";
@@ -6,9 +6,8 @@ import type { Plugin } from "@api/context/plugin";
 import { isPluginEnabled, pluginHasOptions, setPluginEnabled } from "@api/context/plugin/settings";
 import { useState } from "@api/react";
 import { GearIcon, InfoIcon } from "@components/icons";
+import { PluginModal } from "@components/settings/plugins";
 import { TertiaryButton, Text, Toggle } from "@components/spotify";
-
-import PluginModal from "./PluginModal";
 
 interface Props {
     plugin: Plugin;

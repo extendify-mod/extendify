@@ -8,15 +8,19 @@ import { Slider } from "@components/spotify";
 import { INVALID_INPUT } from "@shared/constants";
 
 export default function (props: OptionTypeProps<SliderPluginOption>) {
-    function getDefaultValue(): number {
+    function getInitialValue(): number {
         if (!props.value) {
-            return (props.schema.default - props.schema.min) / props.schema.max;
+            return (
+                (props.schema.default - props.schema.min) / (props.schema.max - props.schema.min)
+            );
         }
 
-        return props.value > 1 ? (props.value - props.schema.min) / props.schema.max : props.value;
+        return props.value > 1
+            ? (props.value - props.schema.min) / (props.schema.max - props.schema.min)
+            : props.value;
     }
 
-    const [state, setState] = useState(getDefaultValue());
+    const [state, setState] = useState(getInitialValue());
     const [error, setError] = useState<string | undefined>();
 
     function getRealValue(progress: number) {

@@ -14,3 +14,4 @@ export const InfoIcon = findIcon("M8 14.5a6.5");
 export const EditIcon = findIcon("M11.838.714a2.438");
 export const CloseIcon = findIcon("M2.47 2.47a");
 export const GearIcon = findIcon("m15.51 7.484");
+export const GarbageIcon = findIcon("M5.25 3v-");

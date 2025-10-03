@@ -1,3 +1,4 @@
+import type { TargetPlatform } from "../../lib/shared/types";
 import { getKwarg } from "../args";
 import { exists, getTimeDifference } from "../utils";
 import { entrypoints, webpackChunkName } from "./config";
@@ -6,8 +7,6 @@ import { copyFile, mkdir, readdir, rm } from "fs/promises";
 import { join } from "path";
 import { rolldown } from "rolldown";
 import { importGlobPlugin } from "rolldown/experimental";
-
-export type TargetPlatform = "desktop" | "webos";
 
 const DEVELOPMENT = Bun.argv.includes("--dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";

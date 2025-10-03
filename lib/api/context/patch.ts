@@ -1,6 +1,7 @@
-import type { Context, TargetPlatform } from "@api/context";
+import type { Context } from "@api/context";
 import { patches } from "@api/registry";
 import { type AnyMatch, type Match, createComplexRegExp } from "@shared/match";
+import type { TargetPlatform } from "@shared/types";
 
 export interface PatchConditions {
     /**

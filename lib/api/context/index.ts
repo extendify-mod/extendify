@@ -2,8 +2,7 @@ import type { Plugin } from "@api/context/plugin";
 import { isPluginEnabled } from "@api/context/plugin/settings";
 import { contexts, plugins } from "@api/registry";
 import { Logger, createLogger } from "@shared/logger";
-
-export type TargetPlatform = "desktop" | "webos";
+import type { TargetPlatform } from "@shared/types";
 
 export interface Context {
     /**
