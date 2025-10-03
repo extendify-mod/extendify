@@ -2,7 +2,7 @@ export interface Experiment<T, S extends ExperimentSpec<T>> {
     name: string;
     description: string;
     source: string;
-    localValue: T;
+    localValue?: T;
     remoteValue: T;
     spec: S;
 }
