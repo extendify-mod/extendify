@@ -1,0 +1,18 @@
+.ext-dbg-icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ext-dbg-icon-container {
+    background-color: var(--background-tinted-base);
+    border-radius: var(--encore-corner-radius-larger-2);
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease;
+    padding: 8px;
+}
+
+.ext-dbg-icon-container:hover {
+    background-color: hsla(0, 0%, 100%, 0.2);
+}

@@ -1,36 +1,54 @@
-import { Platform, WebpackInstance } from "@webpack/types";
-import { SettingsType } from "@api/settings";
+import type { TargetPlatform } from "@api/context";
+import type { AnyFn } from "@api/context/patch";
+import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
-type Theme = {
-    name: string;
-    author: string;
-    description: string;
-    source: string;
-    fileName: string;
-    version: string;
-}
+import type { createElement } from "react";
 
-type ExtendifyNative = {
-    themes: {
-        uploadTheme(fileName: string, fileData: string): void;
-        deleteTheme(fileName: string): void;
-        getTheme(fileName: string): string | undefined;
-        getThemesDir(): string;
-        getThemes(): Theme[];
-    };
-    settings: {
-        get(): SettingsType;
-        set(settings: SettingsType, path: string): void;
-        getSettingsDir(): string;
-    };
-}
+declare module "*.css";
 
 declare global {
-    export var IS_DEV: boolean;
-    export var Extendify: typeof import("./Extendify");
+    /** Whether Extendify is in debug mode */
+    export const DEVELOPMENT: boolean;
+    /** The platform for which Extendify is being compiled */
+    export const PLATFORM: TargetPlatform;
+    /** The urls of the possible entrypoint bundles */
+    export const ENTRYPOINTS: string[];
+    /** The name of the webpack chunk in the global window object */
+    export const WEBPACK_CHUNK: string;
+    /** Whether @webpack/loader should be used to load the webpack entrypoint */
+    export const USE_WEBPACK_LOADER: boolean;
 
     interface Window {
-        EXTENDIFY_NATIVE_AVAILABLE: boolean = false;
-        ExtendifyNative: ExtendifyNative;
+        [WEBPACK_CHUNK]?: WebpackChunkGlobal;
+
+        ExtendifyFragment: Symbol;
+        ExtendifyCreateElement: ((...args: unknown[]) => void) | typeof createElement;
+
+        exportedFunctions: {
+            [context: string]: {
+                [name: string]: AnyFn;
+            };
+        };
+    }
+
+    type ImportMetaGlobPattern = string | string[];
+
+    interface ImportMeta {
+        glob<T = any>(
+            pattern: ImportMetaGlobPattern,
+            options?: ImportMetaGlobOptions
+        ): Record<string, () => Promise<T>>;
+        glob<T = any>(
+            pattern: ImportMetaGlobPattern,
+            options: Extract<ImportMetaGlobOptions, { eager: true }>
+        ): Record<string, T>;
+    }
+
+    interface ImportMetaGlobOptions {
+        eager?: boolean;
+        import?: string;
+        query?: string | Record<string, string>;
     }
 }
+
+export {};
