@@ -1,6 +1,5 @@
 import type { TargetPlatform } from "@api/context";
-import type { WEBPACK_CHUNK } from "@shared/constants";
-import type { AnyFn } from "@shared/types/patch";
+import type { AnyFn } from "@api/context/patch";
 import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
 import type { createElement } from "react";
@@ -8,10 +7,16 @@ import type { createElement } from "react";
 declare module "*.css";
 
 declare global {
+    /** Whether Extendify is in debug mode */
     export const DEVELOPMENT: boolean;
+    /** The platform for which Extendify is being compiled */
     export const PLATFORM: TargetPlatform;
+    /** The urls of the possible entrypoint bundles */
     export const ENTRYPOINTS: string[];
+    /** The name of the webpack chunk in the global window object */
     export const WEBPACK_CHUNK: string;
+    /** Whether @webpack/loader should be used to load the webpack entrypoint */
+    export const USE_WEBPACK_LOADER: boolean;
 
     interface Window {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
@@ -26,6 +31,8 @@ declare global {
         };
     }
 
+    type ImportMetaGlobPattern = string | string[];
+
     interface ImportMeta {
         glob<T = any>(
             pattern: ImportMetaGlobPattern,
@@ -36,14 +43,12 @@ declare global {
             options: Extract<ImportMetaGlobOptions, { eager: true }>
         ): Record<string, T>;
     }
-}
 
-type ImportMetaGlobPattern = string | string[];
-
-interface ImportMetaGlobOptions {
-    eager?: boolean;
-    import?: string;
-    query?: string | Record<string, string>;
+    interface ImportMetaGlobOptions {
+        eager?: boolean;
+        import?: string;
+        query?: string | Record<string, string>;
+    }
 }
 
 export {};

@@ -1,7 +1,7 @@
 import { registerContext } from "@api/context";
 import { redirectTo, registerPage } from "@api/page";
 import { registerTopbarElement } from "@api/topbar";
-import { ExtendifyPage } from "@components/settings/SettingsPage";
+import { ExtendifyPage } from "@components/settings";
 import { PrimaryButton } from "@components/spotify";
 
 const { context } = registerContext({
@@ -17,5 +17,7 @@ registerTopbarElement(context, () => (
 
 registerPage(context, {
     route: "/extendify",
-    component: () => <ExtendifyPage />
+    component() {
+        return <ExtendifyPage />;
+    }
 });

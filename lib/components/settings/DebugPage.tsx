@@ -1,5 +1,5 @@
 import "./debugPage.css";
-import "./settingsPage.css";
+import "./extendifyPage.css";
 
 import type { Icon } from "@components/icons";
 import { exportFilters, findAllModuleExports } from "@webpack/module";

@@ -1,8 +1,3 @@
-import { useEffect, useState } from "@api/react";
-import { type ExportFilter, findModuleExport } from "@webpack/module";
-
-import type { ComponentType } from "react";
-
 export function createLazy<T>(getter: () => T): T {
     let cache: T | undefined;
 

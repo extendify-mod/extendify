@@ -2,7 +2,7 @@ import "./plugin.css";
 import "./pluginModal.css";
 
 import type { Plugin } from "@api/context/plugin";
-import { type PluginOptionType } from "@api/context/plugin/settings";
+import type { PluginOptionType } from "@api/context/plugin/settings";
 import { pluginOptions, settingsValues } from "@api/registry";
 import { Modal, ModalFooter } from "@components/modal";
 import {

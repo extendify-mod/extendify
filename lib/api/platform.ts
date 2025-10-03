@@ -2,7 +2,7 @@ import { registerContext } from "@api/context";
 import { emitEvent } from "@api/context/event";
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { createLazy } from "@shared/lazy";
-import type { Platform } from "@shared/types/spotify";
+import type { Platform, RemoteConfigDebugAPI } from "@shared/types/spotify";
 import type { PlaybackAPI } from "@shared/types/spotify/playback";
 import type { PlayerAPI, PlayerState, Song } from "@shared/types/spotify/player";
 
@@ -11,6 +11,7 @@ import { diffArrays } from "diff";
 export let platform: Platform | undefined;
 export let player = resolveApi<PlayerAPI>("PlayerAPI");
 export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
+export let remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
 
 const { context, logger } = registerContext({
     name: "Platform",
