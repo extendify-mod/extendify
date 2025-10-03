@@ -1,0 +1,45 @@
+.ext-plugin-header {
+    display: flex;
+    width: 100%;
+    height: 2rem;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5em;
+}
+
+.ext-plugin-header-name {
+    width: 100%;
+}
+
+.ext-plugin-header-icon {
+    font-size: 10rem;
+}
+
+.ext-plugin-description {
+    height: 46px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.ext-plugin-authors {
+    display: flex;
+}
+
+.ext-plugin-author-pfp {
+    border-radius: 100%;
+    width: 48px;
+    height: 48px;
+}
+
+.ext-restart-container {
+    gap: 16px;
+}
+
+.ext-restart-button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}

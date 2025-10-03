@@ -1,111 +1,64 @@
-# Extendify (WIP)
+# Extendify
 
-Enhance your Spotify experience with custom plugins.
-
-The best [Spicetify](https://spicetify.app) alternative in [a familiar way](https://vencord.dev).
+Enhance your Spotify experience with custom plugins!
 
 Join the official Extendify [Discord server](https://discord.gg/eWD5BahyBm)!
 
-# Project Status
-
-For this project to continue, the native part of Extendify needs to be completed.
-This is being developed by [1 person](https://github.com/sadan4) and will therefore take a while.
-The native part of Extendify will allow us to hook into Spotify's executable which will open up many possibilities
-for plugins regarding playback and other things that are not controlled by the frontend.
-An example of this is changing the playback speed. We are currently not able to do this because audio is played from the application process.
-
-Right now on the frontend side of things we need to implement trivial things
-like being able to add options to context menus among other things, which will open a lot more doors for new plugins.
-
-The TL;DR is that we're working on it. You can join the [Discord server](https://discord.gg/eWD5BahyBm) to keep up with progress if you want to.
+Extendify is not affiliated with Spotify.
 
 # Inspirations
 
 This project was largely inspired by [Vencord](https://vencord.dev).
-A large part of this codebase is just a modified version of Vencord.
-I've added a banner crediting the original source for every file where this is the case.
+
+I've tried to make it so the systems used in Extendify write similar to Vencord's systems,
+so that they are easy to understand and make plugins if you have previous Vencord experience.
 
 I also took inspiration from [Spicetify](https://spicetify.app). I just thought that there was a better way to do things.
 
-# Running
+# Installing
 
-If you're on Windows, Extendify requires installing Spotify from the installer. (**NOT THE MICROSOFT STORE!**)
+Currently, Extendify requires you to download Spotify from the official installer. Not from the Microsoft Store.
+If you have a Microsoft Store installation, uninstall it before proceeding.
 
-If you already have Spotify installed through this method, your install is probably not up to date, even if you're technically on the latest version.
-Read the [Manual Updating](#manual-updating) section to learn how to update properly.
-
-Currently the [`applyPatch.mjs`](/scripts/patch/applyPatch.mjs) script supports Windows, Linux and MacOS (tested on Win11, Arch and an arm Mac Mini).
-
-One thing is that for loading the entrypoint we reference [hardcoded variables](/src/webpack/loader.ts). Linux versions will always be behind MacOS and Windows, so if these change between versions it won't work on Linux until it's caught up. You can change these to test or make a fix for this but I don't have access to testing that stuff right now so I will leave it to someone else.
-
-## Manual Updating
-
-The idea of manual updating is that you delete the `.spa` files in the `Apps` folder of the Spotify install, and the Spotify executable, and then re-run the installer.
-This solves our problem of out of date archives 99.9% of the time.
-
-We have a script for this which you can run:
+First, we need to update our Spotify installation.
+You'll need to do this any time your Spotify installation gets updated or breaks.
+The latter just happens randomly if you restart the app too many times in a row.
+If you're on Windows, run the following command:
 
 ```bash
-npm run update
+$ bun run update
 ```
 
-This script currently only supports Windows (tested on Win11).
-For more info on how to run scripts, read the [Scripts](#scripts) section.
+If you're on any other operating system, you will need to follow the instructions in [the update script](./scripts/update.ts).
+(If you have time you can also make a PR implementing it for your OS).
 
-If you're not using Windows, or you want to do it manually, do the following
+Then, to install Extendify to your Spotify installation, run the following command:
 
-- Delete the `xpui.spa` and `_xpui.spa` files from the `Spotify/Apps` directory,
-- Delete the Spotify executable (`Spotify.exe` on Windows) file from the `Spotify` folder,
-- Get the latest installer for your OS and architecture from [here](https://loadspot.pages.dev/),
-- Run the installer.
+```bash
+$ bun run prod
+```
 
-## Scripts:
+Or, if you want to access development features, run the following command:
 
-- `npm run dev`: Build, enable devtools, patch and run Spotify.
-- `npm run build`: Build Extendify.
-- `npm run devtools`: Enable devtools for Spotify.
-- `npm run patch`: Patch Spotify.
+```bash
+$ bun run dev
+```
 
-## OPTIONAL Flags:
+## Optional Flags
 
-- `--flatpak`: Use this flag when running on Linux with flatpak.
+These scripts assume some filepaths. If you're on Linux these will likely be incorrect.
+To fix this we have the following optional flags.
+
 - `--spotifyPath`: Use this flag to specify the path to Spotify's installation directory. (It should contain an `Apps` folder)
 - `--cachePath`: Use this flag to specify the path to the cache directory. (It should contain an `offline.bnk` file)
 
-Apply flags like this:
+Apply the flags like this:
 
 ```bash
-$ npm [flags] run <script>
-```
-
----
-
-To build, enable devtools and patch Spotify, run:
-
-```bash
-$ npm run dev
-```
-
-To undo the patch, run:
-
-```bash
-$ npm run update
-```
-
-# Running (Linux + flatpak)
-
-```bash
-$ npm --flatpak run dev
-```
-
-To undo the patch, run:
-
-```bash
-$ npm --flatpak run update
+$ bun run <script> [flags]
 ```
 
 # Screenshots
 
-![Plugins page](<assets/Screenshot 2025-02-10 224528.png>)
-
-![Plugin modal](<assets/Screenshot 2025-02-10 224410.png>)
+![Plugins page](<assets/plugins page.png>)
+![Plugin modal](<assets/plugin modal.png>)

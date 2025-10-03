@@ -1,9 +1,8 @@
 # folders
 node_modules/
 dist/
-tsdist/
+userplugins/
 test/
-src/userplugins/
 
-# files
-package-lock.json
+# nix build artifacts
+result/

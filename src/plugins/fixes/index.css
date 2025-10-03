@@ -1,0 +1,4 @@
+/* Adds border radius to the Now Playing panel */
+#Desktop_PanelContainer_Id {
+    border-radius: 8px;
+}
