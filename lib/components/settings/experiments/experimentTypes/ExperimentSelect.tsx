@@ -6,9 +6,7 @@ import type { BooleanExperiment, EnumExperiment } from "@shared/types/spotify/ex
 
 export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExperiment>) {
     const [state, setState] = useState(
-        // prettier-ignore
-        // THIS TYPE CHECKING SUCKS
-        (props.experiment.localValue) ?? props.experiment.spec.defaultValue
+        props.experiment.localValue ?? props.experiment.spec.defaultValue
     );
 
     const options: SelectOption[] =
