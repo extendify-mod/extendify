@@ -1,4 +1,5 @@
 import type { Icon } from "@components/icons";
+import type { ArtistUnion } from "@shared/types/spotify/player";
 import { exportFilters } from "@webpack/module";
 import { findModuleComponent } from "@webpack/module";
 
@@ -190,3 +191,11 @@ export const ModalWrapper = findModuleComponent<
             shouldFocusAfterRender?: boolean;
         }>
 >(exportFilters.byCode("modal?."));
+
+export const ArtistAbout = findModuleComponent<{
+    artistUri: string;
+    artist: ArtistUnion["profile"];
+    stats: ArtistUnion["stats"];
+    visuals: ArtistUnion["visuals"];
+    externalLinks: ArtistUnion["profile"]["externalLinks"];
+}>(exportFilters.byEncoreName("profiler(NPVArtistAboutV2)"));
