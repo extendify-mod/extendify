@@ -6,7 +6,7 @@ import { ButtonPrimary } from "@components/spotify";
 
 const { context } = registerContext({
     name: "Core",
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 registerTopbarElement(context, () => (

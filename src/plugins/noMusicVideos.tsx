@@ -5,7 +5,7 @@ const { plugin } = registerPlugin({
     name: "NoMusicVideos",
     description: "Removes all mentions of music videos",
     authors: ["7elia"],
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 // Remove the "Switch to video" button

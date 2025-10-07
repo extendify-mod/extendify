@@ -6,7 +6,7 @@ const { plugin } = registerPlugin({
     authors: ["7elia"],
     description: "Removes tracking from sharing links",
     enabledByDefault: true,
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 registerPatch(plugin, {

@@ -6,7 +6,7 @@ const { plugin, logger } = registerPlugin({
     name: "SkipExplicit",
     description: "Automatically skip explicit songs",
     authors: ["7elia"],
-    platforms: ["desktop", "webos"]
+    platforms: ["desktop", "webos", "browser"]
 });
 
 registerEventListener(plugin, "songChanged", (song) => {
