@@ -41,7 +41,7 @@ export function registerEventListener<E extends EventType>(
     context: Context,
     event: E,
     callback: EventListener<E>
-): RegisteredListener<E> | undefined {
+): RegisteredListener<E> {
     let contextListeners = registeredListeners[context.name];
 
     if (!contextListeners) {
