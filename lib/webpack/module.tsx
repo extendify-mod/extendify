@@ -168,8 +168,8 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
     return createPromise();
 }
 
-export function findAllModuleExports(filter: ExportFilter): any[] {
-    const results: any[] = [];
+export function findAllModuleExports<T = any>(filter: ExportFilter): T[] {
+    const results: T[] = [];
 
     if (!wreq?.c) {
         return results;
@@ -181,7 +181,7 @@ export function findAllModuleExports(filter: ExportFilter): any[] {
         }
 
         if (checkExport(module.exports, filter)) {
-            results.push(module.exports);
+            results.push(module.exports as T);
             continue;
         }
 
