@@ -1,4 +1,5 @@
 import type { pluginOptions, settingsValues } from "@api/context/plugin/settings";
+import type { executeQuery, findQuery } from "@api/gql";
 import type { platform, resolveApi } from "@api/platform";
 import type { wreq } from "@webpack";
 import type {
@@ -27,6 +28,9 @@ declare global {
 
         pluginOptions: typeof pluginOptions;
         settingsValues: typeof settingsValues;
+
+        findQuery: typeof findQuery;
+        executeQuery: typeof executeQuery;
     }
 }
 
