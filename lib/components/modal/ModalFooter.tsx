@@ -1,6 +1,6 @@
 import "./modal.css";
 
-import { PrimaryButton, SecondaryButton } from "@components/spotify";
+import { ButtonPrimary, ButtonSecondary } from "@components/spotify";
 
 interface Props {
     confirmText?: string;
@@ -12,12 +12,12 @@ interface Props {
 export default function (props: Props) {
     return (
         <div className="ext-modal-footer">
-            <PrimaryButton onClick={() => props.onConfirm?.()}>
+            <ButtonPrimary onClick={() => props.onConfirm?.()}>
                 {props.confirmText ?? "Save & Close"}
-            </PrimaryButton>
-            <SecondaryButton onClick={() => props.onCancel?.()}>
+            </ButtonPrimary>
+            <ButtonSecondary onClick={() => props.onCancel?.()}>
                 {props.cancelText ?? "Cancel"}
-            </SecondaryButton>
+            </ButtonSecondary>
         </div>
     );
 }

@@ -94,13 +94,13 @@ type EncoreButton = ComponentProps<"button"> &
         iconOnly?: ComponentType<Icon>;
         fullWidth?: boolean;
     }>;
-export const PrimaryButton = findModuleComponent<EncoreButton>(
+export const ButtonPrimary = findModuleComponent<EncoreButton>(
     exportFilters.byEncoreName("ButtonPrimary")
 );
-export const SecondaryButton = findModuleComponent<EncoreButton>(
+export const ButtonSecondary = findModuleComponent<EncoreButton>(
     exportFilters.byEncoreName("ButtonSecondary")
 );
-export const TertiaryButton = findModuleComponent<EncoreButton>(
+export const ButtonTertiary = findModuleComponent<EncoreButton>(
     exportFilters.byEncoreName("ButtonTertiary")
 );
 

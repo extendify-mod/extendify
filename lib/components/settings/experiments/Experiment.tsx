@@ -8,7 +8,7 @@ import {
     ExperimentNumber,
     ExperimentSelect
 } from "@components/settings/experiments/experimentTypes";
-import { TertiaryButton, Text, Tooltip } from "@components/spotify";
+import { ButtonTertiary, Text, Tooltip } from "@components/spotify";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
 
 interface ExperimentProps {
@@ -50,7 +50,7 @@ export default function (props: ExperimentProps) {
                 </Text>
                 {changed && (
                     <Tooltip label="Reset to default" placement="top">
-                        <TertiaryButton iconOnly={() => <GarbageIcon />} onClick={resetValue} />
+                        <ButtonTertiary iconOnly={() => <GarbageIcon />} onClick={resetValue} />
                     </Tooltip>
                 )}
             </div>

@@ -2,7 +2,7 @@ import "./modal.css";
 
 import { useEffect } from "@api/react";
 import { CloseIcon } from "@components/icons";
-import { ModalWrapper, TertiaryButton, Text } from "@components/spotify";
+import { ButtonTertiary, ModalWrapper, Text } from "@components/spotify";
 
 import type { PropsWithChildren } from "react";
 
@@ -71,7 +71,7 @@ export default function (props: Props) {
                     <Text as="h1" semanticColor="textBase" variant="titleMedium">
                         {props.title}
                     </Text>
-                    <TertiaryButton
+                    <ButtonTertiary
                         // className="ext-modal-close"
                         aria-label="Close"
                         iconOnly={() => <CloseIcon />}

@@ -2,7 +2,7 @@ import { registerContext } from "@api/context";
 import { redirectTo, registerPage } from "@api/page";
 import { registerTopbarElement } from "@api/topbar";
 import { ExtendifyPage } from "@components/settings";
-import { PrimaryButton } from "@components/spotify";
+import { ButtonPrimary } from "@components/spotify";
 
 const { context } = registerContext({
     name: "Core",
@@ -10,9 +10,9 @@ const { context } = registerContext({
 });
 
 registerTopbarElement(context, () => (
-    <PrimaryButton size="small" onClick={() => redirectTo("/extendify")}>
+    <ButtonPrimary size="small" onClick={() => redirectTo("/extendify")}>
         Extendify
-    </PrimaryButton>
+    </ButtonPrimary>
 ));
 
 registerPage(context, {

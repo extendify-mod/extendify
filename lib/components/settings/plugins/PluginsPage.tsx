@@ -5,7 +5,7 @@ import { useState } from "@api/react";
 import { plugins } from "@api/registry";
 import type { SettingsSectionProps } from "@components/settings";
 import { Plugin } from "@components/settings/plugins";
-import { SecondaryButton, Text } from "@components/spotify";
+import { ButtonSecondary, Text } from "@components/spotify";
 
 export default function ({ searchQuery }: SettingsSectionProps) {
     const [needRestart, setNeedRestart] = useState<string[]>([]);
@@ -35,7 +35,7 @@ export default function ({ searchQuery }: SettingsSectionProps) {
                         </Text>
                         {needRestart.join(", ")}
                         <div className="ext-restart-button-container">
-                            <SecondaryButton>Restart</SecondaryButton>
+                            <ButtonSecondary>Restart</ButtonSecondary>
                         </div>
                     </div>
                 )}
