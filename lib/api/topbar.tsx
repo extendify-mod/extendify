@@ -5,7 +5,7 @@ import type { ComponentType } from "react";
 
 const { context, logger } = registerContext({
     name: "Topbar",
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 const topbarElements: Map<string, ComponentType<any>> = new Map();

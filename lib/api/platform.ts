@@ -15,7 +15,7 @@ export let remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI
 
 const { context, logger } = registerContext({
     name: "Platform",
-    platforms: ["desktop", "webos"]
+    platforms: ["desktop", "webos", "browser"]
 });
 
 registerPatch(context, {

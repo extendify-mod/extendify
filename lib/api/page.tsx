@@ -16,7 +16,7 @@ type PageDef = Omit<Page, "context">;
 
 const { context, logger } = registerContext({
     name: "Page",
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 const registeredPages: Page[] = [];

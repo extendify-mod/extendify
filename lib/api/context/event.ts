@@ -3,7 +3,7 @@ import type { PlayerState, Song } from "@shared/types/spotify/player";
 
 const { logger } = registerContext({
     name: "Events",
-    platforms: ["desktop", "webos"]
+    platforms: ["desktop", "webos", "browser"]
 });
 
 export type EventType =

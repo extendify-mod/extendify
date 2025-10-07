@@ -21,7 +21,7 @@ const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
 const { context } = registerContext({
     name: "WebpackExporter",
-    platforms: ["desktop"]
+    platforms: ["desktop", "browser"]
 });
 
 registerPatch(context, {

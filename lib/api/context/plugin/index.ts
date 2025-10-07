@@ -5,7 +5,7 @@ import type { Logger } from "@shared/logger";
 
 const { context, logger: contextLogger } = registerContext({
     name: "Plugins",
-    platforms: ["desktop", "webos"]
+    platforms: ["desktop", "webos", "browser"]
 });
 
 export type PluginDef = Omit<Plugin, "started">;
