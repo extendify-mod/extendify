@@ -130,6 +130,23 @@ export interface PlayerEvents {
     addListener(event: PlayerEventType, callback: (e: any) => void, options?: any): () => void;
 }
 
+export interface Artist {
+    name: string;
+    type: "artist";
+    uri: string;
+}
+
+// TODO, also TrackUnion
+export interface ArtistUnion {
+    profile: {
+        externalLinks: {
+            items: { name: string; url: string }[];
+        };
+    };
+    stats: {};
+    visuals: {};
+}
+
 export interface Song {
     album: {
         images: {
@@ -140,11 +157,7 @@ export interface Song {
         type: "album";
         uri: string;
     };
-    artists: {
-        name: string;
-        type: "artist";
-        uri: string;
-    }[];
+    artists: Artist[];
     duration: {
         milliseconds: number;
     };
