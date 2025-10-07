@@ -7,7 +7,7 @@ import { isPluginEnabled, pluginHasOptions, setPluginEnabled } from "@api/contex
 import { useState } from "@api/react";
 import { GearIcon, InfoIcon } from "@components/icons";
 import { PluginModal } from "@components/settings/plugins";
-import { TertiaryButton, Text, Toggle } from "@components/spotify";
+import { ButtonTertiary, Text, Toggle } from "@components/spotify";
 
 interface Props {
     plugin: Plugin;
@@ -34,7 +34,7 @@ export default function (props: Props) {
                 >
                     {props.plugin.name}
                 </Text>
-                <TertiaryButton
+                <ButtonTertiary
                     className="ext-plugin-header-icon"
                     aria-label={`Configure ${props.plugin.name}`}
                     iconOnly={() => (pluginHasOptions(props.plugin) ? <GearIcon /> : <InfoIcon />)}
