@@ -72,6 +72,8 @@ export function removeEventListener<E extends EventType>(
     }
 
     registeredListeners[context.name]?.[event.type]?.delete(event.callback);
+
+    logger.debug(`Context ${context.name} removed event listener for ${event.type}`);
 }
 
 export async function emitEvent<E extends EventType>(event: E, ...args: EventArgs[E]) {
