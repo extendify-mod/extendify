@@ -35,7 +35,9 @@ export default function ({ searchQuery }: SettingsSectionProps) {
                         </Text>
                         {needRestart.join(", ")}
                         <div className="ext-restart-button-container">
-                            <ButtonSecondary>Restart</ButtonSecondary>
+                            <ButtonSecondary onClick={() => window.location.reload()}>
+                                Restart
+                            </ButtonSecondary>
                         </div>
                     </div>
                 )}
