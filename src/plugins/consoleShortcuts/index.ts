@@ -1,4 +1,5 @@
 import { registerPlugin } from "@api/context/plugin";
+import { executeQuery, findQuery } from "@api/gql";
 import { platform, resolveApi } from "@api/platform";
 import { pluginOptions, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
@@ -62,6 +63,9 @@ const { logger } = registerPlugin({
             localStorage.setItem("rcLogLevel", level);
             window.location.reload();
         };
+
+        window.findQuery = findQuery;
+        window.executeQuery = executeQuery;
 
         logger.info("Defined shortcuts");
     }
