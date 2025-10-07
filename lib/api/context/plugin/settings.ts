@@ -104,10 +104,8 @@ function saveSettings() {
 }
 
 function createSettingsProxy(plugin: string, settings: PluginSettings): PluginSettings {
-    const options = pluginOptions.get(plugin);
-
     function getOptionOrThrow(key: string) {
-        const option = options?.[key];
+        const option = pluginOptions.get(plugin)?.[key];
 
         if (!option) {
             throw new Error(`Unknown option: ${key}`);
