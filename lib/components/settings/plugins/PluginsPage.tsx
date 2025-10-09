@@ -18,12 +18,14 @@ export default function ({ searchQuery }: SettingsSectionProps) {
         });
     }
 
-    const filteredPlugins = Array.from(plugins.values()).filter(
-        (plugin) =>
-            !searchQuery?.length ||
-            plugin.name.toLowerCase().includes(searchQuery) ||
-            plugin.description.toLowerCase().includes(searchQuery)
-    );
+    const filteredPlugins = Array.from(plugins.values())
+        .filter(
+            (plugin) =>
+                !searchQuery?.length ||
+                plugin.name.toLowerCase().includes(searchQuery) ||
+                plugin.description.toLowerCase().includes(searchQuery)
+        )
+        .filter((plugin) => plugin.platforms.includes(PLATFORM));
 
     return (
         <>
