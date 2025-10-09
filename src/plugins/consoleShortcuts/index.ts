@@ -43,29 +43,12 @@ const { logger } = registerPlugin({
         window.findAllModuleExports = findAllModuleExports;
         window.findModuleComponent = findModuleComponent;
         window.findModule = findModule;
-        window.getExportedComponents = async () => {
-            const result: Record<string, any> = {};
-            const components = (await import("@components/spotify")) as any;
-            for (const component in components) {
-                result[component] = components[component];
-            }
-            return result;
-        };
+        window.getExportedComponents = getExportedComponents;
 
         window.resolveApi = resolveApi;
+        window.findTranslation = findTranslation;
 
-        window.setSpotifyLogLevel = (level: string) => {
-            const acceptedLevels = ["debug", "warn", "info", "error"];
-
-            if (!acceptedLevels.includes(level)) {
-                throw new Error(
-                    `Invalid log level, must be one of the following: ${acceptedLevels.join(", ")}`
-                );
-            }
-
-            localStorage.setItem("rcLogLevel", level);
-            window.location.reload();
-        };
+        window.setSpotifyLogLevel = setSpotifyLogLevel;
 
         window.findQuery = findQuery;
         window.executeQuery = executeQuery;
@@ -73,3 +56,58 @@ const { logger } = registerPlugin({
         logger.info("Defined shortcuts");
     }
 });
+
+export async function getExportedComponents() {
+    const result: Record<string, any> = {};
+
+    const components = (await import("@components/spotify")) as any;
+    for (const component in components) {
+        result[component] = components[component];
+    }
+
+    return result;
+}
+
+export function setSpotifyLogLevel(level: string) {
+    const acceptedLevels = ["debug", "warn", "info", "error"];
+
+    if (!acceptedLevels.includes(level)) {
+        throw new Error(
+            `Invalid log level, must be one of the following: ${acceptedLevels.join(", ")}`
+        );
+    }
+
+    localStorage.setItem("rcLogLevel", level);
+    window.location.reload();
+}
+
+export function findTranslation(
+    value: string,
+    object = platform?.getTranslations()
+): Record<string, any> {
+    if (!object) {
+        return {};
+    }
+
+    const results: Record<string, any> = {};
+
+    for (const key in object) {
+        const translation = object[key];
+
+        if (typeof translation === "string") {
+            if (translation.toLowerCase().includes(value.toLowerCase())) {
+                results[key] = translation;
+            }
+        }
+
+        if (typeof translation === "object") {
+            const scan = findTranslation(value, translation);
+
+            if (Object.keys(scan).length > 0) {
+                results[key] = scan;
+            }
+        }
+    }
+
+    return results;
+}
