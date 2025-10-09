@@ -22,7 +22,7 @@ const { context, logger } = registerContext({
 const registeredPages: Page[] = [];
 
 registerPatch(context, {
-    find: '"data-testid":"top-bar-back-button"',
+    find: "spotify:app:home",
     replacement: [
         {
             match: /(type:"locale",uri:"home"}\);return)(\[\(0,.*?\])(}\)\({isDesktop:)/,
@@ -37,7 +37,7 @@ registerPatch(context, {
 });
 
 registerPatch(context, {
-    find: "React Router",
+    find: "routeContext",
     replacement: {
         /**
          * This patch skips the check that makes sure the type is the actual Route component,
