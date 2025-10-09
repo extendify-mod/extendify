@@ -19,12 +19,11 @@ const { context, logger } = registerContext({
 });
 
 registerPatch(context, {
-    find: "const{createPlatformDesktop:",
+    find: /{createPlatform(?:Desktop|Web):\i}/,
     replacement: [
         {
-            match: /(;const \i=)(await async function\(\){.*?}}\(\))/,
-            replace: "$1$exp.loadPlatform($2)",
-            platforms: ["desktop"]
+            match: /(;const \i=)(await async function\(\){.*?}(?:})?\(\))/,
+            replace: "$1$exp.loadPlatform($2)"
         }
     ]
 });
