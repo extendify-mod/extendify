@@ -1,6 +1,7 @@
+import { moduleCache } from "@api/registry";
 import { type AnyMatch, srcMatches } from "@shared/match";
 import type { RawModule } from "@shared/types/webpack";
-import { shouldIgnoreValue, wreq } from "@webpack";
+import { shouldIgnoreValue } from "@webpack";
 
 import type { ComponentType } from "react";
 
@@ -139,11 +140,7 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
         });
     }
 
-    if (!wreq?.c) {
-        return createPromise();
-    }
-
-    for (const module of Object.values(wreq.c)) {
+    for (const module of Object.values(moduleCache)) {
         if (!module?.loaded || !module.exports) {
             continue;
         }
@@ -171,11 +168,7 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
 export function findAllModuleExports<T = any>(filter: ExportFilter): T[] {
     const results: T[] = [];
 
-    if (!wreq?.c) {
-        return results;
-    }
-
-    for (const module of Object.values(wreq.c)) {
+    for (const module of Object.values(moduleCache)) {
         if (!module?.loaded || !module.exports) {
             continue;
         }
@@ -211,11 +204,7 @@ export async function findModule<T = Record<string, any>>(...props: string[]): P
         });
     }
 
-    if (!wreq?.c) {
-        return createPromise();
-    }
-
-    for (const module of Object.values(wreq.c)) {
+    for (const module of Object.values(moduleCache)) {
         if (!module?.loaded || !module.exports) {
             continue;
         }

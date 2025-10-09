@@ -4,7 +4,7 @@ import { patches } from "@api/registry";
 import { createLogger } from "@shared/logger";
 import { srcMatches } from "@shared/match";
 import type { WebpackModule, WebpackRequire } from "@shared/types/webpack";
-import { shouldIgnoreModule, wreq } from "@webpack";
+import { wreq } from "@webpack";
 import { onModuleLoaded } from "@webpack/module";
 
 const logger = createLogger({ name: "WebpackPatcher" });
@@ -70,16 +70,6 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
 
             exports = module.exports;
             if (!exports) {
-                return;
-            }
-
-            if (require.c && shouldIgnoreModule(exports)) {
-                Object.defineProperty(require.c, id, {
-                    value: require.c[id],
-                    enumerable: false,
-                    configurable: true,
-                    writable: true
-                });
                 return;
             }
 
