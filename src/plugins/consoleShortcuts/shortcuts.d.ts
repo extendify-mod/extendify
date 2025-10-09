@@ -11,6 +11,8 @@ import type {
     findModuleExport
 } from "@webpack/module";
 
+import type { findTranslation, getExportedComponents, setSpotifyLogLevel } from ".";
+
 declare global {
     interface Window {
         wreq: typeof wreq;
@@ -21,12 +23,13 @@ declare global {
         findAllModuleExports: typeof findAllModuleExports;
         findModuleComponent: typeof findModuleComponent;
         findModule: typeof findModule;
-        getExportedComponents: () => Promise<Record<string, any>>;
+        getExportedComponents: typeof getExportedComponents;
         moduleCache: typeof moduleCache;
 
         resolveApi: typeof resolveApi;
+        findTranslation: typeof findTranslation;
 
-        setSpotifyLogLevel: (level: string) => void;
+        setSpotifyLogLevel: typeof setSpotifyLogLevel;
 
         pluginOptions: typeof pluginOptions;
         settingsValues: typeof settingsValues;
