@@ -11,11 +11,21 @@ const { context, logger } = registerContext({
 const topbarElements: Map<string, ComponentType<any>> = new Map();
 
 registerPatch(context, {
-    find: '"data-testid":"top-bar-back-button"',
+    find: "isGlobalNavDraggable",
     replacement: {
         match: /(,children:)(\[\(0,\i\.\i\)\(\i\.\i\,{label:\i\.\i\.get\("navbar.go-back"\),.*?}\)}\)])/,
         replace: "$1$exp.injectTopbarElements($2)"
     }
+});
+
+registerPatch(context, {
+    find: "isGlobalNavDraggable",
+    replacement: {
+        // Enables the desktop topbar for web versions
+        match: /({isWeb:\i,isPWA:\i,isDesktop:\i})=.*?\(\)/,
+        replace: "$1={isWeb:false,isPWA:false,isDesktop:true}"
+    },
+    platforms: ["browser"]
 });
 
 exportFunction(context, function injectTopbarElements(children: any[]) {
