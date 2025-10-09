@@ -1,7 +1,7 @@
 import { registerContext } from "@api/context";
 import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
 import { moduleCache } from "@api/registry";
-import type { RawModule, WebpackRequire } from "@shared/types/webpack";
+import type { ModuleEval, RawModule, WebpackRequire } from "@shared/types/webpack";
 
 import {
     type BlockStatement,
@@ -10,8 +10,6 @@ import {
     type Identifier
 } from "acorn";
 import { parse } from "acorn-loose";
-
-type EvalFunc = (name: string) => any;
 
 const { context, logger } = registerContext({
     name: "WebpackExporter",
@@ -65,7 +63,7 @@ exportFunction(
         exports: typeof module.exports,
         require: WebpackRequire,
         code: string,
-        ev: EvalFunc
+        ev: ModuleEval
     ) {
         if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
             return;
@@ -87,7 +85,7 @@ exportFunction(
     }
 );
 
-export function parseScope(code: string, ev: EvalFunc): Record<string, any> {
+export function parseScope(code: string, ev: ModuleEval): Record<string, any> {
     const tree = parse(code, {
         ecmaVersion: "latest",
         sourceType: "script"
