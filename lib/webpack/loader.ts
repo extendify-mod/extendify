@@ -19,7 +19,7 @@ function exposePrivateModule(content: string, requireName: string) {
             (_, prefix, name) => {
                 exportsName = name;
                 logger.info(`Found exports name ${name}`);
-                return `${prefix}${requireName}.iife=(${requireName})=>`;
+                return `${prefix}${requireName}.iife=(extendifyModule,extendifyExports,${requireName})=>`;
             }
         )
         .replace(

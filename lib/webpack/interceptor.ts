@@ -1,5 +1,5 @@
 import { createLogger } from "@shared/logger";
-import type { WebpackRequire } from "@shared/types/webpack";
+import type { RawModule, WebpackRequire } from "@shared/types/webpack";
 import { initializeWebpack, wreq } from "@webpack";
 import { patchFactories, patchModule, patchPush } from "@webpack/patcher";
 
@@ -50,10 +50,14 @@ Object.defineProperty(Function.prototype, "m", {
                  * with our plugin patches and then initialize it ourselves.
                  */
 
+                let src = iife.toString();
+                src = src.substring(src.indexOf("{"));
+                const fakeModule: RawModule = { id: "Private", loaded: true, exports: {} };
                 const original = iife;
-                iife = patchModule(iife, "Private");
+
+                iife = patchModule(iife, String(fakeModule.id));
                 iife.$$ = original;
-                iife(this);
+                iife(fakeModule, {}, this, src);
 
                 Object.defineProperty(this, "iife", {
                     value: iife,
