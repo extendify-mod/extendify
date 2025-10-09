@@ -1,4 +1,4 @@
-import { registerPatch } from "@api/context/patch";
+import { exportFunction, registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
 
 const { plugin } = registerPlugin({
@@ -10,9 +10,15 @@ const { plugin } = registerPlugin({
 });
 
 registerPatch(plugin, {
-    find: '"copy_link"',
+    find: "feedback.link-copied",
     replacement: {
-        match: /\?si=\$.*?`/g,
-        replace: "`"
+        match: /(const{shareUrl:\i,shareId:\i})=(\i)/,
+        replace: "$1={...$2,shareUrl:$exp.removeShareId($2.shareUrl)}"
     }
+});
+
+exportFunction(plugin, function removeShareId(shareUrl: string) {
+    const url = new URL(shareUrl);
+    url.searchParams.delete("si");
+    return url.toString();
 });
