@@ -1,13 +1,7 @@
-// @ts-nocheck
-/**
- * We can use nocheck because this doesn't need to target early ES versions,
- * since it's only available on desktop.
- */
 import { registerContext } from "@api/context";
 import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
 import { moduleCache } from "@api/registry";
-import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";
-import { wreq } from "@webpack";
+import type { RawModule, WebpackRequire } from "@shared/types/webpack";
 
 import {
     type BlockStatement,
@@ -16,6 +10,8 @@ import {
     type Identifier
 } from "acorn";
 import { parse } from "acorn-loose";
+
+type EvalFunc = (name: string) => any;
 
 const { context, logger } = registerContext({
     name: "WebpackExporter",
@@ -48,7 +44,7 @@ registerPatch(context, {
             replace: ";$exp.injectExporter(...arguments,(v)=>eval(v));$&"
         }
     ]
-});
+} as PatchDef);
 
 registerPatch(context, {
     find: "displayName=`profiler(${",
@@ -68,17 +64,20 @@ exportFunction(
         module: RawModule,
         exports: typeof module.exports,
         require: WebpackRequire,
-        code: string
+        code: string,
+        ev: EvalFunc
     ) {
         if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
             return;
         }
 
-        try {
-            const customExports = parseScope(code, arguments[4]);
+        const moduleId = module.id ?? module.i;
 
-            moduleCache[module.id] = {
-                id: module.id,
+        try {
+            const customExports = parseScope(code, ev);
+
+            moduleCache[moduleId] = {
+                id: moduleId,
                 loaded: true,
                 exports: { ...customExports, ...module.exports }
             };
@@ -88,7 +87,7 @@ exportFunction(
     }
 );
 
-export function parseScope(code: string, ev: (name: string) => any): Record<string, any> {
+export function parseScope(code: string, ev: EvalFunc): Record<string, any> {
     const tree = parse(code, {
         ecmaVersion: "latest",
         sourceType: "script"

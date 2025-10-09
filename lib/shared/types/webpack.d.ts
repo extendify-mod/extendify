@@ -11,7 +11,9 @@ export type ModuleExportsWithProps<P extends string> = Record<P, unknown> &
 
 export interface RawModule {
     id: number;
+    i?: number;
     loaded: boolean;
+    l?: boolean;
     exports: Record<string, any>;
 }
 
