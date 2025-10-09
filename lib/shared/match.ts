@@ -9,7 +9,7 @@ export interface MultiMatch {
 
 export type AnyMatch = Match | MultiMatch;
 
-export function createComplexRegExp(regex: RegExp) {
+export function createExtendedRegExp(regex: RegExp) {
     return new RegExp(regex.source.replaceAll("\\i", IDENTIFIER_REGEX), regex.flags);
 }
 
@@ -31,7 +31,7 @@ export function srcMatches(
     }
 
     if (match instanceof RegExp) {
-        return createComplexRegExp(match).test(src);
+        return createExtendedRegExp(match).test(src);
     }
 
     function test(filter: string | RegExp): boolean {
@@ -39,7 +39,7 @@ export function srcMatches(
             return src.includes(filter);
         }
 
-        return createComplexRegExp(filter).test(src);
+        return createExtendedRegExp(filter).test(src);
     }
 
     const { mode, matches } = match;
