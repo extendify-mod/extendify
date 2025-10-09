@@ -59,7 +59,11 @@ function loadSettings(): Map<string, PluginSettings> {
     const settings = localStorage.getItem(`${CONFIG_KEY}.plugins`);
     if (!settings) {
         logger.info("Creating plugins config");
-        return createDefaultMap();
+
+        const defaultOptions = createDefaultMap();
+        saveSettings(defaultOptions);
+
+        return defaultOptions;
     }
 
     const parsed = JSON.parse(settings);
@@ -93,10 +97,10 @@ function initializeSettings() {
     }
 }
 
-function saveSettings() {
+function saveSettings(values: typeof settingsValues = settingsValues) {
     const plain: Record<string, any> = {};
 
-    for (const [plugin, state] of Array.from(settingsValues.entries())) {
+    for (const [plugin, state] of Array.from(values.entries())) {
         plain[plugin] = { ...state };
     }
 
