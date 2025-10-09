@@ -1,5 +1,5 @@
 import type { TargetPlatform } from "../../lib/shared/types";
-import { getKwarg } from "../args";
+import { getKwarg, hasArg } from "../args";
 import { exists, getTimeDifference } from "../utils";
 import { entrypoints, webpackChunkName } from "./config";
 
@@ -8,7 +8,7 @@ import { join } from "path";
 import { rolldown } from "rolldown";
 import { importGlobPlugin } from "rolldown/experimental";
 
-const DEVELOPMENT = Bun.argv.includes("--dev");
+const DEVELOPMENT = hasArg("dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
 
 const start = performance.now();
