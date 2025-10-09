@@ -10,6 +10,13 @@
     "content_scripts": [
         {
             "run_at": "document_start",
+            "matches": ["*://open.spotify.com/extendify"],
+            "js": ["redirect.js"],
+            "all_frames": true,
+            "world": "MAIN"
+        },
+        {
+            "run_at": "document_start",
             "matches": ["*://open.spotify.com/*"],
             "js": ["extendify.js"],
             "css": ["extendify.css"],
