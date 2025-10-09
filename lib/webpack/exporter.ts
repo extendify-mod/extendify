@@ -11,12 +11,10 @@ import {
     type BlockStatement,
     type ClassDeclaration,
     type FunctionDeclaration,
-    type Identifier,
-    Parser
+    type Identifier
 } from "acorn";
 import classFields from "acorn-class-fields";
-import privateMethods from "acorn-private-methods";
-
+import { parse } from "acorn-loose";
 const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
 const { context } = registerContext({
@@ -76,8 +74,8 @@ exportFunction(context, async function injectExporter() {
     }
 });
 
-function parseScope(code: string, ev: (name: string) => any): any {
-    const tree = parser.parse(code, {
+export function parseScope(code: string, ev: (name: string) => any): Record<string, any> {
+    const tree = parse(code, {
         ecmaVersion: "latest",
         sourceType: "script"
     });
