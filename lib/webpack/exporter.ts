@@ -5,6 +5,8 @@
  */
 import { registerContext } from "@api/context";
 import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
+import { moduleCache } from "@api/registry";
+import type { RawModule, WebpackModule, WebpackRequire } from "@shared/types/webpack";
 import { wreq } from "@webpack";
 
 import {
@@ -13,11 +15,9 @@ import {
     type FunctionDeclaration,
     type Identifier
 } from "acorn";
-import classFields from "acorn-class-fields";
 import { parse } from "acorn-loose";
-const parser: typeof Parser = Parser.extend(classFields, privateMethods);
 
-const { context } = registerContext({
+const { context, logger } = registerContext({
     name: "WebpackExporter",
     platforms: ["desktop", "browser"]
 });
@@ -42,37 +42,51 @@ registerPatch(context, {
             }
         },
         {
-            // Inject the exporter at the very start of the function
-            match: "{",
+            // Inject the exporter at the very end of the function
+            match: /}$/,
             // Pretty clever: we just pass a function that runs `eval` from the module's scope so that we can reference local variables from our exporter
-            replace: "{$exp.injectExporter(...arguments,(v)=>eval(v));"
+            replace: ";$exp.injectExporter(...arguments,(v)=>eval(v));$&"
         }
     ]
-} as PatchDef);
+});
 
 registerPatch(context, {
     find: "displayName=`profiler(${",
     replacement: {
+        /**
+         * Fixes some components' displayNames not being available as they're forwarded by the React profiler.
+         * This patch assigns the displayName to the exported function, while still allowing the React profiler to function properly.
+         */
         match: /return (\i)\.displayName=/,
         replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
     }
 });
 
-exportFunction(context, async function injectExporter() {
-    const code: string = arguments[3];
+exportFunction(
+    context,
+    async function injectExporter(
+        module: RawModule,
+        exports: typeof module.exports,
+        require: WebpackRequire,
+        code: string
+    ) {
+        if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
+            return;
+        }
 
-    if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
-        return;
+        try {
+            const customExports = parseScope(code, arguments[4]);
+
+            moduleCache[module.id] = {
+                id: module.id,
+                loaded: true,
+                exports: { ...customExports, ...module.exports }
+            };
+        } catch (e) {
+            logger.error(`Module ${module.id} couldn't be parsed`, e);
+        }
     }
-
-    const customExport = parseScope(code, arguments[4]);
-
-    if (arguments[2]?.d) {
-        arguments[2].d(arguments[1], customExport);
-    } else {
-        wreq.d(arguments[1], customExport);
-    }
-});
+);
 
 export function parseScope(code: string, ev: (name: string) => any): Record<string, any> {
     const tree = parse(code, {
@@ -80,9 +94,13 @@ export function parseScope(code: string, ev: (name: string) => any): Record<stri
         sourceType: "script"
     });
 
-    const customExport: Record<string, () => any> = {};
+    const customExports: Record<string, any> = {};
     function addExport(name: string) {
-        customExport[`extendify__${name}`] = () => ev(name);
+        try {
+            customExports[`extendify__${name}`] = ev(name);
+        } catch {
+            logger.debug(`Skipping '${name}' for module ${module.id}`);
+        }
     }
 
     for (let element of (tree.body[0] as BlockStatement).body) {
@@ -107,5 +125,5 @@ export function parseScope(code: string, ev: (name: string) => any): Record<stri
         }
     }
 
-    return customExport;
+    return customExports;
 }

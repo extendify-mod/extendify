@@ -1,6 +1,7 @@
 import type { pluginOptions, settingsValues } from "@api/context/plugin/settings";
 import type { executeQuery, findQuery } from "@api/gql";
 import type { platform, resolveApi } from "@api/platform";
+import type { moduleCache } from "@api/registry";
 import type { wreq } from "@webpack";
 import type {
     exportFilters,
@@ -21,6 +22,7 @@ declare global {
         findModuleComponent: typeof findModuleComponent;
         findModule: typeof findModule;
         getExportedComponents: () => Promise<Record<string, any>>;
+        moduleCache: typeof moduleCache;
 
         resolveApi: typeof resolveApi;
 

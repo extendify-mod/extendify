@@ -18,7 +18,6 @@ export interface RawModule {
 export type WebpackRawModules = Record<string | number, RawModule>;
 
 export type WebpackRequire = ((e: number) => unknown) & {
-    c: WebpackRawModules;
     d: (module: unknown, exports: Record<string, () => unknown>) => void;
     m: WebpackChunk[1];
     iife: ((wreq: WebpackRequire) => void) & { $$: Omit<WebpackRequire["iife"], "$$"> };
