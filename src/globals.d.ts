@@ -15,8 +15,6 @@ declare global {
     export const ENTRYPOINTS: string[];
     /** The name of the webpack chunk in the global window object */
     export const WEBPACK_CHUNK: string;
-    /** Whether @webpack/loader should be used to load the webpack entrypoint */
-    export const USE_WEBPACK_LOADER: boolean;
 
     interface Window {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
