@@ -15,6 +15,8 @@ declare global {
     export const ENTRYPOINTS: string[];
     /** The name of the webpack chunk in the global window object */
     export const WEBPACK_CHUNK: string;
+    /** Whether to skip userplugins */
+    export const SKIP_USERPLUGINS: boolean;
 
     interface Window {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
