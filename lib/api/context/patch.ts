@@ -1,7 +1,7 @@
 import type { Context } from "@api/context";
 import { patches } from "@api/registry";
 import { type AnyMatch, type Match, createExtendedRegExp } from "@shared/match";
-import type { TargetPlatform } from "@shared/types";
+import type { AnyFn, TargetPlatform } from "@shared/types";
 
 export interface PatchConditions {
     /**
@@ -61,8 +61,6 @@ export interface PatchReplacement extends PatchConditions {
      */
     platforms?: TargetPlatform[];
 }
-
-export type AnyFn = ((...args: any[]) => any) & { name: string };
 
 window.exportedFunctions = {};
 
