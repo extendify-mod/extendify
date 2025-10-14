@@ -8,7 +8,8 @@ import {
     findAllModuleExports,
     findModule,
     findModuleComponent,
-    findModuleExport
+    findModuleExport,
+    findModuleExportSync
 } from "@webpack/module";
 
 const { logger } = registerPlugin({
@@ -40,6 +41,7 @@ const { logger } = registerPlugin({
         });
 
         window.findModuleExport = findModuleExport;
+        window.findModuleExportSync = findModuleExportSync;
         window.findAllModuleExports = findAllModuleExports;
         window.findModuleComponent = findModuleComponent;
         window.findModule = findModule;

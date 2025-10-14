@@ -1,4 +1,5 @@
 import { moduleCache } from "@api/registry";
+import { createLazy } from "@shared/lazy";
 import { type AnyMatch, srcMatches } from "@shared/match";
 import type { RawModule } from "@shared/types/webpack";
 import { shouldIgnoreValue } from "@webpack";
@@ -140,29 +141,15 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
         });
     }
 
-    for (const module of Object.values(moduleCache)) {
-        if (!module?.loaded || !module.exports) {
-            continue;
-        }
+    return getModuleExport<T>(filter) ?? createPromise();
+}
 
-        if (checkExport(module.exports, filter)) {
-            return module.exports as T;
-        }
+export function findModuleExportSync<T>(filter: ExportFilter): T | undefined {
+    return createLazy(() => getModuleExport<T>(filter));
+}
 
-        if (typeof module.exports !== "object") {
-            continue;
-        }
-
-        for (const child of Object.values(module.exports)) {
-            if (!checkExport(child, filter)) {
-                continue;
-            }
-
-            return child as T;
-        }
-    }
-
-    return createPromise();
+function getModuleExport<T>(filter: ExportFilter): T | undefined {
+    return findAllModuleExports<T>(filter)[0];
 }
 
 export function findAllModuleExports<T = any>(filter: ExportFilter): T[] {
