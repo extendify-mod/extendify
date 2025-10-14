@@ -142,3 +142,13 @@ export async function launchSpotify(): Promise<void> {
 export function getTimeDifference(timestamp: DOMHighResTimeStamp): string {
     return (performance.now() - timestamp).toFixed(2);
 }
+
+export function stringify(obj: Record<string, any>) {
+    const result: Record<string, string> = {};
+
+    for (const key in obj) {
+        result[key] = JSON.stringify(obj[key]);
+    }
+
+    return result;
+}
