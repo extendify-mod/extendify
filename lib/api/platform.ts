@@ -1,7 +1,9 @@
-import { registerContext } from "@api/context";
-import { emitEvent } from "@api/context/event";
+import { type Context, registerContext } from "@api/context";
+import { emitEvent, registerEventListener } from "@api/context/event";
 import { exportFunction, registerPatch } from "@api/context/patch";
+import { overriddenFunctions } from "@api/registry";
 import { createLazy } from "@shared/lazy";
+import type { AnyFn } from "@shared/types";
 import type { Platform, RemoteConfigDebugAPI } from "@shared/types/spotify";
 import type { PlaybackAPI } from "@shared/types/spotify/playback";
 import type { PlayerAPI, PlayerState, Song } from "@shared/types/spotify/player";
@@ -12,6 +14,14 @@ export let platform: Platform | undefined;
 export let player = resolveApi<PlayerAPI>("PlayerAPI");
 export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
 export let remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
+
+export interface ApiOverride {
+    context: string;
+    apiName: string;
+    fnName: string;
+    original?: AnyFn;
+    replacement: AnyFn;
+}
 
 const { context, logger } = registerContext({
     name: "Platform",
@@ -38,6 +48,14 @@ exportFunction(context, function loadPlatform(value: Platform): Platform {
     return value;
 });
 
+registerEventListener(context, "contextEnabled", (context) => {
+    overrideApi(context.name, true);
+});
+
+registerEventListener(context, "contextDisabled", (context) => {
+    overrideApi(context.name, false);
+});
+
 export function resolveApi<T>(key: string): T | undefined {
     return createLazy(() => {
         if (!platform) {
@@ -46,6 +64,67 @@ export function resolveApi<T>(key: string): T | undefined {
 
         return platform.getRegistry().resolve(Symbol.for(key));
     });
+}
+
+function overrideApi(context: string, enable: boolean) {
+    if (!platform) {
+        return;
+    }
+
+    for (const override of overriddenFunctions) {
+        if (override.context !== context) {
+            continue;
+        }
+
+        const instance = platform.getRegistry()._map.get(Symbol.for(override.apiName))?.instance;
+
+        if (!instance) {
+            logger.error(`No instance found for API ${override.apiName}`);
+            continue;
+        }
+
+        if (!instance[override.fnName]) {
+            logger.warn(`No original ${override.fnName} function found for ${override.apiName}`);
+        }
+
+        if (!override.original) {
+            override.original = instance[override.fnName];
+        }
+
+        Object.defineProperty(instance, override.fnName, {
+            value: enable ? override.replacement : override.original,
+            configurable: true,
+            writable: true,
+            enumerable: false
+        });
+    }
+}
+
+export function registerApiOverride(context: Context, apiName: string, fn: AnyFn) {
+    if (!fn.name?.length) {
+        throw new Error(`Can't override function from ${apiName} with no name`);
+    }
+
+    let override;
+    if (
+        (override = overriddenFunctions.find(
+            (func) => func.fnName === fn.name && func.apiName === apiName
+        ))
+    ) {
+        logger.error(
+            `Function ${apiName}#${override.fnName} already overridden by ${override.context}`
+        );
+        return;
+    }
+
+    overriddenFunctions.push({
+        context: context.name,
+        apiName,
+        fnName: fn.name,
+        replacement: fn
+    });
+
+    logger.debug(`Context ${context.name} registered override for ${apiName}#${fn.name}`);
 }
 
 let previousPlayerState: PlayerState | undefined;
