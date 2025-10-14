@@ -27,11 +27,11 @@ const logger = createLogger({ name: "Entrypoint" });
  * This filetype allows JSX syntax, where an html-like structure can
  * be used in tandem with javascript/typescript.
  */
-import.meta.glob(
-    ["./{plugins,userplugins}/*/index.{ts,tsx}", "./{plugins,userplugins}/*.{ts,tsx}"],
-    {
-        eager: true
-    }
-);
+
+const globFolders = ["plugins", !SKIP_USERPLUGINS && "userplugins"].filter(Boolean).join(",");
+
+import.meta.glob([`./{${globFolders}}/*/index.{ts,tsx}`, `./{${globFolders}}/*.{ts,tsx}`], {
+    eager: true
+});
 
 logger.debug(`Globbed ${plugins.size} plugins`);
