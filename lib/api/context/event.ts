@@ -12,7 +12,9 @@ export type EventType =
     | "pause"
     | "songChanged"
     | "queueAdded"
-    | "queueRemoved";
+    | "queueRemoved"
+    | "contextEnabled"
+    | "contextDisabled";
 
 export interface EventArgs {
     platformLoaded: [];
@@ -21,6 +23,8 @@ export interface EventArgs {
     songChanged: [newSong: Song, state: PlayerState];
     queueAdded: [songs: Song[], state: PlayerState];
     queueRemoved: [songs: Song[], state: PlayerState];
+    contextEnabled: [context: Context];
+    contextDisabled: [context: Context];
 }
 
 export type EventListener<E extends EventType> = (...args: EventArgs[E]) => void;
