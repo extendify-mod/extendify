@@ -1,5 +1,5 @@
 import { type Context, isContextEnabled, registerContext } from "@api/context";
-import { registerEventListener } from "@api/context/event";
+import { emitEvent, registerEventListener } from "@api/context/event";
 import { plugins } from "@api/registry";
 import type { Logger } from "@shared/logger";
 
@@ -50,6 +50,8 @@ function startPlugins() {
         try {
             plugin.start?.();
             plugin.started = true;
+
+            emitEvent("contextEnabled", plugin);
 
             contextLogger.debug(`Started plugin ${plugin.name}`);
         } catch (e) {

@@ -1,3 +1,4 @@
+import { emitEvent } from "@api/context/event";
 import type { Plugin } from "@api/context/plugin";
 import { pluginOptions, plugins, settingsValues } from "@api/registry";
 import { CONFIG_KEY } from "@shared/constants";
@@ -201,17 +202,22 @@ export function setPluginEnabled(plugin: Plugin, value: boolean = true) {
         throw new Error(`Tried to enable non-existent plugin ${plugin.name}`);
     }
 
+    settings.enabled = value;
+    saveSettings();
+
     if (value && !plugin.started) {
         plugin.start?.();
         plugin.started = true;
+
+        emitEvent("contextEnabled", plugin);
     }
 
     if (!value && plugin.started) {
         plugin.stop?.();
         plugin.started = false;
-    }
 
-    settings.enabled = value;
+        emitEvent("contextDisabled", plugin);
+    }
 }
 
 export function pluginHasOptions(plugin: Plugin): boolean {
