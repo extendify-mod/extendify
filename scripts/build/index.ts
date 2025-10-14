@@ -1,6 +1,6 @@
 import type { TargetPlatform } from "../../lib/shared/types";
 import { getKwarg, hasArg } from "../args";
-import { exists, getTimeDifference } from "../utils";
+import { exists, getTimeDifference, stringify } from "../utils";
 import { entrypoints, webpackChunkName } from "./config";
 
 import { copyFile, mkdir, readdir, rm } from "fs/promises";
@@ -38,12 +38,12 @@ const bundle = await rolldown({
     },
     treeshake: true,
     keepNames: false,
-    define: {
-        DEVELOPMENT: JSON.stringify(DEVELOPMENT),
-        PLATFORM: JSON.stringify(PLATFORM),
-        ENTRYPOINTS: JSON.stringify(entrypoints[PLATFORM]),
-        WEBPACK_CHUNK: JSON.stringify(webpackChunkName[PLATFORM])
-    },
+    define: stringify({
+        DEVELOPMENT: DEVELOPMENT,
+        PLATFORM: PLATFORM,
+        ENTRYPOINTS: entrypoints[PLATFORM],
+        WEBPACK_CHUNK: webpackChunkName[PLATFORM]
+    }),
     plugins: [importGlobPlugin()],
     tsconfig: "tsconfig.json",
     jsx: {
