@@ -1,7 +1,14 @@
+// sort-imports-ignore
+
+import { plugins } from "@api/registry";
+import { createLogger } from "@shared/logger";
+
 import "@inject";
 import "@webpack/exporter";
 import "@webpack/interceptor";
 import "@webpack/loader";
+
+const logger = createLogger({ name: "Entrypoint" });
 
 /**
  * This imports plugins with any of the following file structures:
@@ -26,3 +33,5 @@ import.meta.glob(
         eager: true
     }
 );
+
+logger.debug(`Globbed ${plugins.size} plugins`);
