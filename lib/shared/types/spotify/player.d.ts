@@ -1,5 +1,6 @@
 import type { Identifiable, LoggingParams } from "@shared/types/spotify";
 import type { QueueAction, QueueState } from "@shared/types/spotify/queue";
+import type { User } from "@shared/types/spotify/user";
 
 export interface PlayerAPI {
     forcedShuffle: boolean;
@@ -148,6 +149,8 @@ export interface ArtistUnion {
 }
 
 export interface Song {
+    addedAt?: string;
+    addedBy?: User;
     album: {
         images: {
             label: string;

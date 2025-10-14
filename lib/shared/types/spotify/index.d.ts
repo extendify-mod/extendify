@@ -212,3 +212,5 @@ export interface SpotifyURI {
     toURL(parent: string | undefined): string;
     clone(): SpotifyURI;
 }
+
+export type Capabilities = Record<boolean | (() => boolean)>;
