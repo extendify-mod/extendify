@@ -42,8 +42,7 @@ const bundle = await rolldown({
         DEVELOPMENT: DEVELOPMENT,
         PLATFORM: PLATFORM,
         ENTRYPOINTS: entrypoints[PLATFORM],
-        WEBPACK_CHUNK: webpackChunkName[PLATFORM],
-        SKIP_USERPLUGINS: hasArg("skip-userplugins")
+        WEBPACK_CHUNK: webpackChunkName[PLATFORM]
     }),
     plugins: [importGlobPlugin()],
     tsconfig: "tsconfig.json",
