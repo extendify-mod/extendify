@@ -17,9 +17,16 @@ const options = registerPluginOptions(plugin, {
         description: "Hide artist images from the artist card",
         default: false,
         restartNeeded: true
+    },
+    alwaysShow: {
+        type: "boolean",
+        description: "Show artist cards even if they don't have a description",
+        default: true,
+        restartNeeded: true
     }
 });
 
+// Replaces the ArtistAbout component with our custom handler
 registerPatch(plugin, {
     find: "NPVLyrics",
     replacement: {
@@ -28,6 +35,7 @@ registerPatch(plugin, {
     }
 });
 
+// Removes the image from the ArtistAbout component
 registerPatch(plugin, {
     find: "web-player.now-playing-view.artist-about.title",
     replacement: {
@@ -36,6 +44,18 @@ registerPatch(plugin, {
     },
     predicate() {
         return options.hideImages;
+    }
+});
+
+// Skips the check for an empty biography
+registerPatch(plugin, {
+    find: "NPVArtistAboutV2",
+    replacement: {
+        match: /!\i\.biography\?\.text/,
+        replace: "false"
+    },
+    predicate() {
+        return options.alwaysShow;
     }
 });
 
