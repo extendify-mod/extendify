@@ -22,3 +22,14 @@ registerPatch(plugin, {
         replace: "$1 0"
     }
 });
+
+/**
+ * Fixes a crash when an artist card is clicked (not its name)
+ */
+registerPatch(plugin, {
+    find: "Hire Me on SoundBetter",
+    replacement: {
+        match: /(children:\i)(\.map)/,
+        replace: "$1.items$2"
+    }
+});
