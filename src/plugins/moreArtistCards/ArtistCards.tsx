@@ -42,7 +42,7 @@ export default function () {
                         artist={union.profile}
                         stats={union.stats}
                         visuals={union.visuals}
-                        externalLinks={union.profile.externalLinks}
+                        externalLinks={union.profile.externalLinks.items}
                     />
                 );
             })
