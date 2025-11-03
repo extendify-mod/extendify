@@ -197,5 +197,5 @@ export const ArtistAbout = findModuleComponent<{
     artist: ArtistUnion["profile"];
     stats: ArtistUnion["stats"];
     visuals: ArtistUnion["visuals"];
-    externalLinks: ArtistUnion["profile"]["externalLinks"];
+    externalLinks: ArtistUnion["profile"]["externalLinks"]["items"];
 }>(exportFilters.byEncoreName("profiler(NPVArtistAboutV2)"));
