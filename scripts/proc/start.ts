@@ -1,3 +1,3 @@
-import { launchSpotify } from "../utils";
+import { launchSpotify } from "@scripts/utils";
 
 launchSpotify();

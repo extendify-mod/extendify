@@ -4,8 +4,10 @@ export function hasArg(name: string): boolean {
 
 export function getKwarg(name: string): string | undefined {
     for (const arg of Bun.argv) {
-        if (arg.startsWith(`--${name}=`)) {
-            return arg.substring(arg.indexOf("=")+1);
+        if (!arg.startsWith(`--${name}=`)) {
+            continue;
         }
+
+        return arg.substring(arg.indexOf("=") + 1);
     }
 }
