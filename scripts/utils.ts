@@ -1,4 +1,4 @@
-import { getKwarg, hasArg } from "./args";
+import { getKwarg, hasArg } from "@scripts/args";
 
 import { spawn, spawnSync } from "bun";
 import { access, constants, readdir } from "fs/promises";

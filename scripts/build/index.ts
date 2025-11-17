@@ -1,7 +1,7 @@
-import type { TargetPlatform } from "../../lib/shared/types";
-import { getKwarg, hasArg } from "../args";
-import { exists, getTimeDifference, stringify } from "../utils";
-import { entrypoints, webpackChunkName } from "./config";
+import { getKwarg, hasArg } from "@scripts/args";
+import { entrypoints, webpackChunkName } from "@scripts/build/config";
+import { exists, getTimeDifference, stringify } from "@scripts/utils";
+import type { TargetPlatform } from "@shared/types";
 
 import { copyFile, mkdir, readdir, rm } from "fs/promises";
 import { join } from "path";

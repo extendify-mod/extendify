@@ -1,4 +1,4 @@
-import { exists, getSpotifyPath, killSpotify } from "./utils";
+import { exists, getSpotifyPath, killSpotify } from "@scripts/utils";
 
 import { spawnSync } from "bun";
 import { rm, writeFile } from "fs/promises";

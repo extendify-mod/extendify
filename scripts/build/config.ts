@@ -1,4 +1,4 @@
-import type { TargetPlatform } from "../../lib/shared/types";
+import type { TargetPlatform } from "@shared/types";
 
 export const entrypoints: Record<TargetPlatform, string[]> = {
     desktop: ["xpui-snapshot.js", "xpui.js"],

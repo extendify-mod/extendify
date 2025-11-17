@@ -1,4 +1,4 @@
-import { getCachePath } from "./utils";
+import { getCachePath } from "@scripts/utils";
 
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";

@@ -1,4 +1,4 @@
-import { exists, getAppsPath } from "./utils";
+import { exists, getAppsPath } from "@scripts/utils";
 
 import { lstat } from "fs/promises";
 import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";

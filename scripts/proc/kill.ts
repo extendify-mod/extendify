@@ -1,3 +1,3 @@
-import { killSpotify } from "../utils";
+import { killSpotify } from "@scripts/utils";
 
 killSpotify();
