@@ -1,6 +1,6 @@
 export interface AdManagers {
     audio: {
-        disable(): Promise<void>;
+        disable(): void;
         inStreamApi: {
             adsCoreConnector: {
                 clearSlot(slotId: string): void;
@@ -10,25 +10,23 @@ export interface AdManagers {
                 ): void;
             };
         };
-        isNewAdsNpvEnabled: boolean;
     };
     billboard: {
         disable(): Promise<void>;
     };
     leaderboard: {
-        disableLeaderboard(): Promise<void>;
+        disableLeaderboard(): void;
     };
     inStreamApi: {
-        disable(): Promise<void>;
+        disable(): void;
     };
     sponsoredPlaylist: {
-        disable(): Promise<void>;
+        disable(): void;
     };
     vto: {
         manager: {
-            disable(): Promise<void>;
+            disable(): void;
         };
-        isNewAdsNpvEnabled: boolean;
     };
 }
 
@@ -69,4 +67,20 @@ export interface Ad {
     slot: string;
     trackingEvents: any;
     video: any[];
+}
+
+export interface AdsTestingClient {
+    addPlaytime(opts: { seconds: number });
+}
+
+interface SlotsClient {
+    clearAllAds(params: { slotId: string }): Promise<void>;
+    getSlots(): Promise<{ adSlots: { slotId: string; slot_id: string }[] }>;
+}
+
+interface SlotSettingsClient {
+    updateAdServerEndpoint(params: { slotIds: string[]; url: string }): Promise<void>;
+    updateDisplayTimeInterval(params: { slotId: string; timeInterval: string }): Promise<void>;
+    updateSlotEnabled(params: { slotId: string; enabled: boolean }): Promise<void>;
+    updateStreamTimeInterval(params: { slotId: string; timeInterval: string }): Promise<void>;
 }
