@@ -1,4 +1,4 @@
-import type { AdManagers, SettingsAPI } from "@shared/types/spotify";
+import type { AdManagers, SettingsAPI } from "@shared/types/spotify/ads";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
 import type { User } from "@shared/types/spotify/user";
 
@@ -175,7 +175,8 @@ export interface ProductStateAPI {
         options: Record<string, string>;
         delOverridesValues(values: any): Promise<void>;
         getValues(): Promise<any>;
-        putOverridesValues(values: any): Promise<void>;
+        putOverridesValues(values: any): void;
+        subValues(opts: { keys: string[] }, callback: () => void);
     };
 }
 
