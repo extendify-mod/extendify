@@ -28,8 +28,7 @@ export const exportFilters = {
                 return false;
             }
 
-            const keys = Object.keys(moduleExport);
-            return props.every((prop) => keys.includes(prop));
+            return props.every((prop) => prop in moduleExport);
         };
     },
     byCode(match: AnyMatch): ExportFilter {
