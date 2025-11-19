@@ -4,7 +4,7 @@ import { exportFunction, registerPatch } from "@api/context/patch";
 import { overriddenFunctions } from "@api/registry";
 import { createLazy } from "@shared/lazy";
 import type { AnyFn } from "@shared/types";
-import type { Platform, RemoteConfigDebugAPI } from "@shared/types/spotify";
+import type { Platform, ProductStateAPI, RemoteConfigDebugAPI } from "@shared/types/spotify";
 import type { PlaybackAPI } from "@shared/types/spotify/playback";
 import type { PlayerAPI, PlayerState, Song } from "@shared/types/spotify/player";
 
@@ -14,6 +14,7 @@ export let platform: Platform | undefined;
 export let player = resolveApi<PlayerAPI>("PlayerAPI");
 export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
 export let remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
+export let productState = resolveApi<ProductStateAPI>("ProductStateAPI");
 
 export interface ApiOverride {
     context: string;
@@ -56,14 +57,14 @@ registerEventListener(context, "contextDisabled", (context) => {
     overrideApi(context.name, false);
 });
 
-export function resolveApi<T>(key: string): T | undefined {
+export function resolveApi<T>(key: string): T {
     return createLazy(() => {
         if (!platform) {
             return;
         }
 
         return platform.getRegistry().resolve(Symbol.for(key));
-    });
+    }) as T;
 }
 
 function overrideApi(context: string, enable: boolean) {
