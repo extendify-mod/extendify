@@ -1,16 +1,21 @@
 import "./extendifyPage.css";
 
 import { useRef, useState } from "@api/react";
-import { DebugPage } from "@components/settings";
-import { PluginsPage } from "@components/settings/plugins";
+import { DebugTab } from "@components/settings/debug";
+import { ExperimentsTab } from "@components/settings/experiments";
+import { PluginsTab } from "@components/settings/plugins";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
-
-import { ExperimentsPage } from "./experiments";
 
 import type { ReactElement, RefObject } from "react";
 
-export interface SettingsSectionProps {
+export interface ExtendifyTabProps {
     searchQuery?: string;
+}
+
+interface Tab {
+    name: string;
+    component: ReactElement;
+    canSearch: boolean;
 }
 
 function SettingsHeaderChip(props: { label: string; selected: boolean; onClick: () => void }) {
@@ -32,46 +37,60 @@ export default function () {
     const [searchQuery, setSearchQuery] = useState("");
     const outerRef: RefObject<any> = useRef(null);
 
-    const pages: Record<string, ReactElement> = {
-        Plugins: <PluginsPage searchQuery={searchQuery} />,
-        Experiments: <ExperimentsPage searchQuery={searchQuery} />
-    };
+    const tabs: Tab[] = [
+        {
+            name: "Plugins",
+            component: <PluginsTab searchQuery={searchQuery} />,
+            canSearch: true
+        },
+        {
+            name: "Experiments",
+            component: <ExperimentsTab searchQuery={searchQuery} />,
+            canSearch: true
+        }
+    ];
 
     if (DEVELOPMENT) {
-        pages["Debug"] = <DebugPage />;
+        tabs.push({
+            name: "Debug",
+            component: <DebugTab />,
+            canSearch: false
+        });
     }
 
-    const [activePage, setActivePage] = useState(Object.keys(pages)[0]);
+    const [activeTab, setActiveTab] = useState(tabs[0]!);
 
     return (
         <>
             <div className="ext-settings-section-layout">
                 <div className="ext-settings-header-chips">
-                    {Object.keys(pages).map((key) => (
+                    {tabs.map((tab) => (
                         <SettingsHeaderChip
-                            label={key}
-                            selected={key === activePage}
-                            onClick={() => setActivePage(key)}
+                            label={tab.name}
+                            selected={tab.name === activeTab.name}
+                            onClick={() => setActiveTab(tab)}
                         />
                     ))}
                 </div>
                 <div className="ext-settings-header-title" ref={outerRef}>
                     <Text as="h1" variant="titleMedium" semanticColor="textBase">
-                        {activePage}
+                        {activeTab.name}
                     </Text>
-                    <FilterProvider>
-                        <SearchBar
-                            placeholder={`Search ${activePage}...`}
-                            alwaysExpanded={false}
-                            debounceFilterChangeTimeout={0}
-                            onFilter={(query) => setSearchQuery(query.toLowerCase())}
-                            onClear={() => setSearchQuery("")}
-                            clearOnEscapeInElementRef={outerRef}
-                        />
-                    </FilterProvider>
+                    {activeTab.canSearch && (
+                        <FilterProvider>
+                            <SearchBar
+                                placeholder={`Search ${activeTab}...`}
+                                alwaysExpanded={false}
+                                debounceFilterChangeTimeout={0}
+                                onFilter={(query) => setSearchQuery(query.toLowerCase())}
+                                onClear={() => setSearchQuery("")}
+                                clearOnEscapeInElementRef={outerRef}
+                            />
+                        </FilterProvider>
+                    )}
                 </div>
             </div>
-            {activePage && pages[activePage]}
+            {tabs.find((tab) => tab.name === activeTab.name)?.component ?? <></>}
         </>
     );
 }

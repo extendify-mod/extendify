@@ -3,11 +3,11 @@ import "./plugin.css";
 
 import { useState } from "@api/react";
 import { plugins } from "@api/registry";
-import type { SettingsSectionProps } from "@components/settings";
+import type { ExtendifyTabProps } from "@components/settings";
 import { Plugin } from "@components/settings/plugins";
 import { ButtonSecondary, Text } from "@components/spotify";
 
-export default function ({ searchQuery }: SettingsSectionProps) {
+export default function ({ searchQuery }: ExtendifyTabProps) {
     const [needRestart, setNeedRestart] = useState<string[]>([]);
 
     function onRestartNeeded(plugin: string) {

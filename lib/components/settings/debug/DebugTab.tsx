@@ -1,5 +1,5 @@
-import "./debugPage.css";
-import "./extendifyPage.css";
+import "../extendifyPage.css";
+import "./debugTab.css";
 
 import { resolveApi } from "@api/platform";
 import { React } from "@api/react";

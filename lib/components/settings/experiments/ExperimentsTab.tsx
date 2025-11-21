@@ -3,7 +3,7 @@ import "../extendifyPage.css";
 import { getLocalValue } from "@api/experiment";
 import { remoteConfig } from "@api/platform";
 import { useEffect, useState } from "@api/react";
-import type { SettingsSectionProps } from "@components/settings";
+import type { ExtendifyTabProps } from "@components/settings";
 import { Experiment } from "@components/settings/experiments";
 import { Text } from "@components/spotify";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
@@ -36,7 +36,7 @@ function InnerSection(props: InnerSectionProps) {
     );
 }
 
-export default function (props: SettingsSectionProps) {
+export default function (props: ExtendifyTabProps) {
     const [overridden, setOverridden] = useState<AnyExperiment[]>([]);
     const [experiments, setExperiments] = useState<AnyExperiment[]>([]);
 
