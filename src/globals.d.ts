@@ -2,7 +2,7 @@ import type { TargetPlatform } from "@api/context";
 import type { AnyFn } from "@api/context/patch";
 import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
 
-import type { createElement } from "react";
+import type React from "react";
 
 declare module "*.css";
 
@@ -20,7 +20,7 @@ declare global {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
 
         ExtendifyFragment: Symbol;
-        ExtendifyCreateElement: ((...args: unknown[]) => void) | typeof createElement;
+        ExtendifyCreateElement: typeof React.createElement | (() => any);
 
         exportedFunctions: {
             [context: string]: {

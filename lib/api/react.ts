@@ -1,3 +1,4 @@
+import { emitEvent } from "@api/context/event";
 import { findModule } from "@webpack/module";
 
 export let React: typeof import("react");
@@ -12,4 +13,6 @@ export let useCallback: typeof React.useCallback;
 findModule<typeof React>("useState").then((module) => {
     React = module;
     ({ useState, useEffect, useLayoutEffect, useMemo, useRef, useReducer, useCallback } = React);
+
+    emitEvent("reactLoaded", React);
 });
