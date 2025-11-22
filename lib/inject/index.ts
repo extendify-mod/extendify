@@ -1,12 +1,20 @@
-import { React } from "@api/react";
+// sort-imports-ignore
+
+import "@webpack/exporter";
+import "@webpack/interceptor";
+import "@webpack/loader";
+
+import { registerContext } from "@api/context";
+import { registerEventListener } from "@api/context/event";
+
+const { context } = registerContext({
+    name: "Inject",
+    platforms: ["browser", "desktop", "webos"]
+});
 
 window.ExtendifyFragment = Symbol.for("react.fragment");
-window.ExtendifyCreateElement = (...args: unknown[]) => {
-    if (!React) {
-        // @ts-ignore
-        setTimeout(() => window.ExtendifyCreateElement?.(...args), 100);
-        return;
-    }
-    // @ts-ignore
-    return (window.ExtendifyCreateElement = React.createElement)(...args);
-};
+window.ExtendifyCreateElement = () => {};
+
+registerEventListener(context, "reactLoaded", (instance) => {
+    window.ExtendifyCreateElement = instance.createElement;
+});

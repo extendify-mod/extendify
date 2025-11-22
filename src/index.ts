@@ -4,9 +4,6 @@ import { plugins } from "@api/registry";
 import { createLogger } from "@shared/logger";
 
 import "@inject";
-import "@webpack/exporter";
-import "@webpack/interceptor";
-import "@webpack/loader";
 
 const logger = createLogger({ name: "Entrypoint" });
 
