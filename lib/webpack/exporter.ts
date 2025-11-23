@@ -65,11 +65,17 @@ exportFunction(
         code: string,
         ev: ModuleEval
     ) {
-        if (!code || !/function\s|\bclass\s|\bconst\s/.test(code)) {
+        const moduleId = module.id ?? module.i;
+
+        /**
+         * Hardcoded, but 125 makes sense.
+         * Most of the empty modules that I tested are 120 characters or less.
+         * Accounting for longer ids that these might import I'd say 125 is a pretty fair number.
+         */
+        if (!code || code.length <= 125) {
+            logger.debug(`Skipping module ${moduleId}\n`, code);
             return;
         }
-
-        const moduleId = module.id ?? module.i;
 
         try {
             const customExports = parseScope(code, ev);
