@@ -2,8 +2,6 @@ import { type Context, isContextEnabled, registerContext } from "@api/context";
 import type { Theme } from "@api/themes";
 import type { PlayerState, Song } from "@shared/types/spotify/player";
 
-import type React from "react";
-
 const { logger } = registerContext({
     name: "Events",
     platforms: ["desktop", "webos", "browser"]
@@ -11,7 +9,6 @@ const { logger } = registerContext({
 
 export type EventType =
     | "platformLoaded"
-    | "reactLoaded"
     | "play"
     | "pause"
     | "songChanged"
@@ -23,7 +20,6 @@ export type EventType =
 
 export interface EventArgs {
     platformLoaded: [];
-    reactLoaded: [instance: typeof React];
     play: [state: PlayerState];
     pause: [state: PlayerState];
     songChanged: [newSong: Song, state: PlayerState];

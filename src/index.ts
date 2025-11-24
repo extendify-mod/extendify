@@ -3,7 +3,11 @@
 import { plugins } from "@api/registry";
 import { createLogger } from "@shared/logger";
 
-import "@inject";
+import "@api/react";
+import "@api/themes";
+import "@webpack/exporter";
+import "@webpack/interceptor";
+import "@webpack/loader";
 
 const logger = createLogger({ name: "Entrypoint" });
 
