@@ -4,6 +4,7 @@ import { useRef, useState } from "@api/react";
 import { DebugTab } from "@components/settings/debug";
 import { ExperimentsTab } from "@components/settings/experiments";
 import { PluginsTab } from "@components/settings/plugins";
+import { ThemesTab } from "@components/settings/themes";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
 
 import type { ReactElement, RefObject } from "react";
@@ -41,6 +42,11 @@ export default function () {
         {
             name: "Plugins",
             component: <PluginsTab searchQuery={searchQuery} />,
+            canSearch: true
+        },
+        {
+            name: "Themes",
+            component: <ThemesTab searchQuery={searchQuery} />,
             canSearch: true
         },
         {
