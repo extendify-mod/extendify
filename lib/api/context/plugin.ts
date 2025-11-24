@@ -41,6 +41,14 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
     return { plugin, logger };
 }
 
+export function isPlugin(context: Context | string) {
+    if (typeof context === "string") {
+        return Array.from(plugins.values()).find((plugin) => plugin.name === context);
+    }
+
+    return "description" in context;
+}
+
 function startPlugins() {
     for (const plugin of Array.from(plugins.values())) {
         if (!isContextEnabled(plugin) || plugin.started) {

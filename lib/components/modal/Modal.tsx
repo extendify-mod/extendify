@@ -7,7 +7,7 @@ import { ButtonTertiary, ModalWrapper, Text } from "@components/spotify";
 import type { PropsWithChildren } from "react";
 
 type Props = PropsWithChildren<{
-    id: string;
+    id?: string;
     animationMs?: number;
     className?: string;
     isOpen?: boolean;

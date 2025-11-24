@@ -1,12 +1,12 @@
 import "./optionType.css";
 
-import type { NumberPluginOption } from "@api/context/plugin/settings";
+import type { NumberContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { TextInput } from "@components/input";
 import { OptionType, type OptionTypeProps } from "@components/settings/plugins/optionTypes";
 import { INVALID_INPUT } from "@shared/constants";
 
-export default function (props: OptionTypeProps<NumberPluginOption>) {
+export default function (props: OptionTypeProps<NumberContextOption>) {
     const [state, setState] = useState(`${props.value ?? props.schema.default ?? 0}`);
     const [error, setError] = useState<string | undefined>();
 

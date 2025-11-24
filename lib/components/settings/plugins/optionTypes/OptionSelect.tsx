@@ -1,13 +1,13 @@
 import "./optionType.css";
 
-import type { SelectPluginOption } from "@api/context/plugin/settings";
+import type { SelectContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { Select } from "@components/input";
 import type { SelectOption } from "@components/input/Select";
 import { OptionType, type OptionTypeProps } from "@components/settings/plugins/optionTypes";
 import { INVALID_INPUT } from "@shared/constants";
 
-export default function (props: OptionTypeProps<SelectPluginOption>) {
+export default function (props: OptionTypeProps<SelectContextOption>) {
     const [state, setState] = useState(props.value ?? props.schema.default);
     const [error, setError] = useState<string | undefined>();
 

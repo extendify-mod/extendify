@@ -18,3 +18,4 @@ export const GarbageIcon = findIcon("M5.25 3v-");
 export const CopyIcon = findIcon("M5 .75A.75.75");
 export const ArrowDownIcon = findIcon("M.47 4.97a");
 export const ArrowUpIcon = findIcon("M.47 11.03a");
+export const PlusIcon = findIcon("M15.25 8a");

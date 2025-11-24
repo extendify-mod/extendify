@@ -47,3 +47,25 @@
 .ext-settings-container:hover {
     background-color: hsla(0, 0%, 100%, 0.2);
 }
+
+.ext-settings-container-header {
+    display: flex;
+    width: 100%;
+    height: 2rem;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5em;
+}
+
+.ext-settings-container-title {
+    width: 100%;
+}
+
+.ext-settings-container-description {
+    height: 46px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}

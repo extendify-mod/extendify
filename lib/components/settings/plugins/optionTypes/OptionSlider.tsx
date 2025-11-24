@@ -1,13 +1,13 @@
 import "./optionType.css";
 
-import type { SliderPluginOption } from "@api/context/plugin/settings";
+import type { SliderContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { TextInput } from "@components/input";
 import { OptionType, type OptionTypeProps } from "@components/settings/plugins/optionTypes";
 import { Slider } from "@components/spotify";
 import { INVALID_INPUT } from "@shared/constants";
 
-export default function (props: OptionTypeProps<SliderPluginOption>) {
+export default function (props: OptionTypeProps<SliderContextOption>) {
     function getInitialValue(): number {
         if (!props.value) {
             return (

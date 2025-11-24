@@ -1,6 +1,6 @@
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
-import { registerPluginOptions } from "@api/context/plugin/settings";
+import { registerContextOptions } from "@api/context/settings";
 
 import ArtistCards from "./ArtistCards";
 
@@ -11,7 +11,7 @@ const { plugin } = registerPlugin({
     platforms: ["desktop", "browser"]
 });
 
-const options = registerPluginOptions(plugin, {
+const options = registerContextOptions(plugin, {
     hideImages: {
         type: "boolean",
         description: "Hide artist images from the artist card",

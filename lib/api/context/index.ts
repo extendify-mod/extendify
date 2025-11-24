@@ -1,5 +1,5 @@
-import type { Plugin } from "@api/context/plugin";
-import { isPluginEnabled } from "@api/context/plugin/settings";
+import { type Plugin, isPlugin } from "@api/context/plugin";
+import { isPluginEnabled } from "@api/context/settings";
 import { contexts, plugins } from "@api/registry";
 import { Logger, createLogger } from "@shared/logger";
 import type { TargetPlatform } from "@shared/types";
@@ -59,8 +59,8 @@ export function isContextEnabled(context: Context | Plugin | string): boolean {
         return false;
     }
 
-    if ("description" in context) {
-        return isPluginEnabled(context);
+    if (isPlugin(context)) {
+        return isPluginEnabled(context as Plugin);
     }
 
     return true;

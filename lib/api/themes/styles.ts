@@ -88,8 +88,12 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
     return styles;
 }
 
-export function createStyleElement(overrides: StyleSheetOverride[]): HTMLStyleElement {
+function serializeOverrides(overrides: StyleSheetOverride[]): string {
     let content = "";
+
+    if (!overrides.length) {
+        return content;
+    }
 
     for (const override of overrides) {
         content += `${override.selector}{`;
@@ -99,10 +103,11 @@ export function createStyleElement(overrides: StyleSheetOverride[]): HTMLStyleEl
         }
     }
 
-    content += "}";
+    return content + "}";
+}
 
+export function createStyleElement(overrides: StyleSheetOverride[]): HTMLStyleElement {
     const element = document.createElement("style");
-    element.textContent = content;
-
+    element.textContent = serializeOverrides(overrides);
     return element;
 }
