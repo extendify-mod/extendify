@@ -1,7 +1,7 @@
 import { registerPlugin } from "@api/context/plugin";
 import { executeQuery, findQuery } from "@api/gql";
 import { platform, resolveApi } from "@api/platform";
-import { moduleCache, pluginOptions, settingsValues } from "@api/registry";
+import { contextOptions, moduleCache, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
 import {
     exportFilters,
@@ -30,7 +30,7 @@ const { logger } = registerPlugin({
                 get: () => exportFilters
             },
             pluginOptions: {
-                get: () => pluginOptions
+                get: () => contextOptions
             },
             settingsValues: {
                 get: () => settingsValues

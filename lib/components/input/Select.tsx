@@ -3,9 +3,9 @@ import "./select.css";
 import classNames from "classnames";
 import type { ComponentProps } from "react";
 
-export interface SelectOption {
+export interface SelectOption<T = any> {
     label: string;
-    value: any;
+    value: T;
 }
 
 type Props = Omit<ComponentProps<"select">, "value" | "onSelect"> & {

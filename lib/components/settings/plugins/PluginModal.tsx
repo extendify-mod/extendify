@@ -2,8 +2,8 @@ import "./plugin.css";
 import "./pluginModal.css";
 
 import type { Plugin } from "@api/context/plugin";
-import type { PluginOptionType } from "@api/context/plugin/settings";
-import { pluginOptions, settingsValues } from "@api/registry";
+import type { ContextOptionType } from "@api/context/settings";
+import { contextOptions, settingsValues } from "@api/registry";
 import { Modal, ModalFooter } from "@components/modal";
 import {
     OptionBoolean,
@@ -24,7 +24,7 @@ interface Props {
     onRestartNeeded(): void;
 }
 
-const componentMap: Record<PluginOptionType, ComponentType<OptionTypeProps<any>>> = {
+const componentMap: Record<ContextOptionType, ComponentType<OptionTypeProps<any>>> = {
     boolean: OptionBoolean,
     number: OptionNumber,
     select: OptionSelect,
@@ -33,7 +33,7 @@ const componentMap: Record<PluginOptionType, ComponentType<OptionTypeProps<any>>
 };
 
 export default function (props: Props) {
-    const options = pluginOptions.get(props.plugin.name);
+    const options = contextOptions.get(props.plugin.name);
 
     return (
         <Modal

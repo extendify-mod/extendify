@@ -1,4 +1,5 @@
 import { type Context, isContextEnabled, registerContext } from "@api/context";
+import type { Theme } from "@api/themes";
 import type { PlayerState, Song } from "@shared/types/spotify/player";
 
 import type React from "react";
@@ -17,7 +18,8 @@ export type EventType =
     | "queueAdded"
     | "queueRemoved"
     | "contextEnabled"
-    | "contextDisabled";
+    | "contextDisabled"
+    | "themeChanged";
 
 export interface EventArgs {
     platformLoaded: [];
@@ -29,6 +31,7 @@ export interface EventArgs {
     queueRemoved: [songs: Song[], state: PlayerState];
     contextEnabled: [context: Context];
     contextDisabled: [context: Context];
+    themeChanged: [newTheme: Theme];
 }
 
 export type EventListener<E extends EventType> = (...args: EventArgs[E]) => void;

@@ -1,18 +1,18 @@
 import "./optionType.css";
 
-import type { AnyPluginOption } from "@api/context/plugin/settings";
+import type { AnyContextOption } from "@api/context/settings";
 import { Text } from "@components/spotify";
 
 import type { PropsWithChildren } from "react";
 
-export interface OptionTypeProps<T extends AnyPluginOption> {
+export interface OptionTypeProps<T extends AnyContextOption> {
     id: string;
     schema: T;
     value: T["default"];
     onChange(value: T["default"]): void;
 }
 
-export function OptionType<T extends AnyPluginOption>(
+export function OptionType<T extends AnyContextOption>(
     props: PropsWithChildren<OptionTypeProps<T>> & {
         error?: string;
     }

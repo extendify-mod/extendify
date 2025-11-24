@@ -1,6 +1,6 @@
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
-import { registerPluginOptions } from "@api/context/plugin/settings";
+import { registerContextOptions } from "@api/context/settings";
 
 /**
  * This is how you register a plugin. It returns a logger and the plugin object.
@@ -28,7 +28,7 @@ const { plugin, logger } = registerPlugin({
 });
 
 // We can also make config options
-const { homeNavLog } = registerPluginOptions(plugin, {
+const { homeNavLog } = registerContextOptions(plugin, {
     homeNavLog: {
         type: "boolean",
         description: "Whether to enable the log message for when the user clicks the Home button!",

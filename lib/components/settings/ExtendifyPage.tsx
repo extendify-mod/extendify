@@ -85,7 +85,7 @@ export default function () {
                     {activeTab.canSearch && (
                         <FilterProvider>
                             <SearchBar
-                                placeholder={`Search ${activeTab}...`}
+                                placeholder={`Search ${activeTab.name}...`}
                                 alwaysExpanded={false}
                                 debounceFilterChangeTimeout={0}
                                 onFilter={(query) => setSearchQuery(query.toLowerCase())}
@@ -96,7 +96,7 @@ export default function () {
                     )}
                 </div>
             </div>
-            {tabs.find((tab) => tab.name === activeTab.name)?.component ?? <></>}
+            {activeTab.component ?? <></>}
         </>
     );
 }

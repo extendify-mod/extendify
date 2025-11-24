@@ -1,7 +1,6 @@
-import type { pluginOptions, settingsValues } from "@api/context/plugin/settings";
 import type { executeQuery, findQuery } from "@api/gql";
 import type { platform, resolveApi } from "@api/platform";
-import type { moduleCache } from "@api/registry";
+import type { contextOptions, moduleCache, settingsValues } from "@api/registry";
 import type { wreq } from "@webpack";
 import type {
     exportFilters,
@@ -33,7 +32,7 @@ declare global {
 
         setSpotifyLogLevel: typeof setSpotifyLogLevel;
 
-        pluginOptions: typeof pluginOptions;
+        contextOptions: typeof contextOptions;
         settingsValues: typeof settingsValues;
 
         findQuery: typeof findQuery;

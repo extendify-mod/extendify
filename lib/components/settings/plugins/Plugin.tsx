@@ -3,7 +3,7 @@ import "./plugin.css";
 
 import { contextHasPatches } from "@api/context/patch";
 import type { Plugin } from "@api/context/plugin";
-import { isPluginEnabled, pluginHasOptions, setPluginEnabled } from "@api/context/plugin/settings";
+import { contextHasOptions, isPluginEnabled, setPluginEnabled } from "@api/context/settings";
 import { useState } from "@api/react";
 import { GearIcon, InfoIcon } from "@components/icons";
 import { PluginModal } from "@components/settings/plugins";
@@ -26,9 +26,9 @@ export default function (props: Props) {
                 onClose={() => setModalOpened(false)}
                 onRestartNeeded={() => props.onRestartNeeded?.(props.plugin.name)}
             />
-            <div className="ext-plugin-header">
+            <div className="ext-settings-container-header">
                 <Text
-                    className="ext-plugin-header-name"
+                    className="ext-settings-container-title"
                     semanticColor="textBase"
                     variant="titleSmall"
                 >
@@ -37,7 +37,7 @@ export default function (props: Props) {
                 <ButtonTertiary
                     className="ext-plugin-header-icon"
                     aria-label={`Configure ${props.plugin.name}`}
-                    iconOnly={() => (pluginHasOptions(props.plugin) ? <GearIcon /> : <InfoIcon />)}
+                    iconOnly={() => (contextHasOptions(props.plugin) ? <GearIcon /> : <InfoIcon />)}
                     onClick={() => setModalOpened(true)}
                 />
                 <Toggle
@@ -57,7 +57,7 @@ export default function (props: Props) {
             <Text
                 semanticColor="textSubdued"
                 variant="bodyMedium"
-                className="ext-plugin-description"
+                className="ext-settings-container-description"
             >
                 {props.plugin.description}
             </Text>
