@@ -1,4 +1,3 @@
-import { emitEvent } from "@api/context/event";
 import { findModule } from "@webpack/module";
 
 export let React: typeof import("react");
@@ -10,9 +9,12 @@ export let useRef: typeof React.useRef;
 export let useReducer: typeof React.useReducer;
 export let useCallback: typeof React.useCallback;
 
+window.ExtendifyFragment = Symbol.for("react.fragment");
+window.ExtendifyCreateElement = () => {};
+
 findModule<typeof React>("useState").then((module) => {
+    window.ExtendifyCreateElement = module.createElement;
+
     React = module;
     ({ useState, useEffect, useLayoutEffect, useMemo, useRef, useReducer, useCallback } = React);
-
-    emitEvent("reactLoaded", React);
 });

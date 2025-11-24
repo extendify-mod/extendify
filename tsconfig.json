@@ -28,8 +28,6 @@
 
             "@components/*": ["lib/components/*"],
 
-            "@inject": ["lib/inject/index.ts"],
-
             "@shared/*": ["lib/shared/*"],
 
             "@webpack": ["lib/webpack/index.ts"],
