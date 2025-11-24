@@ -1,5 +1,6 @@
 // sort-imports-ignore
 
+import "@api/themes";
 import "@webpack/exporter";
 import "@webpack/interceptor";
 import "@webpack/loader";
