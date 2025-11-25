@@ -5,7 +5,7 @@ import type { Logger } from "@shared/logger";
 
 const { context, logger: contextLogger } = registerContext({
     name: "Plugins",
-    platforms: ["desktop", "webos", "browser"]
+    platforms: ["desktop", "browser"]
 });
 
 export type PluginDef = Omit<Plugin, "started">;
@@ -43,14 +43,14 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
 
 export function isPlugin(context: Context | string) {
     if (typeof context === "string") {
-        return Array.from(plugins.values()).find((plugin) => plugin.name === context);
+        return plugins.values().find((plugin) => plugin.name === context);
     }
 
     return "description" in context;
 }
 
 function startPlugins() {
-    for (const plugin of Array.from(plugins.values())) {
+    for (const plugin of plugins) {
         if (!isContextEnabled(plugin) || plugin.started) {
             continue;
         }

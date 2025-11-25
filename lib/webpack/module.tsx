@@ -103,7 +103,7 @@ function checkSubscription(
 }
 
 export function onModuleLoaded(module: RawModule) {
-    for (const subscription of Array.from(exportSubscriptions.values())) {
+    for (const subscription of exportSubscriptions) {
         if (checkSubscription(subscription, module.exports)) {
             continue;
         }
@@ -117,7 +117,7 @@ export function onModuleLoaded(module: RawModule) {
         }
     }
 
-    for (const subscription of Array.from(moduleSubscriptions.values())) {
+    for (const subscription of moduleSubscriptions) {
         if (typeof module.exports !== "object") {
             continue;
         }

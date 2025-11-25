@@ -54,7 +54,7 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
         `((?:\\.encore-${base}-theme,)?\\.encore-${base}-theme(?:\\s+\\.[\\w-]+)?){([^}]+)}`,
         "g"
     );
-    for (const [_, selector, variables] of Array.from(stylesheet.matchAll(regex))) {
+    for (const [_, selector, variables] of stylesheet.matchAll(regex)) {
         if (!selector || !variables) {
             continue;
         }

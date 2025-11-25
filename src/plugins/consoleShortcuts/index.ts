@@ -17,7 +17,7 @@ const { logger } = registerPlugin({
     description: "Expose internal APIs to the window object",
     authors: ["7elia"],
     required: DEVELOPMENT,
-    platforms: ["desktop", "webos", "browser"],
+    platforms: ["desktop", "browser"],
     async start() {
         Object.defineProperties(window, {
             wreq: {

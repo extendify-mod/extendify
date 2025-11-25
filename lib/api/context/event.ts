@@ -4,7 +4,7 @@ import type { PlayerState, Song } from "@shared/types/spotify/player";
 
 const { logger } = registerContext({
     name: "Events",
-    platforms: ["desktop", "webos", "browser"]
+    platforms: ["desktop", "browser"]
 });
 
 export type EventType =
@@ -96,7 +96,7 @@ export async function emitEvent<E extends EventType>(event: E, ...args: EventArg
             continue;
         }
 
-        for (const callback of Array.from(listeners.values())) {
+        for (const callback of listeners) {
             callback(...args);
         }
     }
