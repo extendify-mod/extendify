@@ -7,7 +7,7 @@ import { contextHasOptions, isPluginEnabled, setPluginEnabled } from "@api/conte
 import { useState } from "@api/react";
 import { GearIcon, InfoIcon } from "@components/icons";
 import { PluginModal } from "@components/settings/plugins";
-import { ButtonTertiary, Text, Toggle } from "@components/spotify";
+import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 
 interface Props {
     plugin: Plugin;
@@ -61,6 +61,13 @@ export default function (props: Props) {
             >
                 {props.plugin.description}
             </Text>
+            <div>
+                {props.plugin.platforms.map((platform) => (
+                    <Chip selected={true} selectedColorSet="invertedLight">
+                        {platform}
+                    </Chip>
+                ))}
+            </div>
         </div>
     );
 }
