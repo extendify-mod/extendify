@@ -18,7 +18,8 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
         });
     }
 
-    const filteredPlugins = Array.from(plugins.values())
+    const filteredPlugins = plugins
+        .values()
         .filter(
             (plugin) =>
                 !searchQuery?.length ||

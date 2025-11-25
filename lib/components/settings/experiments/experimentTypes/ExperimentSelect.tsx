@@ -4,6 +4,11 @@ import { Select, type SelectOption } from "@components/input";
 import type { ExperimentTypeProps } from "@components/settings/experiments/experimentTypes";
 import type { BooleanExperiment, EnumExperiment } from "@shared/types/spotify/experiments";
 
+const booleanSelectOpts = [
+    { label: "ENABLED", value: true },
+    { label: "DISABLED", value: false }
+];
+
 export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExperiment>) {
     const [state, setState] = useState(
         props.experiment.localValue ?? props.experiment.spec.defaultValue
@@ -11,10 +16,7 @@ export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExpe
 
     const options: SelectOption[] =
         props.experiment.type === "boolean"
-            ? [
-                  { label: "ENABLED", value: true },
-                  { label: "DISABLED", value: false }
-              ]
+            ? booleanSelectOpts
             : props.experiment.spec.values.map((option) => ({
                   label: option.toUpperCase(),
                   value: option

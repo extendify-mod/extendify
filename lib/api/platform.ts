@@ -26,7 +26,7 @@ export interface ApiOverride {
 
 const { context, logger } = registerContext({
     name: "Platform",
-    platforms: ["desktop", "webos", "browser"]
+    platforms: ["desktop", "browser"]
 });
 
 registerPatch(context, {

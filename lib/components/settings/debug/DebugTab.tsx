@@ -22,9 +22,7 @@ export default function () {
     const [pkgHidden, setPkgHidden] = useState(false);
 
     useEffect(() => {
-        setIcons(
-            Array.from(new Set(findAllModuleExports(exportFilters.byCode("svgContent:"))).values())
-        );
+        setIcons(Array.from(new Set(findAllModuleExports(exportFilters.byCode("svgContent:")))));
     }, []);
 
     useEffect(() => {

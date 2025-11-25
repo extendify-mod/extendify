@@ -29,7 +29,7 @@ registerPatch(context, {
 });
 
 exportFunction(context, function injectTopbarElements(children: any[]) {
-    for (const [_, Element] of Array.from(topbarElements.entries())) {
+    for (const [_, Element] of topbarElements) {
         children.push(<Element />);
     }
 

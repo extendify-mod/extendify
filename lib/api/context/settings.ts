@@ -47,7 +47,7 @@ initializeSettings();
 function createDefaultMap(): Map<string, ContextSettings> {
     const map = new Map<string, ContextSettings>();
 
-    for (const context of Array.from(contexts.values())) {
+    for (const context of contexts.values()) {
         map.set(context.name, createSettingsProxy(context.name, getDefaultSettings(context)));
     }
 
@@ -86,7 +86,7 @@ function loadSettings(): Map<string, ContextSettings> {
     );
     const defaultMap = createDefaultMap();
 
-    for (const [context, settings] of Array.from(defaultMap.entries())) {
+    for (const [context, settings] of defaultMap.entries()) {
         if (savedMap.has(context)) {
             continue;
         }
@@ -98,7 +98,7 @@ function loadSettings(): Map<string, ContextSettings> {
 }
 
 function initializeSettings() {
-    for (const [key, value] of Array.from(loadSettings().entries())) {
+    for (const [key, value] of loadSettings().entries()) {
         settingsValues.set(key, value);
     }
 }
@@ -106,7 +106,7 @@ function initializeSettings() {
 function saveSettings(values: typeof settingsValues = settingsValues) {
     const plain: Record<string, any> = {};
 
-    for (const [context, state] of Array.from(values.entries())) {
+    for (const [context, state] of values.entries()) {
         plain[context] = { ...state };
     }
 
