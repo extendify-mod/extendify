@@ -1,5 +1,5 @@
 {
     "editor.detectIndentation": false,
     "editor.tabSize": 4,
-    "prettier.endOfLine": "crlf"
+    "editor.defaultFormatter": "biomejs.biome"
 }
