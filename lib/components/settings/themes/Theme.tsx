@@ -4,20 +4,22 @@ import "./theme.css";
 import { registerContext } from "@api/context";
 import { registerEventListener, removeEventListener } from "@api/context/event";
 import { useEffect, useState } from "@api/react";
-import { type Theme, enableTheme, getEnabledTheme } from "@api/themes";
+import { enableTheme, getEnabledTheme, type Theme } from "@api/themes";
+import { ThemeModal } from "@components/settings/themes";
 import { Chip, Text, Toggle } from "@components/spotify";
 
 interface Props {
     theme: Theme;
 }
 
-const { context, logger } = registerContext({
+const { context } = registerContext({
     name: "ThemeComponent",
     platforms: ["browser", "desktop"]
 });
 
 export default function (props: Props) {
     const [enabled, setEnabled] = useState(getEnabledTheme()?.name === props.theme.name);
+    const [modalOpen, setModalOpen] = useState(false);
 
     function onToggle(value: boolean) {
         if (!value) {
@@ -29,7 +31,7 @@ export default function (props: Props) {
     }
 
     useEffect(() => {
-        const listener = registerEventListener(context, "themeChanged", (newTheme) => {
+        const listener = registerEventListener(context, "themeChanged", newTheme => {
             if (!enabled) {
                 return;
             }
@@ -43,29 +45,36 @@ export default function (props: Props) {
     });
 
     return (
-        <div className="ext-settings-container">
-            <div className="ext-settings-container-header">
+        <>
+            <ThemeModal
+                theme={props.theme}
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+            />
+            <div className="ext-settings-container">
+                <div className="ext-settings-container-header">
+                    <Text
+                        className="ext-settings-container-title"
+                        semanticColor="textBase"
+                        variant="titleSmall"
+                    >
+                        {props.theme.name}
+                    </Text>
+                    <Toggle value={enabled} onSelected={onToggle} />
+                </div>
                 <Text
-                    className="ext-settings-container-title"
-                    semanticColor="textBase"
-                    variant="titleSmall"
+                    semanticColor="textSubdued"
+                    variant="bodyMedium"
+                    className="ext-settings-container-description"
                 >
-                    {props.theme.name}
+                    {props.theme.description}
                 </Text>
-                <Toggle value={enabled} onSelected={onToggle} />
+                <div>
+                    <Chip selected={true} selectedColorSet="invertedLight">
+                        {props.theme.base}
+                    </Chip>
+                </div>
             </div>
-            <Text
-                semanticColor="textSubdued"
-                variant="bodyMedium"
-                className="ext-settings-container-description"
-            >
-                {props.theme.description}
-            </Text>
-            <div>
-                <Chip selected={true} selectedColorSet="invertedLight">
-                    {props.theme.base}
-                </Chip>
-            </div>
-        </div>
+        </>
     );
 }
