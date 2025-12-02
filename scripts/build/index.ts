@@ -3,10 +3,11 @@ import { entrypoints, webpackChunkName } from "@scripts/build/config";
 import { exists, getTimeDifference, stringify } from "@scripts/utils";
 import type { TargetPlatform } from "@shared/types";
 
-import { copyFile, mkdir, readdir, rm } from "fs/promises";
-import { join } from "path";
 import { rolldown } from "rolldown";
 import { importGlobPlugin } from "rolldown/experimental";
+
+import { copyFile, mkdir, readdir, rm } from "node:fs/promises";
+import { join } from "node:path";
 
 const DEVELOPMENT = hasArg("dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
@@ -14,7 +15,7 @@ const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
 const start = performance.now();
 
 try {
-    await rm("dist", { recursive: true, force: true });
+    await rm("dist", { force: true, recursive: true });
 } catch {}
 await mkdir("dist", { recursive: true });
 console.log(`Created dist folder (${getTimeDifference(start)} ms)`);
@@ -23,7 +24,7 @@ const assetsCopyStart = performance.now();
 for (const fileName of await readdir(`src/targets/${PLATFORM}`, { recursive: true })) {
     try {
         await copyFile(join("src/targets", PLATFORM, fileName), join("dist", fileName));
-    } catch (e) {
+    } catch (_) {
         await mkdir(join("dist", fileName), { recursive: true });
     }
 }
@@ -31,40 +32,40 @@ console.log(`Copied ${PLATFORM} assets (${getTimeDifference(assetsCopyStart)} ms
 
 const bundleStart = performance.now();
 const bundle = await rolldown({
-    input: "src/index.ts",
-    platform: "browser",
+    define: stringify({
+        DEVELOPMENT: DEVELOPMENT,
+        ENTRYPOINTS: entrypoints[PLATFORM],
+        PLATFORM: PLATFORM,
+        WEBPACK_CHUNK: webpackChunkName[PLATFORM]
+    }),
     experimental: {
         strictExecutionOrder: true
     },
-    treeshake: true,
-    keepNames: false,
-    define: stringify({
-        DEVELOPMENT: DEVELOPMENT,
-        PLATFORM: PLATFORM,
-        ENTRYPOINTS: entrypoints[PLATFORM],
-        WEBPACK_CHUNK: webpackChunkName[PLATFORM]
-    }),
-    plugins: [importGlobPlugin()],
-    tsconfig: "tsconfig.json",
+    input: "src/index.ts",
     jsx: {
-        mode: "classic",
         factory: "ExtendifyCreateElement",
-        fragment: "ExtendifyFragment"
-    }
+        fragment: "ExtendifyFragment",
+        mode: "classic"
+    },
+    keepNames: false,
+    platform: "browser",
+    plugins: [importGlobPlugin()],
+    treeshake: true,
+    tsconfig: "tsconfig.json"
 });
 console.log(`Created bundle (${getTimeDifference(bundleStart)} ms)`);
 
 const bundleWriteStart = performance.now();
 await bundle.write({
+    file: "dist/extendify.js",
+    format: "iife",
     minify: {
         compress: false,
         // Having this set to false is important for the $exp exporting stuff
         mangle: false
     },
     minifyInternalExports: true,
-    sourcemap: DEVELOPMENT ? "inline" : "hidden",
-    file: "dist/extendify.js",
-    format: "iife"
+    sourcemap: DEVELOPMENT ? "inline" : "hidden"
 });
 console.log(`Wrote bundle (${getTimeDifference(bundleWriteStart)} ms)`);
 
@@ -74,7 +75,7 @@ if (await exists("dist/dist")) {
         await copyFile(join("dist", "dist", fileName), join("dist", fileName));
     }
 
-    await rm("dist/dist", { recursive: true, force: true });
+    await rm("dist/dist", { force: true, recursive: true });
     console.log(`Fixed dist/dist (${getTimeDifference(fixStart)} ms)`);
 }
 

@@ -73,12 +73,12 @@ export interface AdsTestingClient {
     addPlaytime(opts: { seconds: number });
 }
 
-interface SlotsClient {
+export interface SlotsClient {
     clearAllAds(params: { slotId: string }): Promise<void>;
     getSlots(): Promise<{ adSlots: { slotId: string; slot_id: string }[] }>;
 }
 
-interface SlotSettingsClient {
+export interface SlotSettingsClient {
     updateAdServerEndpoint(params: { slotIds: string[]; url: string }): Promise<void>;
     updateDisplayTimeInterval(params: { slotId: string; timeInterval: string }): Promise<void>;
     updateSlotEnabled(params: { slotId: string; enabled: boolean }): Promise<void>;

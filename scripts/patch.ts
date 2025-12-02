@@ -1,15 +1,19 @@
 import { exists, getAppsPath } from "@scripts/utils";
 
-import { lstat } from "fs/promises";
-import { copyFile, readFile, readdir, rm, writeFile } from "fs/promises";
 import JSZip from "jszip";
-import { join } from "path";
+
+import { copyFile, lstat, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { exit } from "node:process";
 
 if (!(await exists("dist"))) {
     throw new Error("Extendify has not been built yet");
 }
 
 const appsPath = await getAppsPath();
+if (!appsPath) {
+    exit();
+}
 const apps = await readdir(appsPath);
 
 // Using xpui folder instead of archive (Likely from Spicetify installation)
@@ -47,9 +51,9 @@ for (const relativePath of dist) {
 }
 
 const buffer = await archive.generateAsync({
-    type: "uint8array",
     compression: "DEFLATE",
-    compressionOptions: { level: 9 }
+    compressionOptions: { level: 9 },
+    type: "uint8array"
 });
 
 await writeFile(join(appsPath, "xpui.spa"), buffer);

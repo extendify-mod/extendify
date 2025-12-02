@@ -5,24 +5,24 @@ import { registerContextOptions } from "@api/context/settings";
 import ArtistCards from "./ArtistCards";
 
 const { plugin } = registerPlugin({
-    name: "MoreArtistCards",
-    description: "Displays every artist in the Now Playing section",
     authors: ["7elia"],
+    description: "Displays every artist in the Now Playing section",
+    name: "MoreArtistCards",
     platforms: ["desktop", "browser"]
 });
 
 const options = registerContextOptions(plugin, {
-    hideImages: {
-        type: "boolean",
-        description: "Hide artist images from the artist card",
-        default: false,
-        restartNeeded: true
-    },
     alwaysShow: {
-        type: "boolean",
-        description: "Show artist cards even if they don't have a description",
         default: true,
-        restartNeeded: true
+        description: "Show artist cards even if they don't have a description",
+        restartNeeded: true,
+        type: "boolean"
+    },
+    hideImages: {
+        default: false,
+        description: "Hide artist images from the artist card",
+        restartNeeded: true,
+        type: "boolean"
     }
 });
 
@@ -38,24 +38,24 @@ registerPatch(plugin, {
 // Removes the image from the ArtistAbout component
 registerPatch(plugin, {
     find: "web-player.now-playing-view.artist-about.title",
+    predicate() {
+        return options.hideImages;
+    },
     replacement: {
         match: /(children:\[)(\(0,.*?name:\i}\),)/,
         replace: "$1"
-    },
-    predicate() {
-        return options.hideImages;
     }
 });
 
 // Skips the check for an empty biography
 registerPatch(plugin, {
     find: "NPVArtistAboutV2",
+    predicate() {
+        return options.alwaysShow;
+    },
     replacement: {
         match: /!\i\.biography\?\.text/,
         replace: "false"
-    },
-    predicate() {
-        return options.alwaysShow;
     }
 });
 

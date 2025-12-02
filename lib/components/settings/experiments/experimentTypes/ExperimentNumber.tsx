@@ -24,8 +24,8 @@ export default function (props: ExperimentTypeProps<NumberExperiment>) {
 
         await remoteConfig?.setOverride(
             {
-                source: props.experiment.source,
                 name: props.experiment.name,
+                source: props.experiment.source,
                 type: props.experiment.type
             },
             value
@@ -37,10 +37,10 @@ export default function (props: ExperimentTypeProps<NumberExperiment>) {
 
     return (
         <TextInput
-            onChange={(value) => onChange(Number(value))}
-            value={state}
-            type="number"
+            onChange={value => onChange(Number(value))}
             placeholder={`Enter a number from ${props.experiment.spec.lower} to ${props.experiment.spec.upper}`}
+            type="number"
+            value={state}
         />
     );
 }

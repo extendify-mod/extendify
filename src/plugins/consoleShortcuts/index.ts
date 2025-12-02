@@ -13,21 +13,21 @@ import {
 } from "@webpack/module";
 
 const { logger } = registerPlugin({
-    name: "ConsoleShortcuts",
-    description: "Expose internal APIs to the window object",
     authors: ["7elia"],
-    required: DEVELOPMENT,
+    description: "Expose internal APIs to the window object",
+    name: "ConsoleShortcuts",
     platforms: ["desktop", "browser"],
+    required: DEVELOPMENT,
     async start() {
         Object.defineProperties(window, {
-            wreq: {
-                get: () => wreq
+            exportFilters: {
+                get: () => exportFilters
+            },
+            moduleCache: {
+                get: () => moduleCache
             },
             platform: {
                 get: () => platform
-            },
-            exportFilters: {
-                get: () => exportFilters
             },
             pluginOptions: {
                 get: () => contextOptions
@@ -35,8 +35,8 @@ const { logger } = registerPlugin({
             settingsValues: {
                 get: () => settingsValues
             },
-            moduleCache: {
-                get: () => moduleCache
+            wreq: {
+                get: () => wreq
             }
         });
 

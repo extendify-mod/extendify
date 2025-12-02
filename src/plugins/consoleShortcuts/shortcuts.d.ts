@@ -39,5 +39,3 @@ declare global {
         executeQuery: typeof executeQuery;
     }
 }
-
-export {};

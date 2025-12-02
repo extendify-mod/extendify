@@ -1,8 +1,9 @@
 import { getKwarg, hasArg } from "@scripts/args";
+import { createLogger } from "@shared/logger";
 
-import { spawn, spawnSync } from "bun";
-import { access, constants, readdir } from "fs/promises";
-import { join } from "path";
+import { $ } from "bun";
+import { access, constants, readdir } from "node:fs/promises";
+import { join } from "node:path";
 
 const winAppId = "SpotifyAB.SpotifyMusic";
 
@@ -18,93 +19,174 @@ const spotifyCachePath = ".cache/spotify";
 
 const usingFlatpak = hasArg("flatpak");
 
+const logger = createLogger({ name: "Scripts" });
+
+function noInstall() {
+    throw new Error(
+        "No Spotify installation found. Use --spotifyPath if it was moved somewhere else"
+    );
+}
+
+function noData() {
+    throw new Error("No Spotify data folder found. Use --cachePath if it was moved somewhere else");
+}
+
 export async function exists(path: string) {
     return await access(path, constants.F_OK)
         .then(() => true)
         .catch(() => false);
 }
 
-export async function getSpotifyPath(): Promise<string> {
-    let argument;
-    if ((argument = getKwarg("spotifyPath"))) {
+export async function getSpotifyPath(): Promise<string | undefined> {
+    const argument = getKwarg("spotifyPath");
+    if (argument) {
         return argument;
     }
 
     switch (process.platform) {
-        case "win32":
-            const appDataPath = join(process.env.AppData!, "Spotify");
+        case "win32": {
+            if (!process.env.AppData || !process.env.ProgramFiles) {
+                noInstall();
+                return;
+            }
+
+            const appDataPath = join(process.env.AppData, "Spotify");
             if (await exists(appDataPath)) {
                 return appDataPath;
             }
 
-            const winAppsPath = join(process.env.ProgramFiles!, "WindowsApps");
-            for (const appName of await readdir(winAppsPath)) {
-                if (!appName.startsWith(winAppId)) {
-                    continue;
-                }
+            try {
+                const winAppsPath = join(process.env.ProgramFiles, "WindowsApps");
+                for (const appName of await readdir(winAppsPath)) {
+                    if (!appName.startsWith(winAppId)) {
+                        continue;
+                    }
 
-                return join(winAppsPath, appName);
+                    return join(winAppsPath, appName);
+                }
+            } catch {
+                logger.error("Couldn't access WinApps folder");
             }
 
-            throw new Error(
-                "No Spotify installation found. Use --spotifyPath if it was moved somewhere else"
-            );
-        case "linux":
-            return join(process.env.HOME!, usingFlatpak ? flatpakPath : spotifyLauncherPath);
-        case "darwin":
-            return "/Applications/Spotify.app/Contents/Resources";
+            noInstall();
+            return;
+        }
+        case "linux": {
+            if (!process.env.HOME) {
+                noInstall();
+                return;
+            }
+
+            const path = join(process.env.HOME, usingFlatpak ? flatpakPath : spotifyLauncherPath);
+            if (!(await exists(path))) {
+                noInstall();
+                return;
+            }
+
+            return path;
+        }
+        case "darwin": {
+            const path = "/Applications/Spotify.app/Contents/Resources";
+            if (!(await exists(path))) {
+                noInstall();
+                return;
+            }
+
+            return path;
+        }
         default:
             throw new Error(`Platform ${process.platform} not implemented`);
     }
 }
 
-export async function getCachePath(): Promise<string> {
-    let argument;
-    if ((argument = getKwarg("cachePath"))) {
+export async function getCachePath(): Promise<string | undefined> {
+    const argument = getKwarg("cachePath");
+    if (argument) {
         return argument;
     }
 
     switch (process.platform) {
-        case "win32":
-            const appDataPath = join(process.env.LocalAppData!, "Spotify");
+        case "win32": {
+            if (!process.env.LocalAppData) {
+                noData();
+                return;
+            }
+
+            const appDataPath = join(process.env.LocalAppData, "Spotify");
             if (await exists(appDataPath)) {
                 return appDataPath;
             }
 
-            const packagesPath = join(process.env.LocalAppData!, "Packages");
-            for (const pkgName of await readdir(packagesPath)) {
-                if (!pkgName.startsWith(winAppId)) {
-                    continue;
-                }
+            try {
+                const packagesPath = join(process.env.LocalAppData, "Packages");
+                for (const pkgName of await readdir(packagesPath)) {
+                    if (!pkgName.startsWith(winAppId)) {
+                        continue;
+                    }
 
-                return join(packagesPath, pkgName, "LocalState/Spotify");
+                    return join(packagesPath, pkgName, "LocalState/Spotify");
+                }
+            } catch {
+                logger.error("Couldn't access Packages folder");
             }
 
-            throw new Error(
-                "No Spotify data folder found. Use --cachePath if it was moved somewhere else"
+            noData();
+            return;
+        }
+        case "linux": {
+            if (!process.env.HOME) {
+                noData();
+                return;
+            }
+
+            const path = join(process.env.HOME, usingFlatpak ? flatpakCachePath : spotifyCachePath);
+            if (!(await exists(path))) {
+                noData();
+                return;
+            }
+
+            return path;
+        }
+        case "darwin": {
+            if (!process.env.HOME) {
+                noData();
+                return;
+            }
+
+            const path = join(
+                process.env.HOME,
+                "Library/Application Support/Spotify/PersistentCache"
             );
-        case "linux":
-            return join(process.env.HOME!, usingFlatpak ? flatpakCachePath : spotifyCachePath);
-        case "darwin":
-            return join(process.env.HOME!, "Library/Application SUpport/Spotify/PersistentCache");
+            if (!(await exists(path))) {
+                noData();
+                return;
+            }
+
+            return path;
+        }
         default:
             throw new Error(`Platform ${process.platform} not implemented`);
     }
 }
 
-export async function getAppsPath(): Promise<string> {
-    return join(await getSpotifyPath(), "Apps");
+export async function getAppsPath(): Promise<string | undefined> {
+    const spotifyPath = await getSpotifyPath();
+    if (!spotifyPath) {
+        return;
+    }
+
+    return join(spotifyPath, "Apps");
 }
 
-export async function killSpotify(): Promise<void> {
+export function killSpotify(): Promise<void> {
     return new Promise((resolve, reject) => {
-        let command;
+        let command: string;
         switch (process.platform) {
             case "win32":
                 command = "taskkill /F /IM Spotify.exe";
                 break;
             case "linux":
-                command = "killall spotify";
+                command = "pkill spotify";
                 break;
             case "darwin":
                 command = "killall Spotify";
@@ -114,27 +196,27 @@ export async function killSpotify(): Promise<void> {
                 return;
         }
 
-        try {
-            spawnSync({ cmd: command.split(" ") });
-            resolve();
-        } catch (e) {
-            console.error(`Couldn't kill Spotify process: ${e}`);
-        }
+        $`${command}`
+            .then(() => resolve())
+            .catch(e => logger.error(`Couldn't kill Spotify process: ${e}`));
     });
 }
 
 export async function launchSpotify(): Promise<void> {
+    const spotifyPath = await getSpotifyPath();
+    if (!spotifyPath) {
+        return;
+    }
+
     switch (process.platform) {
         case "win32":
-            spawn({ cmd: [join(await getSpotifyPath(), "Spotify.exe")] });
+            await $`start \"${join(spotifyPath, "Spotify.exe")}\"`;
             break;
         case "linux":
-            spawn({
-                cmd: usingFlatpak ? ["flatpak", "run", "com.spotify.Client"] : ["spotify-launcher"]
-            });
+            await $`${usingFlatpak ? "flatpak run com.spotify.Client" : "spotify-launcher"}`;
             break;
         case "darwin":
-            spawn({ cmd: [join(await getSpotifyPath(), "../MacOS/Spotify")] });
+            await $`${join(spotifyPath, "../MacOS/Spotify")}`;
             break;
     }
 }

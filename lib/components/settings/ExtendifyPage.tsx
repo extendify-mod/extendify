@@ -24,9 +24,9 @@ function SettingsHeaderChip(props: { label: string; selected: boolean; onClick: 
         <div role="presentation">
             <Chip
                 aria-label={props.label}
-                selectedColorSet="invertedLight"
-                selected={props.selected}
                 onClick={props.onClick}
+                selected={props.selected}
+                selectedColorSet="invertedLight"
             >
                 {props.label}
             </Chip>
@@ -40,57 +40,63 @@ export default function () {
 
     const tabs: Tab[] = [
         {
-            name: "Plugins",
+            canSearch: true,
             component: <PluginsTab searchQuery={searchQuery} />,
-            canSearch: true
+            name: "Plugins"
         },
         {
-            name: "Themes",
+            canSearch: true,
             component: <ThemesTab searchQuery={searchQuery} />,
-            canSearch: true
+            name: "Themes"
         },
         {
-            name: "Experiments",
+            canSearch: true,
             component: <ExperimentsTab searchQuery={searchQuery} />,
-            canSearch: true
+            name: "Experiments"
         }
     ];
 
     if (DEVELOPMENT) {
         tabs.push({
-            name: "Debug",
+            canSearch: false,
             component: <DebugTab />,
-            canSearch: false
+            name: "Debug"
         });
     }
 
-    const [activeTab, setActiveTab] = useState(tabs[0]!);
+    const [activeTab, setActiveTab] = useState<Tab>(
+        tabs[0] ?? {
+            canSearch: false,
+            component: <></>,
+            name: "Error"
+        }
+    );
 
     return (
         <>
             <div className="ext-settings-section-layout">
                 <div className="ext-settings-header-chips">
-                    {tabs.map((tab) => (
+                    {tabs.map(tab => (
                         <SettingsHeaderChip
                             label={tab.name}
-                            selected={tab.name === activeTab.name}
                             onClick={() => setActiveTab(tab)}
+                            selected={tab.name === activeTab.name}
                         />
                     ))}
                 </div>
                 <div className="ext-settings-header-title" ref={outerRef}>
-                    <Text as="h1" variant="titleMedium" semanticColor="textBase">
+                    <Text as="h1" semanticColor="textBase" variant="titleMedium">
                         {activeTab.name}
                     </Text>
                     {activeTab.canSearch && (
                         <FilterProvider>
                             <SearchBar
-                                placeholder={`Search ${activeTab.name}...`}
                                 alwaysExpanded={false}
-                                debounceFilterChangeTimeout={0}
-                                onFilter={(query) => setSearchQuery(query.toLowerCase())}
-                                onClear={() => setSearchQuery("")}
                                 clearOnEscapeInElementRef={outerRef}
+                                debounceFilterChangeTimeout={0}
+                                onClear={() => setSearchQuery("")}
+                                onFilter={query => setSearchQuery(query.toLowerCase())}
+                                placeholder={`Search ${activeTab.name}...`}
                             />
                         </FilterProvider>
                     )}

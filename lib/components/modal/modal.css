@@ -19,8 +19,8 @@
 
 .ext-modal-content {
     display: flex;
-    gap: 20px;
     flex-direction: column;
+    gap: 20px;
     padding: 10px 24px 24px 24px;
     border-top: 2px solid var(--text-base);
 }
@@ -35,21 +35,4 @@
 
 .ext-modal-close:hover {
     background-color: hsla(0, 0%, 100%, 0.1);
-}
-
-/* MQQEonum615k8mGkliT_ */
-.ext-modal-close {
-    align-self: end;
-    border: 0;
-    border-radius: 32px;
-    color: hsla(0, 0%, 100%, 0.7);
-    height: 100%;
-    width: min-content;
-    margin-top: -8px;
-    -webkit-margin-end: -8px;
-    margin-inline-end: -8px;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    align-items: center;
 }

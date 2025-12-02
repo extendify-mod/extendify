@@ -41,11 +41,11 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
 
         const originalMod = mod;
 
-        const factory = (factories[id] = function (
+        const factory: WebpackModule = (
             module,
             exports: typeof module.exports,
             require: WebpackRequire
-        ) {
+        ) => {
             if (!mod) {
                 return;
             }
@@ -74,8 +74,9 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
             }
 
             onModuleLoaded(module);
-        } as WebpackModule);
+        };
 
+        factories[id] = factory;
         factory.$$ = originalMod;
         factory.toString = originalMod.toString.bind(originalMod);
 
@@ -89,7 +90,7 @@ export function patchModule<T>(module: T, id: string): T {
     }
 
     const patchedBy: Set<string> = new Set();
-    let src = "0," + module.toString().replaceAll("\n", "");
+    let src = `0,${module.toString().replaceAll("\n", "")}`;
 
     for (let i = 0; i < patches.length; i++) {
         const patch = patches[i];
@@ -159,6 +160,8 @@ export function patchModule<T>(module: T, id: string): T {
 
                 const header = `// Webpack Module ${id} - Patched by ${[...patchedBy].join(", ")}`;
                 const footer = `//# sourceURL=https://xpui.app.spotify.com/modules/WebpackModule${id}.js`;
+                // biome-ignore lint/complexity/noCommaOperator: This is like the only place we do this and it's just a js hack sooo...
+                // biome-ignore lint/security/noGlobalEval:      ^
                 module = (0, eval)(`${header}\n${newSrc}\n${footer}`);
 
                 src = newSrc;

@@ -47,9 +47,9 @@ export default function (props: Props) {
     return (
         <>
             <ThemeModal
-                theme={props.theme}
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
+                theme={props.theme}
             />
             <div className="ext-settings-container">
                 <div className="ext-settings-container-header">
@@ -60,12 +60,12 @@ export default function (props: Props) {
                     >
                         {props.theme.name}
                     </Text>
-                    <Toggle value={enabled} onSelected={onToggle} />
+                    <Toggle onSelected={onToggle} value={enabled} />
                 </div>
                 <Text
+                    className="ext-settings-container-description"
                     semanticColor="textSubdued"
                     variant="bodyMedium"
-                    className="ext-settings-container-description"
                 >
                     {props.theme.description}
                 </Text>

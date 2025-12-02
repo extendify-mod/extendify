@@ -37,35 +37,36 @@ export default function (props: Props) {
 
     return (
         <Modal
+            animationMs={100}
             id={`modal-${props.plugin.name}`}
             isOpen={props.isOpen}
             onClose={props.onClose}
-            animationMs={100}
             title={props.plugin.name}
         >
             <div className="ext-plugin-modal-description">
-                <Text as="span" variant="bodyMedium" semanticColor="textSubdued">
+                <Text as="span" semanticColor="textSubdued" variant="bodyMedium">
                     {props.plugin.description}
                 </Text>
             </div>
 
-            <Text as="span" variant="titleSmall" semanticColor="textBase">
+            <Text as="span" semanticColor="textBase" variant="titleSmall">
                 Authors
             </Text>
             <div className="ext-plugin-modal-authors">
-                {props.plugin.authors.map((author) => (
+                {props.plugin.authors.map(author => (
                     <Tooltip label={author} placement="bottom">
                         <Link to={`https://github.com/${author}`}>
                             <img
-                                src={`https://github.com/${author}.png`}
+                                alt={author}
                                 className="ext-plugin-author-pfp"
+                                src={`https://github.com/${author}.png`}
                             />
                         </Link>
                     </Tooltip>
                 ))}
             </div>
 
-            <Text as="span" variant="titleSmall" semanticColor="textBase">
+            <Text as="span" semanticColor="textBase" variant="titleSmall">
                 Settings
             </Text>
             <div className="ext-plugin-modal-settings">
@@ -80,18 +81,22 @@ export default function (props: Props) {
                             <Component
                                 id={key}
                                 key={key}
-                                schema={option}
-                                onChange={(value) => {
+                                onChange={value => {
                                     if (!settingsValues || !settingsValues.has(props.plugin.name)) {
                                         return;
                                     }
 
-                                    settingsValues.get(props.plugin.name)![key] = value;
+                                    const values = settingsValues.get(props.plugin.name);
+                                    if (!values) {
+                                        return;
+                                    }
+                                    values[key] = value;
 
                                     if (option.restartNeeded) {
                                         props.onRestartNeeded();
                                     }
                                 }}
+                                schema={option}
                                 value={
                                     settingsValues.get(props.plugin.name)?.[key] ?? option.default
                                 }
@@ -99,13 +104,13 @@ export default function (props: Props) {
                         );
                     })
                 ) : (
-                    <Text as="span" variant="bodyMedium" semanticColor="textSubdued">
+                    <Text as="span" semanticColor="textSubdued" variant="bodyMedium">
                         This plugin has no settings.
                     </Text>
                 )}
             </div>
 
-            <ModalFooter onConfirm={props.onClose} onCancel={props.onClose} />
+            <ModalFooter onCancel={props.onClose} onConfirm={props.onClose} />
         </Modal>
     );
 }

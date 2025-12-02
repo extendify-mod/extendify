@@ -57,26 +57,23 @@ export default function (props: OptionTypeProps<SliderContextOption>) {
         <OptionType {...props} error={error}>
             <div className="ext-plugin-option-slider-container">
                 <TextInput
-                    id={`${props.id}-input`}
                     className="ext-plugin-option-slider-input"
+                    id={`${props.id}-input`}
                     onChange={onInputChange}
-                    value={getRealValue(state).toFixed(1)}
                     type="number"
+                    value={getRealValue(state).toFixed(1)}
                 />
-                {/* <Text as="span" semanticColor="textSubdued" variant="bodySmall">
-                    {getRealValue(state).toFixed(0)}
-                </Text> */}
                 <Slider
-                    id={`${props.id}-slider`}
                     className={"ext-plugin-option-slider"}
-                    value={state}
                     enableAnimation={true}
-                    onDragStart={onSliderChange}
-                    onDragMove={onSliderChange}
-                    onDragEnd={onSliderChange}
+                    id={`${props.id}-slider`}
                     labelText={getRealValue(state).toFixed(0)}
                     max={1}
+                    onDragEnd={onSliderChange}
+                    onDragMove={onSliderChange}
+                    onDragStart={onSliderChange}
                     step={0.1}
+                    value={state}
                 />
             </div>
         </OptionType>

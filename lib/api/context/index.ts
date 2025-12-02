@@ -1,7 +1,7 @@
-import { type Plugin, isPlugin } from "@api/context/plugin";
+import { isPlugin, type Plugin } from "@api/context/plugin";
 import { isPluginEnabled } from "@api/context/settings";
 import { contexts, plugins } from "@api/registry";
-import { Logger, createLogger } from "@shared/logger";
+import { createLogger, type Logger } from "@shared/logger";
 import type { TargetPlatform } from "@shared/types";
 
 export interface Context {
@@ -22,7 +22,7 @@ export function registerContext(context: Context): {
     context: Context;
     logger: Logger;
 } {
-    if (contexts.values().find((c) => c.name === context.name)) {
+    if (contexts.values().find(c => c.name === context.name)) {
         throw new Error(`Context with name ${context.name} already registered`);
     }
 
@@ -31,8 +31,8 @@ export function registerContext(context: Context): {
     return {
         context,
         logger: createLogger({
-            name: `${context.loggerPrefix ?? "Context"}/${context.name}`,
-            color: context.loggerColor
+            color: context.loggerColor,
+            name: `${context.loggerPrefix ?? "Context"}/${context.name}`
         })
     };
 }
@@ -45,8 +45,8 @@ export function registerContext(context: Context): {
 export function isContextEnabled(context: Context | Plugin | string): boolean {
     if (typeof context === "string") {
         const entry =
-            plugins.values().find((p) => p.name === context) ??
-            contexts.values().find((c) => c.name === context);
+            plugins.values().find(p => p.name === context) ??
+            contexts.values().find(c => c.name === context);
 
         if (!entry) {
             throw new Error(`Couldn't find plugin or context entry ${context}`);

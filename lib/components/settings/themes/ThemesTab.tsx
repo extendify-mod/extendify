@@ -9,9 +9,9 @@ import { Theme, ThemeModal } from "@components/settings/themes";
 import { ButtonPrimary } from "@components/spotify";
 
 const defaultNewTheme: ThemeType = {
-    name: "New Theme",
-    description: "My awesome theme",
     base: "dark",
+    description: "My awesome theme",
+    name: "New Theme",
     overrides: []
 };
 

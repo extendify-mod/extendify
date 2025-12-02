@@ -1,7 +1,6 @@
 import { type Context, registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { platform } from "@api/platform";
-import { React } from "@api/react";
 import { Route } from "@components/spotify";
 
 import type { ComponentType } from "react";
@@ -58,7 +57,7 @@ exportFunction(context, function injectPages(children: any[]) {
         const { route, component: Component } = page;
         const key = (route.startsWith("/") ? route.substring(1) : route).replaceAll("/", "-");
 
-        children.push(<Route key={key} path={route} element={<Component />} />);
+        children.push(<Route element={<Component />} key={key} path={route} />);
     }
 
     return children;
@@ -78,7 +77,7 @@ export function isCustomPage(route?: string) {
         route = platform?.getHistory().location.pathname;
     }
 
-    return route ? !!registeredPages.find((page) => page.route === route) : false;
+    return route ? !!registeredPages.find(page => page.route === route) : false;
 }
 
 export function redirectTo(route: string) {

@@ -21,10 +21,10 @@ export default function (props: Props) {
     return (
         <div className="ext-settings-container">
             <PluginModal
-                plugin={props.plugin}
                 isOpen={modalOpened}
                 onClose={() => setModalOpened(false)}
                 onRestartNeeded={() => props.onRestartNeeded?.(props.plugin.name)}
+                plugin={props.plugin}
             />
             <div className="ext-settings-container-header">
                 <Text
@@ -35,16 +35,14 @@ export default function (props: Props) {
                     {props.plugin.name}
                 </Text>
                 <ButtonTertiary
-                    className="ext-plugin-header-icon"
                     aria-label={`Configure ${props.plugin.name}`}
+                    className="ext-plugin-header-icon"
                     iconOnly={() => (contextHasOptions(props.plugin) ? <GearIcon /> : <InfoIcon />)}
                     onClick={() => setModalOpened(true)}
                 />
                 <Toggle
-                    id={`toggle-${props.plugin.name}`}
-                    value={enabled}
                     disabled={props.plugin.required}
-                    onSelected={(value) => {
+                    onSelected={value => {
                         setEnabled(value);
                         setPluginEnabled(props.plugin, value);
 
@@ -52,17 +50,18 @@ export default function (props: Props) {
                             props.onRestartNeeded?.(props.plugin.name);
                         }
                     }}
+                    value={enabled}
                 />
             </div>
             <Text
+                className="ext-settings-container-description"
                 semanticColor="textSubdued"
                 variant="bodyMedium"
-                className="ext-settings-container-description"
             >
                 {props.plugin.description}
             </Text>
             <div>
-                {props.plugin.platforms.map((platform) => (
+                {props.plugin.platforms.map(platform => (
                     <Chip selected={true} selectedColorSet="invertedLight">
                         {platform}
                     </Chip>

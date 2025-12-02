@@ -26,8 +26,8 @@ export default function (props: OptionTypeProps<StringContextOption>) {
     return (
         <OptionType {...props} error={error}>
             <TextInput
-                id={props.id}
                 className="ext-plugin-option-element"
+                id={props.id}
                 onChange={onChange}
                 value={state}
             />

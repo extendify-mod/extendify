@@ -38,12 +38,12 @@ export function registerPlugin(plugin: PluginDef): { plugin: Plugin; logger: Log
     plugins.add(plugin);
     contextLogger.debug(`Plugin ${plugin.name} registered`);
 
-    return { plugin, logger };
+    return { logger, plugin };
 }
 
 export function isPlugin(context: Context | string) {
     if (typeof context === "string") {
-        return plugins.values().find((plugin) => plugin.name === context);
+        return plugins.values().find(plugin => plugin.name === context);
     }
 
     return "description" in context;

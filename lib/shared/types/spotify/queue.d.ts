@@ -1,5 +1,5 @@
 import type { Capabilities } from "@shared/types/spotify";
-import { Song } from "@shared/types/spotify/player";
+import type { Song } from "@shared/types/spotify/player";
 
 export interface QueueState {
     current: Song;

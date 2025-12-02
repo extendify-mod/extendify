@@ -12,7 +12,7 @@ export let useCallback: typeof React.useCallback;
 window.ExtendifyFragment = Symbol.for("react.fragment");
 window.ExtendifyCreateElement = () => {};
 
-findModule<typeof React>("useState").then((module) => {
+findModule<typeof React>("useState").then(module => {
     window.ExtendifyCreateElement = module.createElement;
 
     React = module;

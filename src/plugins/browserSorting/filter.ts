@@ -6,9 +6,9 @@ export function filterResults(items: Song[], options: PlaylistQueryOptions): Son
 
     if (filter?.length) {
         items = items.filter(
-            (song) =>
+            song =>
                 song.album.name.toLowerCase().includes(filter) ||
-                song.artists.some((artist) => artist.name.toLowerCase().includes(filter)) ||
+                song.artists.some(artist => artist.name.toLowerCase().includes(filter)) ||
                 song.name.toLowerCase().includes(filter)
         );
     }

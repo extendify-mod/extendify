@@ -10,7 +10,7 @@ export interface MultiMatch {
 export type AnyMatch = Match | MultiMatch;
 
 export function createExtendedRegExp(regex: RegExp) {
-    return new RegExp(regex.source.replaceAll("\\i", IDENTIFIER_REGEX), regex.flags);
+    return new RegExp(regex.source.replaceAll(String.raw`\i`, IDENTIFIER_REGEX), regex.flags);
 }
 
 export function srcMatches(

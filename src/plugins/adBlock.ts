@@ -4,9 +4,9 @@ import type { AdsTestingClient, SlotSettingsClient, SlotsClient } from "@shared/
 import { exportFilters, findModuleExport } from "@webpack/module";
 
 registerPlugin({
-    name: "AdBlock",
-    description: "Block ads on Spotify",
     authors: ["7elia"],
+    description: "Block ads on Spotify",
+    name: "AdBlock",
     platforms: ["desktop", "browser"],
     async start() {
         await configureSlotsClient();
@@ -33,7 +33,7 @@ async function configureSlotsClient() {
     for (const slot of slots.adSlots) {
         audio.inStreamApi.adsCoreConnector.subscribeToSlot(
             slot.slotId ?? slot.slot_id,
-            async (data) => {
+            async data => {
                 const slotId = data?.adSlotEvent?.slotId;
                 if (!slotId) {
                     return;
@@ -46,7 +46,7 @@ async function configureSlotsClient() {
                     slotIds: [slotId],
                     url: "https://poop.com"
                 });
-                await settingsClient.updateSlotEnabled({ slotId, enabled: false });
+                await settingsClient.updateSlotEnabled({ enabled: false, slotId });
                 await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: "0" });
                 await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: "0" });
             }

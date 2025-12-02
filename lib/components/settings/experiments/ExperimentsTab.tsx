@@ -21,11 +21,11 @@ function InnerSection(props: InnerSectionProps) {
 
     return (
         <>
-            <Text as="span" variant="bodyMediumBold" semanticColor="textSubdued">
+            <Text as="span" semanticColor="textSubdued" variant="bodyMediumBold">
                 {props.title}
             </Text>
             <div className="ext-settings-grid">
-                {props.experiments.map((experiment) => (
+                {props.experiments.map(experiment => (
                     <Experiment
                         experiment={experiment}
                         onValueChanged={() => props.onValueChanged(experiment)}
@@ -42,13 +42,13 @@ export default function (props: ExtendifyTabProps) {
 
     function onOverrideChanged(experiment: AnyExperiment) {
         if (getLocalValue(experiment.name) === experiment.spec.defaultValue) {
-            setOverridden((prev) => prev.filter((exp) => exp.name !== experiment.name));
-            setExperiments((prev) => [...prev, experiment]);
+            setOverridden(prev => prev.filter(exp => exp.name !== experiment.name));
+            setExperiments(prev => [...prev, experiment]);
             return;
         }
 
-        setOverridden((prev) => [...prev, experiment]);
-        setExperiments((prev) => prev.filter((exp) => exp.name !== experiment.name));
+        setOverridden(prev => [...prev, experiment]);
+        setExperiments(prev => prev.filter(exp => exp.name !== experiment.name));
     }
 
     useEffect(() => {
@@ -58,18 +58,18 @@ export default function (props: ExtendifyTabProps) {
 
         remoteConfig._properties
             .filter(
-                (experiment) =>
+                experiment =>
                     !props.searchQuery?.length ||
                     experiment.name.toLowerCase().includes(props.searchQuery) ||
                     experiment.description.toLowerCase().includes(props.searchQuery)
             )
-            .forEach((experiment) => {
+            .forEach(experiment => {
                 const localValue = getLocalValue(experiment.name);
 
                 if (localValue === experiment.spec.defaultValue) {
-                    setExperiments((prev) => [...prev, experiment]);
+                    setExperiments(prev => [...prev, experiment]);
                 } else {
-                    setOverridden((prev) => [...prev, experiment]);
+                    setOverridden(prev => [...prev, experiment]);
                 }
             });
     }, [remoteConfig]);
@@ -77,14 +77,14 @@ export default function (props: ExtendifyTabProps) {
     return (
         <div className="ext-settings-section-layout">
             <InnerSection
-                title="Overridden"
                 experiments={overridden}
                 onValueChanged={onOverrideChanged}
+                title="Overridden"
             />
             <InnerSection
-                title="Experiments"
                 experiments={experiments}
                 onValueChanged={onOverrideChanged}
+                title="Experiments"
             />
         </div>
     );

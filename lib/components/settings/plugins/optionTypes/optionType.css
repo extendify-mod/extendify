@@ -17,12 +17,11 @@
 
 .ext-plugin-option-slider-container {
     display: flex;
+    gap: 10px;
     width: 50%;
     height: 28px;
-    /* margin-top: auto; */
-    vertical-align: middle;
-    gap: 10px;
     line-height: 12px;
+    vertical-align: middle;
 }
 
 .ext-plugin-option-slider-input {

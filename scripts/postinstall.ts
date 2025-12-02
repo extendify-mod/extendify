@@ -1,7 +1,3 @@
-import { execSync } from "child_process";
+import { $ } from "bun";
 
-try {
-    execSync("bun2nix -o bun.nix", {
-        stdio: "ignore"
-    });
-} catch {}
+$`bun2nix -o bun.nix`.quiet();

@@ -1,18 +1,18 @@
 .ext-experiment-header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    height: 2rem;
+    justify-content: space-between;
     width: 100%;
+    height: 2rem;
 }
 
 .ext-experiment-config {
     display: flex;
+    align-items: flex-end;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    justify-content: center;
-    align-items: flex-end;
 }
 
 .ext-experiment-config > .ext-text-input-container,

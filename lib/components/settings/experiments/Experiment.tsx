@@ -45,7 +45,7 @@ export default function (props: ExperimentProps) {
     return (
         <div className="ext-settings-container">
             <div className="ext-experiment-header">
-                <Text as="span" variant="bodyMediumBold" semanticColor="textBase">
+                <Text as="span" semanticColor="textBase" variant="bodyMediumBold">
                     {props.experiment.name}
                 </Text>
                 {changed && (

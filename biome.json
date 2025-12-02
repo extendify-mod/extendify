@@ -1,31 +1,45 @@
 {
     "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
-    "formatter": {
-        "enabled": true,
-        "formatWithErrors": true,
-        "attributePosition": "auto",
-        "indentStyle": "space",
-        "indentWidth": 4,
-        "lineWidth": 100,
-        "lineEnding": "lf",
-        "includes": ["{src,lib,scripts}/**/*.{ts,tsx}"]
-    },
     "assist": {
         "actions": {
             "source": {
-                "organizeImports": "on"
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [
+                            "*.css",
+                            ":BLANK_LINE:",
+
+                            [":ALIAS:", "!:PACKAGE:", "@*/**/*", "@*"],
+                            ":BLANK_LINE:",
+
+                            [":PACKAGE:"],
+                            ":BLANK_LINE:",
+
+                            [":PACKAGE_WITH_PROTOCOL:", ":NODE:", ":BUN:"],
+                            ":BLANK_LINE:",
+
+                            ":PATH:",
+                            ":BLANK_LINE:"
+                        ]
+                    }
+                },
+                "useSortedAttributes": "on",
+                "useSortedKeys": "on",
+                "useSortedProperties": "on"
             }
-        }
+        },
+        "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"]
     },
-    "linter": {
-        "rules": {
-            "suspicious": {
-                "noExplicitAny": "off"
-            },
-            "complexity": {
-                "noUselessEscapeInRegex": "off"
-            }
-        }
+    "formatter": {
+        "attributePosition": "auto",
+        "enabled": true,
+        "formatWithErrors": true,
+        "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"],
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 100
     },
     "javascript": {
         "formatter": {
@@ -41,6 +55,18 @@
     "json": {
         "formatter": {
             "trailingCommas": "none"
+        }
+    },
+    "linter": {
+        "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"],
+        "rules": {
+            "complexity": {
+                "noUselessEscapeInRegex": "off",
+                "noUselessFragments": "off"
+            },
+            "suspicious": {
+                "noExplicitAny": "off"
+            }
         }
     }
 }

@@ -4,10 +4,10 @@ import { registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
 
 const { plugin } = registerPlugin({
-    name: "Fixes",
-    description: "Provides some fixes for Spotify",
     authors: ["7elia"],
+    description: "Provides some fixes for Spotify",
     enabledByDefault: true,
+    name: "Fixes",
     platforms: ["desktop", "browser"]
 });
 

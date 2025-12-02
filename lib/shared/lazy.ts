@@ -9,12 +9,12 @@ export function createLazy<T>(getter: () => T): T {
         return cache;
     }
 
-    return new Proxy(function () {}, {
-        get(_, prop, receiver) {
-            return Reflect.get(getTarget() as any, prop, receiver);
-        },
+    return new Proxy(() => {}, {
         apply(_, thisArg, argArray) {
             return Reflect.apply(getTarget() as any, thisArg, argArray);
+        },
+        get(_, prop, receiver) {
+            return Reflect.get(getTarget() as any, prop, receiver);
         }
     }) as T;
 }

@@ -3,13 +3,13 @@ import { registerPlugin } from "@api/context/plugin";
 import { player } from "@api/platform";
 
 const { plugin, logger } = registerPlugin({
-    name: "SkipExplicit",
-    description: "Automatically skip explicit songs",
     authors: ["7elia"],
+    description: "Automatically skip explicit songs",
+    name: "SkipExplicit",
     platforms: ["desktop", "browser"]
 });
 
-registerEventListener(plugin, "songChanged", (song) => {
+registerEventListener(plugin, "songChanged", song => {
     if (!player || !song.isExplicit) {
         return;
     }

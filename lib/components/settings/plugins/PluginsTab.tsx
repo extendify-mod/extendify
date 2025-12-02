@@ -11,22 +11,22 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
     const [needRestart, setNeedRestart] = useState<string[]>([]);
 
     function onRestartNeeded(plugin: string) {
-        setNeedRestart((prev) => {
+        setNeedRestart(prev => {
             return !prev.includes(plugin)
                 ? [...prev, plugin]
-                : prev.filter((name) => name !== plugin);
+                : prev.filter(name => name !== plugin);
         });
     }
 
     const filteredPlugins = plugins
         .values()
         .filter(
-            (plugin) =>
+            plugin =>
                 !searchQuery?.length ||
                 plugin.name.toLowerCase().includes(searchQuery) ||
                 plugin.description.toLowerCase().includes(searchQuery)
         )
-        .filter((plugin) => plugin.platforms.includes(PLATFORM));
+        .filter(plugin => plugin.platforms.includes(PLATFORM));
 
     return (
         <>
@@ -46,7 +46,7 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
                 )}
 
                 <div className="ext-settings-grid">
-                    {filteredPlugins.map((plugin) => (
+                    {filteredPlugins.map(plugin => (
                         <Plugin onRestartNeeded={onRestartNeeded} plugin={plugin} />
                     ))}
                 </div>

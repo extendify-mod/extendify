@@ -2,9 +2,9 @@ import { exportFunction, registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
 
 const { plugin } = registerPlugin({
-    name: "NoMusicVideos",
-    description: "Removes all mentions of music videos",
     authors: ["7elia"],
+    description: "Removes all mentions of music videos",
+    name: "NoMusicVideos",
     platforms: ["desktop", "browser"]
 });
 
@@ -54,13 +54,13 @@ registerPatch(
 registerPatch(
     plugin,
     {
+        all: true,
         find: {
             matches: ["internal-track-link", "rowImage"],
             mode: "any"
         },
-        all: true,
-        noWarn: true,
         noError: true,
+        noWarn: true,
         replacement: {
             match: /(isVideo:)\i(?:\|\|\i)?([,}])/g,
             replace: "$1false$2"
