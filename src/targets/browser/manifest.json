@@ -1,27 +1,27 @@
 {
-    "version": "0.1",
-    "manifest_version": 3,
-    "name": "Extendify (Web)",
-    "homepage_url": "https://github.com/extendify-mod",
-    "icons": {
-        "128": "icon.png"
-    },
-    "host_permissions": ["*://*.spotify.com/*"],
     "content_scripts": [
         {
-            "run_at": "document_start",
-            "matches": ["*://open.spotify.com/extendify"],
-            "js": ["redirect.js"],
             "all_frames": true,
+            "js": ["redirect.js"],
+            "matches": ["*://open.spotify.com/extendify"],
+            "run_at": "document_start",
             "world": "MAIN"
         },
         {
-            "run_at": "document_start",
-            "matches": ["*://open.spotify.com/*"],
-            "js": ["extendify.js"],
-            "css": ["extendify.css"],
             "all_frames": true,
+            "css": ["extendify.css"],
+            "js": ["extendify.js"],
+            "matches": ["*://open.spotify.com/*"],
+            "run_at": "document_start",
             "world": "MAIN"
         }
-    ]
+    ],
+    "homepage_url": "https://github.com/extendify-mod",
+    "host_permissions": ["*://*.spotify.com/*"],
+    "icons": {
+        "128": "icon.png"
+    },
+    "manifest_version": 3,
+    "name": "Extendify (Web)",
+    "version": "0.1"
 }

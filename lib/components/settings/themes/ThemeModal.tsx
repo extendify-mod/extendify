@@ -1,8 +1,8 @@
 import "./themeModal.css";
 
 import { useEffect, useState } from "@api/react";
-import { type Theme, type ThemeBase, getSavedThemes } from "@api/themes";
-import { type StyleSheet, parseBaseStyleSheet } from "@api/themes/styles";
+import { getSavedThemes, type Theme, type ThemeBase } from "@api/themes";
+import { parseBaseStyleSheet, type StyleSheet } from "@api/themes/styles";
 import { Select, type SelectOption, TextInput } from "@components/input";
 import { Modal, ModalFooter } from "@components/modal";
 import { Text } from "@components/spotify";
@@ -27,14 +27,14 @@ export default function (props: Props) {
     const [stylesSelectOpts, setStylesSelectOpts] = useState<SelectOption<StyleSheet>[]>([]);
 
     useEffect(() => {
-        parseBaseStyleSheet(themeBase).then((styles) => {
+        parseBaseStyleSheet(themeBase).then(styles => {
             if (!styles) {
                 return;
             }
 
             setStyles(styles);
             setStylesSelectOpts(
-                styles.map((style) => {
+                styles.map(style => {
                     return {
                         label: style.readableName,
                         value: style
@@ -56,7 +56,7 @@ export default function (props: Props) {
             valid = false;
         }
 
-        if (getSavedThemes().find((theme) => theme.name.toLowerCase() === name.toLowerCase())) {
+        if (getSavedThemes().find(theme => theme.name.toLowerCase() === name.toLowerCase())) {
             valid = false;
         }
 
@@ -77,28 +77,28 @@ export default function (props: Props) {
     }
 
     return (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} animationMs={100} title="Theme Editor">
+        <Modal animationMs={100} isOpen={props.isOpen} onClose={props.onClose} title="Theme Editor">
             <div className="ext-theme-modal-inputs">
                 <div className="ext-theme-modal-header">
-                    <TextInput placeholder="Theme Name" value={name} onChange={onNameChange} />
+                    <TextInput onChange={onNameChange} placeholder="Theme Name" value={name} />
                     <Select
+                        onSelect={onBaseChange}
                         options={themeBaseOptions}
                         value={themeBaseOptions[0]}
-                        onSelect={onBaseChange}
                     />
                 </div>
                 <div className="ext-theme-modal-style-select">
                     <Select
+                        onSelect={value => setSelectedStyle(value?.value)}
                         options={stylesSelectOpts}
                         value={stylesSelectOpts[0]}
-                        onSelect={(value) => setSelectedStyle(value?.value)}
                     />
                 </div>
             </div>
 
             {selectedStyle && (
                 <div className="ext-theme-modal-variables">
-                    {selectedStyle.variables.map((variable) => (
+                    {selectedStyle.variables.map(variable => (
                         <div className="ext-theme-modal-variable">
                             <Text as="span" variant="bodyMediumBold">
                                 {variable.readableName}:
@@ -110,9 +110,9 @@ export default function (props: Props) {
             )}
 
             <ModalFooter
-                onConfirm={props.onClose}
-                onCancel={props.onClose}
                 disabled={!validInput}
+                onCancel={props.onClose}
+                onConfirm={props.onClose}
             />
         </Modal>
     );

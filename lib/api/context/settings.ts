@@ -1,6 +1,6 @@
 import type { Context } from "@api/context";
 import { emitEvent } from "@api/context/event";
-import { type Plugin, isPlugin } from "@api/context/plugin";
+import { isPlugin, type Plugin } from "@api/context/plugin";
 import { contextOptions, contexts, settingsValues } from "@api/registry";
 import { CONFIG_KEY } from "@shared/constants";
 import { createLogger } from "@shared/logger";

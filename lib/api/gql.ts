@@ -1,6 +1,5 @@
+import { platform } from "@api/platform";
 import { exportFilters, findAllModuleExports } from "@webpack/module";
-
-import { platform } from "./platform";
 
 interface Query {
     name: string;

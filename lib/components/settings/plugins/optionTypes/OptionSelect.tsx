@@ -36,13 +36,13 @@ export default function (props: OptionTypeProps<SelectContextOption>) {
     return (
         <OptionType {...props} error={error}>
             <Select
-                id={props.id}
                 className="ext-plugin-option-element"
-                value={createSelectOption(
-                    props.schema.options.find((option) => option === state) ?? props.schema.default
-                )}
+                id={props.id}
+                onSelect={option => onChange(option?.value ?? props.schema.default)}
                 options={props.schema.options.map(createSelectOption)}
-                onSelect={(option) => onChange(option?.value ?? props.schema.default)}
+                value={createSelectOption(
+                    props.schema.options.find(option => option === state) ?? props.schema.default
+                )}
             />
         </OptionType>
     );

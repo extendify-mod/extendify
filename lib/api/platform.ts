@@ -11,10 +11,10 @@ import type { PlayerAPI, PlayerState, Song } from "@shared/types/spotify/player"
 import { diffArrays } from "diff";
 
 export let platform: Platform | undefined;
-export let player = resolveApi<PlayerAPI>("PlayerAPI");
-export let playback = resolveApi<PlaybackAPI>("PlaybackAPI");
-export let remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
-export let productState = resolveApi<ProductStateAPI>("ProductStateAPI");
+export const player = resolveApi<PlayerAPI>("PlayerAPI");
+export const playback = resolveApi<PlaybackAPI>("PlaybackAPI");
+export const remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
+export const productState = resolveApi<ProductStateAPI>("ProductStateAPI");
 
 export interface ApiOverride {
     context: string;
@@ -49,11 +49,11 @@ exportFunction(context, function loadPlatform(value: Platform): Platform {
     return value;
 });
 
-registerEventListener(context, "contextEnabled", (context) => {
+registerEventListener(context, "contextEnabled", context => {
     overrideApi(context.name, true);
 });
 
-registerEventListener(context, "contextDisabled", (context) => {
+registerEventListener(context, "contextDisabled", context => {
     overrideApi(context.name, false);
 });
 
@@ -93,10 +93,10 @@ function overrideApi(context: string, enable: boolean) {
         }
 
         Object.defineProperty(instance, override.fnName, {
-            value: enable ? override.replacement : override.original,
             configurable: true,
-            writable: true,
-            enumerable: false
+            enumerable: false,
+            value: enable ? override.replacement : override.original,
+            writable: true
         });
     }
 }
@@ -106,12 +106,10 @@ export function registerApiOverride(context: Context, apiName: string, fn: AnyFn
         throw new Error(`Can't override function from ${apiName} with no name`);
     }
 
-    let override;
-    if (
-        (override = overriddenFunctions.find(
-            (func) => func.fnName === fn.name && func.apiName === apiName
-        ))
-    ) {
+    const override = overriddenFunctions.find(
+        func => func.fnName === fn.name && func.apiName === apiName
+    );
+    if (override) {
         logger.error(
             `Function ${apiName}#${override.fnName} already overridden by ${override.context}`
         );
@@ -119,8 +117,8 @@ export function registerApiOverride(context: Context, apiName: string, fn: AnyFn
     }
 
     overriddenFunctions.push({
-        context: context.name,
         apiName,
+        context: context.name,
         fnName: fn.name,
         replacement: fn
     });

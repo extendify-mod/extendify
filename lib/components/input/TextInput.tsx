@@ -14,18 +14,18 @@ export default function (props: Props) {
     return (
         <div className={classNames(props.className, "ext-text-input-container")}>
             {props.label && (
-                <label htmlFor={props.id} className="ext-text-input-label">
-                    <Text variant="marginalBold" className="ext-text-input-label-content">
+                <label className="ext-text-input-label" htmlFor={props.id}>
+                    <Text className="ext-text-input-label-content" variant="marginalBold">
                         {props.label}
                     </Text>
                 </label>
             )}
             <input
                 {...props}
-                type={props.type ?? "text"}
-                dir={props.dir ?? "auto"}
                 className="ext-text-input-input"
-                onChange={(event) => props.onChange?.(event.target.value)}
+                dir={props.dir ?? "auto"}
+                onChange={event => props.onChange?.(event.target.value)}
+                type={props.type ?? "text"}
             />
         </div>
     );

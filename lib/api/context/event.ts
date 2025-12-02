@@ -56,7 +56,7 @@ export function registerEventListener<E extends EventType>(
     }
 
     if (!contextListeners[event]) {
-        // @ts-ignore: Why is this even giving an error
+        // @ts-expect-error: Why is this even giving an error
         contextListeners[event] = new Set();
     }
 
@@ -64,7 +64,7 @@ export function registerEventListener<E extends EventType>(
 
     logger.debug(`Context ${context.name} registered new event listener for ${event}`);
 
-    return { type: event, callback };
+    return { callback, type: event };
 }
 
 export function removeEventListener<E extends EventType>(

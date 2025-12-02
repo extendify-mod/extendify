@@ -3,10 +3,10 @@ import { LOGGER_NAME } from "@shared/constants";
 type LogLevel = "error" | "warn" | "info" | "debug";
 
 const levelColors: Record<LogLevel, string> = {
-    info: "#2596be",
+    debug: "#b57af5",
     error: "#e81c1c",
-    warn: "#e8801c",
-    debug: "#b57af5"
+    info: "#2596be",
+    warn: "#e8801c"
 };
 
 function getNameHash(name: string): number {

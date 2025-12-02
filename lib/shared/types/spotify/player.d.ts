@@ -144,8 +144,8 @@ export interface ArtistUnion {
             items: { name: string; url: string }[];
         };
     };
-    stats: {};
-    visuals: {};
+    stats: unknown;
+    visuals: unknown;
 }
 
 export interface Song {

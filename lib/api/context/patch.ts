@@ -1,6 +1,6 @@
 import type { Context } from "@api/context";
 import { patches } from "@api/registry";
-import { type AnyMatch, type Match, createExtendedRegExp } from "@shared/match";
+import { type AnyMatch, createExtendedRegExp, type Match } from "@shared/match";
 import type { AnyFn, TargetPlatform } from "@shared/types";
 
 export interface PatchConditions {
@@ -81,7 +81,7 @@ export function exportFunction(context: Context, fn: AnyFn) {
         throw new Error("Exported functions must have a name");
     }
 
-    let contextExports = window.exportedFunctions[context.name] ?? {};
+    const contextExports = window.exportedFunctions[context.name] ?? {};
 
     if (Object.keys(contextExports).includes(fn.name)) {
         throw new Error(`Function ${fn.name} already exported`);
@@ -110,11 +110,11 @@ export function executePatch(
         match = createExtendedRegExp(match);
     }
 
-    // @ts-ignore
+    // @ts-expect-error
     // There are multiple overloads here that conflict which causes an error when having 'string | ReplaceFn'
     return src.replace(match, replace);
 }
 
 export function contextHasPatches(contextName: string): boolean {
-    return patches.filter((patch) => patch.context.name === contextName).length >= 1;
+    return patches.filter(patch => patch.context.name === contextName).length >= 1;
 }

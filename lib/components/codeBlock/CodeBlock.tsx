@@ -32,9 +32,9 @@ export default function (props: Props) {
         <div className="ext-codeblock">
             <div className="ext-codeblock-actions">
                 <ButtonTertiary
+                    disabled={!props.code}
                     iconOnly={() => <CopyIcon />}
                     onClick={() => props.code && navigator.clipboard.writeText(props.code)}
-                    disabled={!props.code}
                 />
                 <ButtonTertiary
                     iconOnly={() => (hidden ? <ArrowUpIcon /> : <ArrowDownIcon />)}

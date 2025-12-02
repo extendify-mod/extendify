@@ -10,14 +10,14 @@ const { context } = registerContext({
 });
 
 registerTopbarElement(context, () => (
-    <ButtonPrimary size="small" onClick={() => redirectTo("/extendify")}>
+    <ButtonPrimary onClick={() => redirectTo("/extendify")} size="small">
         Extendify
     </ButtonPrimary>
 ));
 
 registerPage(context, {
-    route: "/extendify",
     component() {
         return <ExtendifyPage />;
-    }
+    },
+    route: "/extendify"
 });

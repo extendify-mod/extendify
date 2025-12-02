@@ -1,7 +1,6 @@
 import type { Icon } from "@components/icons";
 import type { ArtistUnion } from "@shared/types/spotify/player";
-import { exportFilters } from "@webpack/module";
-import { findModuleComponent } from "@webpack/module";
+import { exportFilters, findModuleComponent } from "@webpack/module";
 
 import type {
     ComponentProps,

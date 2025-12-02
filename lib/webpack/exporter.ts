@@ -1,14 +1,9 @@
 import { registerContext } from "@api/context";
-import { type PatchDef, exportFunction, registerPatch } from "@api/context/patch";
+import { exportFunction, type PatchDef, registerPatch } from "@api/context/patch";
 import { moduleCache } from "@api/registry";
 import type { ModuleEval, RawModule, WebpackRequire } from "@shared/types/webpack";
 
-import {
-    type BlockStatement,
-    type ClassDeclaration,
-    type FunctionDeclaration,
-    type Identifier
-} from "acorn";
+import type { BlockStatement, ClassDeclaration, FunctionDeclaration, Identifier } from "acorn";
 import { parse } from "acorn-loose";
 
 const { context, logger } = registerContext({
@@ -20,7 +15,6 @@ registerPatch(context, {
     all: true,
     replacement: [
         {
-            noWarn: true,
             /**
              * Turn every module into a function instead of an arrow function:
              * 1111: (a, b, c) => {} -> 1111: function(a, b, c) {}
@@ -31,6 +25,7 @@ registerPatch(context, {
              * If the module is already a function, which there is at least one example of, this patch will not apply
              */
             match: /(function)?(?:\((.*?)\)|(.|module))=>{/,
+            noWarn: true,
             replace(match, func, args1, args2) {
                 return func ? match : `function(${args1 ?? args2}){`;
             }
@@ -60,8 +55,8 @@ exportFunction(
     context,
     async function injectExporter(
         module: RawModule,
-        exports: typeof module.exports,
-        require: WebpackRequire,
+        _exports: typeof module.exports,
+        _require: WebpackRequire,
         code: string,
         ev: ModuleEval
     ) {
@@ -81,9 +76,9 @@ exportFunction(
             const customExports = parseScope(code, ev);
 
             moduleCache[moduleId] = {
+                exports: { ...customExports, ...module.exports },
                 id: moduleId,
-                loaded: true,
-                exports: { ...customExports, ...module.exports }
+                loaded: true
             };
         } catch (e) {
             logger.error(`Module ${module.id} couldn't be parsed`, e);
@@ -110,7 +105,7 @@ export function parseScope(code: string, ev: ModuleEval): Record<string, any> {
         if (["FunctionDeclaration", "ClassDeclaration"].includes(element.type)) {
             element = element as FunctionDeclaration | ClassDeclaration;
 
-            if (element.id && element.id.name) {
+            if (element.id?.name) {
                 addExport(element.id.name);
             }
 

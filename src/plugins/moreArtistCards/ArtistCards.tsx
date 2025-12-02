@@ -24,25 +24,25 @@ export default function () {
         }
 
         const builtCards = await Promise.all(
-            song.artists.map(async (artist) => {
+            song.artists.map(async artist => {
                 const {
                     data: { artistUnion: union }
                 } = await executeQuery<{
                     artistUnion: ArtistUnion;
                 }>(unionQuery, {
                     artistUri: artist.uri,
-                    trackUri: song.uri,
                     enableRelatedAudioTracks: false,
-                    enableRelatedVideos: false
+                    enableRelatedVideos: false,
+                    trackUri: song.uri
                 });
 
                 return (
                     <ArtistAbout
-                        artistUri={artist.uri}
                         artist={union.profile}
+                        artistUri={artist.uri}
+                        externalLinks={union.profile.externalLinks.items}
                         stats={union.stats}
                         visuals={union.visuals}
-                        externalLinks={union.profile.externalLinks.items}
                     />
                 );
             })
@@ -54,7 +54,7 @@ export default function () {
     useEffect(() => {
         setState(player?.getQueue().current);
 
-        const listener = registerEventListener(context, "songChanged", (song) => setState(song));
+        const listener = registerEventListener(context, "songChanged", song => setState(song));
 
         return () => {
             removeEventListener(context, listener);

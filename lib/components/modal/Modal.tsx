@@ -21,49 +21,47 @@ export default function (props: Props) {
             return;
         }
 
-        let keyListener: (event: KeyboardEvent) => any;
-        window.addEventListener(
-            "keyup",
-            (keyListener = (event) => {
-                if (!props.isOpen || event.key !== "Escape") {
-                    return;
-                }
+        function keyListener(event: KeyboardEvent) {
+            if (!props.isOpen || event.key !== "Escape") {
+                return;
+            }
 
-                props.onClose?.();
+            props.onClose?.();
 
-                window.removeEventListener("keyup", keyListener);
+            window.removeEventListener("keyup", keyListener);
 
-                event.preventDefault();
-            })
-        );
+            event.preventDefault();
+        }
+        window.addEventListener("keyup", keyListener);
 
-        let mouseListener: (event: MouseEvent) => any;
-        window.addEventListener(
-            "mouseup",
-            (mouseListener = (event) => {
-                const children = (event.target as HTMLElement)?.children;
+        function mouseListener(event: MouseEvent) {
+            const children = (event.target as HTMLElement)?.children;
 
-                if (children.length === 0 || children[0]?.id !== props.id || !props.isOpen) {
-                    return;
-                }
+            if (
+                children.length === 0 ||
+                children[0]?.ariaModal !== JSON.stringify(true) ||
+                !props.isOpen
+            ) {
+                return;
+            }
 
-                props.onClose?.();
+            props.onClose?.();
 
-                window.removeEventListener("mouseup", mouseListener);
+            window.removeEventListener("mouseup", mouseListener);
 
-                event.preventDefault();
-            })
-        );
+            event.preventDefault();
+        }
+        window.addEventListener("mouseup", mouseListener);
     }, [props]);
 
     const hasAnimation = (props.animationMs ?? 0) > 0;
 
     return (
         <ModalWrapper
-            id={props.id}
-            className={props.className}
             animated={hasAnimation}
             animation={hasAnimation ? { closeTimeoutMs: props.animationMs } : undefined}
+            className={props.className}
+            id={props.id}
             isOpen={props.isOpen}
         >
             <div className="ext-modal-container">
@@ -72,7 +70,6 @@ export default function (props: Props) {
                         {props.title}
                     </Text>
                     <ButtonTertiary
-                        // className="ext-modal-close"
                         aria-label="Close"
                         iconOnly={() => <CloseIcon />}
                         onClick={() => props.onClose?.()}

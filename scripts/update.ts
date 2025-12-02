@@ -1,16 +1,20 @@
 import { exists, getSpotifyPath, killSpotify } from "@scripts/utils";
 
 import { spawnSync } from "bun";
-import { rm, writeFile } from "fs/promises";
-import { tmpdir } from "os";
-import path from "path";
+import { rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { exit } from "node:process";
 
 await killSpotify();
 
 const root = await getSpotifyPath();
+if (!root) {
+    exit();
+}
 
 switch (process.platform) {
-    case "win32":
+    case "win32": {
         for (const subPath of ["Spotify.exe", "Apps"]) {
             const fullPath = path.join(root, subPath);
 
@@ -25,8 +29,8 @@ switch (process.platform) {
 
         const installer = await (
             await fetch("https://download.scdn.co/SpotifySetup.exe", {
-                method: "GET",
                 cache: "no-cache",
+                method: "GET",
                 redirect: "follow"
             })
         ).bytes();
@@ -41,6 +45,7 @@ switch (process.platform) {
         spawnSync({ cmd: [installerPath] });
 
         break;
+    }
     default:
         // If you want to implement your platform, it should do the following:
         // - Delete the Spotify executable file

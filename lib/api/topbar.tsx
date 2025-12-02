@@ -20,12 +20,12 @@ registerPatch(context, {
 
 registerPatch(context, {
     find: "isGlobalNavDraggable",
+    platforms: ["browser"],
     replacement: {
         // Enables the desktop topbar for web versions
         match: /({isWeb:\i,isPWA:\i,isDesktop:\i})=.*?\(\)/,
         replace: "$1={isWeb:false,isPWA:false,isDesktop:true}"
-    },
-    platforms: ["browser"]
+    }
 });
 
 exportFunction(context, function injectTopbarElements(children: any[]) {

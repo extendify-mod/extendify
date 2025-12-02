@@ -23,7 +23,7 @@ export interface StyleSheetOverride {
 function createReadableString(key: string): string {
     return key
         .split("-")
-        .map((word) => word[0]?.toUpperCase() + word.substring(1))
+        .map(word => word[0]?.toUpperCase() + word.substring(1))
         .join(" ");
 }
 
@@ -51,7 +51,7 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
     const styles: StyleSheet[] = [];
 
     const regex = new RegExp(
-        `((?:\\.encore-${base}-theme,)?\\.encore-${base}-theme(?:\\s+\\.[\\w-]+)?){([^}]+)}`,
+        String.raw`((?:\.encore-${base}-theme,)?\.encore-${base}-theme(?:\s+\.[\w-]+)?){([^}]+)}`,
         "g"
     );
     for (const [_, selector, variables] of stylesheet.matchAll(regex)) {
@@ -79,8 +79,8 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
         }
 
         styles.push({
-            selector,
             readableName: createReadableString((selector.split(" ")[1] ?? selector).substring(1)),
+            selector,
             variables: parsedVariables
         });
     }
@@ -103,7 +103,7 @@ function serializeOverrides(overrides: StyleSheetOverride[]): string {
         }
     }
 
-    return content + "}";
+    return `${content}}`;
 }
 
 export function createStyleElement(overrides: StyleSheetOverride[]): HTMLStyleElement {

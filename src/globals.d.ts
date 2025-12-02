@@ -1,6 +1,6 @@
 import type { TargetPlatform } from "@api/context";
 import type { AnyFn } from "@api/context/patch";
-import type { WebpackChunkGlobal, WebpackRequire } from "@shared/types/webpack";
+import type { WebpackChunkGlobal } from "@shared/types/webpack";
 
 import type React from "react";
 
@@ -19,7 +19,7 @@ declare global {
     interface Window {
         [WEBPACK_CHUNK]?: WebpackChunkGlobal;
 
-        ExtendifyFragment: Symbol;
+        ExtendifyFragment: symbol;
         ExtendifyCreateElement: typeof React.createElement | (() => any);
 
         exportedFunctions: {
@@ -48,5 +48,3 @@ declare global {
         query?: string | Record<string, string>;
     }
 }
-
-export {};

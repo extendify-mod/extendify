@@ -1,5 +1,3 @@
-// sort-imports-ignore
-
 import { plugins } from "@api/registry";
 import { createLogger } from "@shared/logger";
 

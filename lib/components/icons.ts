@@ -1,5 +1,5 @@
 import type { SemanticColor } from "@components/spotify";
-import { type LazyComponent, exportFilters, findModuleComponent } from "@webpack/module";
+import { exportFilters, findModuleComponent, type LazyComponent } from "@webpack/module";
 
 export interface Icon {
     iconSize?: number;

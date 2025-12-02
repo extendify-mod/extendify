@@ -17,7 +17,7 @@ export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExpe
     const options: SelectOption[] =
         props.experiment.type === "boolean"
             ? booleanSelectOpts
-            : props.experiment.spec.values.map((option) => ({
+            : props.experiment.spec.values.map(option => ({
                   label: option.toUpperCase(),
                   value: option
               }));
@@ -25,8 +25,8 @@ export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExpe
     async function onChange(option: SelectOption) {
         await remoteConfig?.setOverride(
             {
-                source: props.experiment.source,
                 name: props.experiment.name,
+                source: props.experiment.source,
                 type: props.experiment.type
             },
             option.value
@@ -38,9 +38,9 @@ export default function (props: ExperimentTypeProps<EnumExperiment | BooleanExpe
 
     return (
         <Select
-            value={options.find((option) => option.value === state)}
-            options={options}
             onSelect={onChange}
+            options={options}
+            value={options.find(option => option.value === state)}
         />
     );
 }

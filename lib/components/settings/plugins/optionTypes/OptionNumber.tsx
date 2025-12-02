@@ -26,12 +26,12 @@ export default function (props: OptionTypeProps<NumberContextOption>) {
     return (
         <OptionType {...props} error={error}>
             <TextInput
-                id={props.id}
                 className="ext-plugin-option-element"
+                id={props.id}
                 onChange={onChange}
-                value={state}
-                type="number"
                 placeholder="Enter a number"
+                type="number"
+                value={state}
             />
         </OptionType>
     );

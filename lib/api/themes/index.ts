@@ -1,8 +1,7 @@
 import { registerContext } from "@api/context";
 import { emitEvent, registerEventListener } from "@api/context/event";
-import { registerPatch } from "@api/context/patch";
 import { registerContextOptions } from "@api/context/settings";
-import { type StyleSheetOverride, createStyleElement } from "@api/themes/styles";
+import { createStyleElement, type StyleSheetOverride } from "@api/themes/styles";
 
 export type ThemeBase = "dark" | "light";
 
@@ -21,34 +20,34 @@ const { context, logger } = registerContext({
 
 const options = registerContextOptions(context, {
     enabledTheme: {
-        type: "string",
+        default: "Spotify Dark",
         description: "The user's selected theme",
-        default: "Spotify Dark"
+        type: "string"
     },
     savedThemes: {
-        type: "string",
-        description: "All of the user's saved themes",
         default: JSON.stringify([
             {
-                name: "Spotify Dark",
                 base: "dark",
+                builtIn: true,
                 description: "Spotify's built-in dark theme",
-                overrides: [],
-                builtIn: true
+                name: "Spotify Dark",
+                overrides: []
             },
             {
-                name: "Spotify Light",
                 base: "light",
+                builtIn: true,
                 description: "Spotify's built-in light theme",
-                overrides: [],
-                builtIn: true
+                name: "Spotify Light",
+                overrides: []
             }
-        ] as Theme[])
+        ] as Theme[]),
+        description: "All of the user's saved themes",
+        type: "string"
     }
 });
 
 function findTheme(name: string): Theme | undefined {
-    return (JSON.parse(options.savedThemes) as Theme[]).find((theme) => theme.name === name);
+    return (JSON.parse(options.savedThemes) as Theme[]).find(theme => theme.name === name);
 }
 
 export function getSavedThemes(): Theme[] {
@@ -86,10 +85,8 @@ export function enableTheme(theme: Theme) {
     document.body.classList.remove("encore-dark-theme", "encore-light-theme");
     document.body.classList.add(`encore-${theme.base}-theme`);
 
-    let query;
-    if ((query = document.querySelector("#extendify-theme"))) {
-        document.body.removeChild(query);
-    }
+    const query = document.querySelector("#extendify-theme");
+    query && document.body.removeChild(query);
 
     const element = createStyleElement(theme.overrides);
     element.id = "extendify-theme";

@@ -66,8 +66,8 @@ export interface Platform {
      */
     getPlatformData(): PlatformData;
     getRegistry(): {
-        _map: Map<Symbol, any>;
-        resolve<T>(key: Symbol): T;
+        _map: Map<symbol, any>;
+        resolve<T>(key: symbol): T;
     };
     getRemoteConfiguration(): RemoteConfiguration;
     getRemoteConfigurationWithLocalOverrides(): RemoteConfiguration;
@@ -154,7 +154,7 @@ export interface Session {
 }
 
 export interface RemoteConfiguration {
-    values: Map<String, any>;
+    values: Map<string, any>;
     getValue<T>(key: string): T;
     toJSON(): Record<string, any>;
 }

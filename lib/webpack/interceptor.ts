@@ -28,8 +28,8 @@ Object.defineProperty(Function.prototype, "m", {
     set(this: WebpackRequire, modules: WebpackRequire["m"]) {
         Object.defineProperty(this, "m", {
             configurable: true,
-            value: modules,
             enumerable: true,
+            value: modules,
             writable: true
         });
 
@@ -52,7 +52,7 @@ Object.defineProperty(Function.prototype, "m", {
 
                 let src = iife.toString();
                 src = src.substring(src.indexOf("{"));
-                const fakeModule: RawModule = { id: "Private", loaded: true, exports: {} };
+                const fakeModule: RawModule = { exports: {}, id: "Private", loaded: true };
                 const original = iife;
 
                 iife = patchModule(iife, String(fakeModule.id));
@@ -60,9 +60,9 @@ Object.defineProperty(Function.prototype, "m", {
                 iife(fakeModule, {}, this, src);
 
                 Object.defineProperty(this, "iife", {
-                    value: iife,
                     configurable: true,
                     enumerable: false,
+                    value: iife,
                     writable: true
                 });
 
