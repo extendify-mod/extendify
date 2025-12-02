@@ -28,14 +28,15 @@
                 "useSortedKeys": "on",
                 "useSortedProperties": "on"
             }
-        },
+        }
+    },
+    "files": {
         "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"]
     },
     "formatter": {
         "attributePosition": "auto",
         "enabled": true,
         "formatWithErrors": true,
-        "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"],
         "indentStyle": "space",
         "indentWidth": 4,
         "lineEnding": "lf",
@@ -58,7 +59,6 @@
         }
     },
     "linter": {
-        "includes": ["{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"],
         "rules": {
             "complexity": {
                 "noUselessEscapeInRegex": "off",
