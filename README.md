@@ -20,7 +20,20 @@ I also took inspiration from [Spicetify](https://spicetify.app). I just thought 
 Currently, Extendify requires you to download Spotify from the official installer. Not from the Microsoft Store.
 If you have a Microsoft Store installation, uninstall it before proceeding.
 
-First, we need to update our Spotify installation.
+### Prerequisites
+
+- [bun](https://bun.sh)
+- [git](https://git-scm.com/install/)
+
+To download Extendify use the following commands:
+
+```bash
+$ git clone https://github.com/extendify/extendify-mod
+$ cd extendify-mod
+$ bun install
+```
+
+Before we can install Extendify, you'll need to update your Spotify installation.
 You'll need to do this any time your Spotify installation gets updated or breaks.
 The latter just happens randomly if you restart the app too many times in a row.
 If you're on Windows, run the following command:
@@ -44,13 +57,20 @@ Or, if you want to access development features, run the following command:
 $ bun run dev
 ```
 
+> [!NOTE]
+> Either of these commands will start the Spotify process.
+> Killing this process is fine and will just close Spotify.
+> Your patched Spotify install will persist.
+
 ## Optional Flags
 
 These scripts assume some filepaths. If you're on Linux these will likely be incorrect.
 To fix this we have the following optional flags.
 
-- `--spotifyPath`: Use this flag to specify the path to Spotify's installation directory. (It should contain an `Apps` folder)
-- `--cachePath`: Use this flag to specify the path to the cache directory. (It should contain an `offline.bnk` file)
+- `--spotifyPath <path>`: Use this flag to specify the path to Spotify's installation directory. (It should contain an `Apps` folder)
+- `--cachePath <path>`: Use this flag to specify the path to the cache directory. (It should contain an `offline.bnk` file)
+- `--flatpak`: Use this flag if you installed Spotify through flatpak.
+- `--dev`: Use this flag if you want to enable development features in the Extendify build.
 
 Apply the flags like this:
 
