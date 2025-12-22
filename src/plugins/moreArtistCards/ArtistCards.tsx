@@ -54,10 +54,12 @@ export default function () {
     useEffect(() => {
         setState(player?.getQueue().current);
 
-        const listener = registerEventListener(context, "songChanged", song => setState(song));
+        const onSongChanged = registerEventListener(context, "songChanged", song => setState(song));
+        const onPlay = registerEventListener(context, "play", state => setState(state.item));
 
         return () => {
-            removeEventListener(context, listener);
+            removeEventListener(context, onSongChanged);
+            removeEventListener(context, onPlay);
         };
     }, []);
 
