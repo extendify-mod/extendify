@@ -13,7 +13,7 @@
                             [":ALIAS:", "!:PACKAGE:", "@*/**/*", "@*"],
                             ":BLANK_LINE:",
 
-                            [":PACKAGE:"],
+                            [":PACKAGE:", "!:PACKAGE_WITH_PROTOCOL:", "!:NODE:", "!:BUN:"],
                             ":BLANK_LINE:",
 
                             [":PACKAGE_WITH_PROTOCOL:", ":NODE:", ":BUN:"],
