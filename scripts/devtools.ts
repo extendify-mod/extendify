@@ -1,4 +1,5 @@
 import { getCachePath } from "@scripts/utils";
+import { DEVTOOLS_TARGET } from "@shared/constants";
 
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -12,16 +13,15 @@ const bnkPath = join(cachePath, "offline.bnk");
 
 const content = await readFile(bnkPath, "binary");
 const buffer = Buffer.from(content, "binary");
-const target = "app-developer";
 
-let location = content.indexOf(target);
+let location = content.indexOf(DEVTOOLS_TARGET);
 if (location) {
-    buffer.write("2", location + target.length + 1);
+    buffer.write("2", location + DEVTOOLS_TARGET.length + 1);
 }
 
-location = content.lastIndexOf(target);
+location = content.lastIndexOf(DEVTOOLS_TARGET);
 if (location) {
-    buffer.write("2", location + target.length + 2);
+    buffer.write("2", location + DEVTOOLS_TARGET.length + 2);
 }
 
 await writeFile(bnkPath, buffer, "binary");

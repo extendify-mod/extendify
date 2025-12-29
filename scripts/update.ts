@@ -1,10 +1,10 @@
 import { exists, getSpotifyPath, killSpotify } from "@scripts/utils";
 
-import { spawnSync } from "bun";
 import { rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { exit } from "node:process";
+import { spawnSync } from "bun";
 
 await killSpotify();
 
