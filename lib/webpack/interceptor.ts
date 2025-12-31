@@ -33,46 +33,69 @@ Object.defineProperty(Function.prototype, "m", {
             writable: true
         });
 
-        patchFactories(modules);
-
         /**
-         * Spotify only has 1 webpack instance, which means we can skip the step
-         * other webpack interceptors use where they check if the "p" property
-         * is equal to the app's main url.
+         * Spotify bundles multiple libraries that create their own webpack instance.
+         * Patching them is undesirable since they share common modules with the main bundle (eg React),
+         * and text based patches cannot replicate the scope in which these modules were originally imported.
          */
 
-        Object.defineProperty(this, "iife", {
+        Object.defineProperty(this, "p", {
             configurable: true,
-            set(this: WebpackRequire, iife: WebpackRequire["iife"]) {
-                /**
-                 * Now that we've found the private iife module, which is assigned to the
-                 * wreq instance as "iife" via a patch (check loader.ts), we can patch it
-                 * with our plugin patches and then initialize it ourselves.
-                 */
-
-                let src = iife.toString();
-                src = src.substring(src.indexOf("{"));
-                const fakeModule: RawModule = { exports: {}, id: "Private", loaded: true };
-                const original = iife;
-
-                iife = patchModule(iife, String(fakeModule.id));
-                iife.$$ = original;
-                iife(fakeModule, {}, this, src);
-
-                Object.defineProperty(this, "iife", {
+            set(this: WebpackRequire, bundlePath: string) {
+                Object.defineProperty(this, "p", {
                     configurable: true,
-                    enumerable: false,
-                    value: iife,
+                    enumerable: true,
+                    value: bundlePath,
                     writable: true
                 });
 
-                logger.info("Found and patched private module");
+                /**
+                 * Only the main instance has an absolute bundle path.
+                 */
+                if (!bundlePath.startsWith("/")) {
+                    return;
+                }
+
+                patchFactories(modules);
+
+                initializePrivateModule(this);
+
+                if (!wreq) {
+                    logger.info("Found main Webpack instance");
+                    initializeWebpack(this);
+                }
             }
         });
-
-        if (!wreq) {
-            logger.info("Found main Webpack instance");
-            initializeWebpack(this);
-        }
     }
 });
+
+function initializePrivateModule(wreq: WebpackRequire) {
+    Object.defineProperty(wreq, "iife", {
+        configurable: true,
+        set(this: WebpackRequire, iife: WebpackRequire["iife"]) {
+            /**
+             * Now that we've found the private iife module, which is assigned to the
+             * wreq instance as "iife" via a patch (check loader.ts), we can patch it
+             * with our plugin patches and then initialize it ourselves.
+             */
+
+            let src = iife.toString();
+            src = src.substring(src.indexOf("{"));
+            const fakeModule: RawModule = { exports: {}, id: "Private", loaded: true };
+            const original = iife;
+
+            iife = patchModule(iife, String(fakeModule.id));
+            iife.$$ = original;
+            iife(fakeModule, {}, this, src);
+
+            Object.defineProperty(this, "iife", {
+                configurable: true,
+                enumerable: false,
+                value: iife,
+                writable: true
+            });
+
+            logger.info("Found and patched private module");
+        }
+    });
+}
