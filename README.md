@@ -28,7 +28,7 @@ If you have a Microsoft Store installation, uninstall it before proceeding.
 To download Extendify use the following commands:
 
 ```bash
-$ git clone https://github.com/extendify/extendify-mod
+$ git clone https://github.com/extendify-mod/extendify
 $ cd extendify-mod
 $ bun install
 ```
