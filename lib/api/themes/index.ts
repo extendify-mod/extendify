@@ -46,7 +46,7 @@ const options = registerContextOptions(context, {
     }
 });
 
-function findTheme(name: string): Theme | undefined {
+export function findTheme(name: string): Theme | undefined {
     return (JSON.parse(options.savedThemes) as Theme[]).find(theme => theme.name === name);
 }
 
@@ -73,7 +73,8 @@ export function removeTheme(theme: Theme) {
     }
 
     const themes = JSON.parse(options.savedThemes) as Theme[];
-    options.savedThemes = JSON.stringify(themes.splice(themes.indexOf(theme)));
+    themes.splice(themes.indexOf(theme));
+    options.savedThemes = JSON.stringify(themes);
 }
 
 export function enableTheme(theme: Theme) {
