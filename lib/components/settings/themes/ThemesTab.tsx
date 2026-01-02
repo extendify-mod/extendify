@@ -7,11 +7,12 @@ import { PlusIcon } from "@components/icons";
 import type { ExtendifyTabProps } from "@components/settings";
 import { Theme, ThemeModal } from "@components/settings/themes";
 import { ButtonPrimary } from "@components/spotify";
+import { DEFAULT_THEME_DESC, DEFAULT_THEME_NAME } from "@shared/constants";
 
 const defaultNewTheme: ThemeType = {
     base: "dark",
-    description: "My awesome theme",
-    name: "New Theme",
+    description: DEFAULT_THEME_DESC,
+    name: DEFAULT_THEME_NAME,
     overrides: []
 };
 

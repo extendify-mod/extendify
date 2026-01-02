@@ -9,7 +9,7 @@ export interface StyleSheet {
     variables: StyleSheetVariable[];
 }
 
-interface StyleSheetVariable {
+export interface StyleSheetVariable {
     key: string;
     readableName: string;
     value: string;

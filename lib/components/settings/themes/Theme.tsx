@@ -4,9 +4,10 @@ import "./theme.css";
 import { registerContext } from "@api/context";
 import { registerEventListener, removeEventListener } from "@api/context/event";
 import { useEffect, useState } from "@api/react";
-import { enableTheme, getEnabledTheme, type Theme } from "@api/themes";
+import { enableTheme, getEnabledTheme, removeTheme, type Theme } from "@api/themes";
+import { GarbageIcon, GearIcon } from "@components/icons";
 import { ThemeModal } from "@components/settings/themes";
-import { Chip, Text, Toggle } from "@components/spotify";
+import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 
 interface Props {
     theme: Theme;
@@ -60,6 +61,18 @@ export default function (props: Props) {
                     >
                         {props.theme.name}
                     </Text>
+                    {!props.theme.builtIn && (
+                        <ButtonTertiary
+                            aria-label={`Delete ${props.theme.name}`}
+                            iconOnly={() => <GarbageIcon />}
+                            onClick={() => removeTheme(props.theme)}
+                        />
+                    )}
+                    <ButtonTertiary
+                        aria-label={`Modify ${props.theme.name}`}
+                        iconOnly={() => <GearIcon />}
+                        onClick={() => setModalOpen(true)}
+                    />
                     <Toggle onSelected={onToggle} value={enabled} />
                 </div>
                 <Text
