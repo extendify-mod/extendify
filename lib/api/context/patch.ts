@@ -91,6 +91,10 @@ export function exportFunction(context: Context, fn: AnyFn) {
     window.exportedFunctions[context.name] = contextExports;
 }
 
+function escapeRegEx(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function executePatch(
     context: Context,
     src: string,
@@ -108,6 +112,10 @@ export function executePatch(
 
     if (match instanceof RegExp) {
         match = createExtendedRegExp(match);
+    } else {
+        // Force the match to be a regex so that you can use $& in the replace string
+        // or a replace function.
+        match = new RegExp(escapeRegEx(match));
     }
 
     // @ts-expect-error
