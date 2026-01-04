@@ -15,6 +15,7 @@ const options = registerContextOptions(plugin, {
     alwaysShow: {
         default: true,
         description: "Show artist cards even if they don't have a description",
+        label: "Always Show Artist Cards",
         restartNeeded: true,
         type: "boolean"
     },

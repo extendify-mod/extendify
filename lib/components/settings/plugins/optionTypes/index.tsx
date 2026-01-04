@@ -12,6 +12,15 @@ export interface OptionTypeProps<T extends AnyContextOption> {
     onChange(value: T["default"]): void;
 }
 
+function createReadableId(id: string) {
+    return (
+        id[0]?.toUpperCase() +
+        Array.from(id.substring(1))
+            .map(c => (c === c.toUpperCase() ? ` ${c}` : c))
+            .join("")
+    );
+}
+
 export function OptionType<T extends AnyContextOption>(
     props: PropsWithChildren<OptionTypeProps<T>> & {
         error?: string;
@@ -22,7 +31,7 @@ export function OptionType<T extends AnyContextOption>(
             <div className="ext-plugin-option-container">
                 <div className="ext-plugin-option-metadata">
                     <Text as="span" semanticColor="textBase" variant="bodyMediumBold">
-                        {props.id}
+                        {props.schema.label ?? createReadableId(props.id)}
                     </Text>
                     <Text as="span" semanticColor="textSubdued" variant="bodyMedium">
                         {props.schema.description}

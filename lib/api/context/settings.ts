@@ -9,6 +9,7 @@ export type ContextOptionType = "string" | "number" | "boolean" | "select" | "sl
 
 export interface ContextOption<T extends ContextOptionType, R = any> {
     type: T;
+    label?: string;
     description: string;
     default: R;
     restartNeeded?: boolean;
