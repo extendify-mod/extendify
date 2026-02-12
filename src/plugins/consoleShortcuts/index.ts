@@ -2,6 +2,7 @@ import { registerPlugin } from "@api/context/plugin";
 import { executeQuery, findQuery } from "@api/gql";
 import { platform, resolveApi } from "@api/platform";
 import { React } from "@api/react";
+import { globalStore } from "@api/redux";
 import { contextOptions, moduleCache, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
 import {
@@ -23,6 +24,9 @@ const { logger } = registerPlugin({
         Object.defineProperties(window, {
             exportFilters: {
                 get: () => exportFilters
+            },
+            globalStore: {
+                get: () => globalStore
             },
             moduleCache: {
                 get: () => moduleCache
