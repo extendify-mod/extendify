@@ -9,7 +9,7 @@ import {
     findModule,
     findModuleComponent,
     findModuleExport,
-    findModuleExportSync
+    findModuleExportLazy
 } from "@webpack/module";
 
 const { logger } = registerPlugin({
@@ -41,7 +41,7 @@ const { logger } = registerPlugin({
         });
 
         window.findModuleExport = findModuleExport;
-        window.findModuleExportSync = findModuleExportSync;
+        window.findModuleExportLazy = findModuleExportLazy;
         window.findAllModuleExports = findAllModuleExports;
         window.findModuleComponent = findModuleComponent;
         window.findModule = findModule;
