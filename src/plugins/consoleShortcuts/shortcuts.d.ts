@@ -11,6 +11,8 @@ import type {
     findModuleExportLazy
 } from "@webpack/module";
 
+import type { Store } from "redux";
+
 import type {
     createTestComponent,
     findTranslation,
@@ -22,6 +24,7 @@ declare global {
     interface Window {
         wreq: typeof wreq;
         platform: typeof platform;
+        globalStore: typeof Store;
 
         exportFilters: typeof exportFilters;
         findModuleExport: typeof findModuleExport;
