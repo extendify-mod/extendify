@@ -19,3 +19,6 @@ export const CopyIcon = findIcon("M5 .75A.75.75");
 export const ArrowDownIcon = findIcon("M.47 4.97a");
 export const ArrowUpIcon = findIcon("M.47 11.03a");
 export const PlusIcon = findIcon("M15.25 8a");
+export const DotsIcon = findIcon("M3 8a1.5");
+
+export const StopwatchIconFilled = findIcon("10.8 0zM8");
