@@ -13,11 +13,11 @@ export let globalStore: Store;
 registerPatch(context, {
     find: "ANONYMOUS_DEFERRED_ACTION_KEY",
     replacement: {
-        match: /\i=(\i)\({session:\i,features:\i,seoExperiment:\i},{.*?}\);/,
-        replace: "$&$exp.loadGlobalContext($1);"
+        match: /(\i)=\i\({session:\i,features:\i,seoExperiment:\i},{.*?}\);/,
+        replace: "$&$exp.loadGlobalStore($1);"
     }
 });
 
-exportFunction(context, function loadGlobalContext(store) {
+exportFunction(context, function loadGlobalStore(store) {
     globalStore = store;
 });
