@@ -8,7 +8,7 @@ import type {
     findModule,
     findModuleComponent,
     findModuleExport,
-    findModuleExportSync
+    findModuleExportLazy
 } from "@webpack/module";
 
 import type { findTranslation, getExportedComponents, setSpotifyLogLevel } from ".";
@@ -20,7 +20,7 @@ declare global {
 
         exportFilters: typeof exportFilters;
         findModuleExport: typeof findModuleExport;
-        findModuleExportSync: typeof findModuleExportSync;
+        findModuleExportLazy: typeof findModuleExportLazy;
         findAllModuleExports: typeof findAllModuleExports;
         findModuleComponent: typeof findModuleComponent;
         findModule: typeof findModule;

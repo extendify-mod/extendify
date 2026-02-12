@@ -143,8 +143,8 @@ export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
     return getModuleExport<T>(filter) ?? createPromise();
 }
 
-export function findModuleExportSync<T>(filter: ExportFilter): T | undefined {
-    return createLazy(() => getModuleExport<T>(filter));
+export function findModuleExportLazy<T>(filter: ExportFilter): T {
+    return createLazy<T>(() => getModuleExport<T>(filter) as T);
 }
 
 function getModuleExport<T>(filter: ExportFilter): T | undefined {

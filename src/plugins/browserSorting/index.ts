@@ -3,7 +3,7 @@ import { executeQuery, findQuery } from "@api/gql";
 import { registerApiOverride } from "@api/platform";
 import type { Song } from "@shared/types/spotify/player";
 import type { PlaylistAPI, PlaylistItems, PlaylistQueryOptions } from "@shared/types/spotify/queue";
-import { exportFilters, findModuleExportSync } from "@webpack/module";
+import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
 import { filterResults } from "./filter";
 
@@ -17,7 +17,7 @@ interface PlaylistV2 {
     };
 }
 
-const itemConverter = findModuleExportSync<(item: any) => Song>(
+const itemConverter = findModuleExportLazy<(item: any) => Song>(
     exportFilters.byCode(/\i\.addedAt\?\.isoString/)
 );
 
@@ -63,10 +63,6 @@ registerApiOverride(
         uri: string,
         options: PlaylistQueryOptions
     ): Promise<PlaylistItems> {
-        if (!itemConverter) {
-            throw new Error("GQL Song -> Playlist Song converter not initialized");
-        }
-
         const query = findQuery("fetchPlaylistContents");
         if (!query) {
             throw new Error("fetchPlaylistContents not found");
