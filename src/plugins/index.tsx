@@ -1,5 +1,5 @@
 import { registerContext } from "@api/context";
-import { redirectTo, registerPage } from "@api/page";
+import { redirectTo, registerPage } from "@api/router";
 import { registerTopbarElement } from "@api/topbar";
 import { ExtendifyPage } from "@components/settings";
 import { ButtonPrimary } from "@components/spotify";

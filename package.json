@@ -28,6 +28,7 @@
     "dependencies": {
         "@types/history": "^5.0.0",
         "@types/react": "18.3.1",
+        "@types/react-router-dom": "^5.3.3",
         "acorn": "^8.15.0",
         "acorn-loose": "^8.5.2",
         "classnames": "^2.5.1",

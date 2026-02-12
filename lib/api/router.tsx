@@ -2,8 +2,10 @@ import { type Context, registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { platform } from "@api/platform";
 import { Route } from "@components/spotify";
+import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
 import type { ComponentType } from "react";
+import type RouterDOM from "react-router-dom";
 
 interface Page {
     context: Context;
@@ -14,11 +16,16 @@ interface Page {
 type PageDef = Omit<Page, "context">;
 
 const { context, logger } = registerContext({
-    name: "Page",
+    name: "Router",
     platforms: ["desktop", "browser"]
 });
 
 const registeredPages: Page[] = [];
+
+export const useLocation = findModuleExportLazy<typeof RouterDOM.useLocation>(
+    exportFilters.byCode(/\i\.useContext\(\i\)\.location/)
+);
+// TODO: useNavigationType
 
 registerPatch(context, {
     find: "spotify:app:home",
@@ -80,6 +87,6 @@ export function isCustomPage(route?: string) {
     return route ? !!registeredPages.find(page => page.route === route) : false;
 }
 
-export function redirectTo(route: string) {
-    platform?.getHistory().push(route);
+export function redirectTo(route: string, state?: any) {
+    platform?.getHistory().push(route, state);
 }
