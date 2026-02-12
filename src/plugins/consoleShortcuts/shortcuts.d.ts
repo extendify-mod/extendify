@@ -11,7 +11,12 @@ import type {
     findModuleExportLazy
 } from "@webpack/module";
 
-import type { findTranslation, getExportedComponents, setSpotifyLogLevel } from ".";
+import type {
+    createTestComponent,
+    findTranslation,
+    getExportedComponents,
+    setSpotifyLogLevel
+} from ".";
 
 declare global {
     interface Window {
@@ -37,5 +42,7 @@ declare global {
 
         findQuery: typeof findQuery;
         executeQuery: typeof executeQuery;
+
+        createTestComponent: typeof createTestComponent;
     }
 }
