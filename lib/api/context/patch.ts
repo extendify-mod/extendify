@@ -1,5 +1,6 @@
 import type { Context } from "@api/context";
 import { patches } from "@api/registry";
+import { PROPS_ARG_NAME } from "@shared/constants";
 import { type AnyMatch, createExtendedRegExp, type Match } from "@shared/match";
 import type { AnyFn, TargetPlatform } from "@shared/types";
 
@@ -95,20 +96,27 @@ function escapeRegEx(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function modifyReplacement(context: Context, replace: string | ReplaceFn) {
+    const registryPrefix = `window.exportedFunctions.${context.name}`;
+
+    function modify(str: string): string {
+        return str.replaceAll("$exp", registryPrefix).replaceAll("$props", PROPS_ARG_NAME);
+    }
+
+    if (typeof replace === "function") {
+        return ((...args) => modify(replace(...args))) as ReplaceFn;
+    }
+
+    return modify(replace);
+}
+
 export function executePatch(
     context: Context,
     src: string,
     match: Match,
     replace: string | ReplaceFn
 ): string {
-    const registryPrefix = `window.exportedFunctions.${context.name}`;
-
-    if (typeof replace === "function") {
-        const original = replace;
-        replace = (...args) => (original as ReplaceFn)(...args).replaceAll("$exp", registryPrefix);
-    } else {
-        replace = replace.replaceAll("$exp", registryPrefix);
-    }
+    replace = modifyReplacement(context, replace);
 
     if (match instanceof RegExp) {
         match = createExtendedRegExp(match);

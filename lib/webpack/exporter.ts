@@ -1,6 +1,7 @@
 import { registerContext } from "@api/context";
 import { exportFunction, type PatchDef, registerPatch } from "@api/context/patch";
 import { moduleCache } from "@api/registry";
+import { PROPS_ARG_NAME } from "@shared/constants";
 import type { ModuleEval, RawModule, WebpackRequire } from "@shared/types/webpack";
 
 import type { BlockStatement, ClassDeclaration, FunctionDeclaration, Identifier } from "acorn";
@@ -50,6 +51,44 @@ registerPatch(context, {
         replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
     }
 });
+
+registerPatch(context, {
+    all: true,
+    noError: true,
+    noWarn: true,
+    /**
+     * Replaces all arrow- and nameless functions in a module (usually components) with spread properties
+     * with a single argument and then destructures that as the first line of the module.
+     *
+     * Example:
+     *
+     * ```
+     * const component = ({ a: b, c: d=e, ...f }) => {
+     *
+     * function({ a: b, c: d=e, ...f }) {
+     * ```
+     *
+     * Will turn into:
+     *
+     * ```
+     * const component = (__extendifyProps) => {
+     *     let { a: b, c: d=e, ...f } = __extendifyProps;
+     *
+     * function(__extendifyProps) {
+     *     let { a: b, c: d=e, ...f } = __extendifyProps;
+     * ```
+     */
+    replacement: [
+        {
+            match: /\((\{[^}]*(?:\.\.\.|:|=)[^}]*\})\)=>{/g,
+            replace: `(${PROPS_ARG_NAME})=>{let $1=${PROPS_ARG_NAME};`
+        },
+        {
+            match: /function\((\{[^}]*(?:\.\.\.|:|=)[^}]*\})\){/g,
+            replace: `function(${PROPS_ARG_NAME}){let $1=${PROPS_ARG_NAME};`
+        }
+    ]
+} as PatchDef);
 
 exportFunction(
     context,
