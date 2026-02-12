@@ -2,7 +2,9 @@ import { plugins } from "@api/registry";
 import { createLogger } from "@shared/logger";
 
 import "@api/react";
+import "@api/redux";
 import "@api/themes";
+
 import "@webpack/exporter";
 import "@webpack/interceptor";
 import "@webpack/loader";
