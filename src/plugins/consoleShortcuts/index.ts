@@ -1,6 +1,7 @@
 import { registerPlugin } from "@api/context/plugin";
 import { executeQuery, findQuery } from "@api/gql";
 import { platform, resolveApi } from "@api/platform";
+import { React } from "@api/react";
 import { contextOptions, moduleCache, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
 import {
@@ -54,6 +55,8 @@ const { logger } = registerPlugin({
 
         window.findQuery = findQuery;
         window.executeQuery = executeQuery;
+
+        window.createTestComponent = createTestComponent;
 
         logger.info("Defined shortcuts");
     }
@@ -112,4 +115,8 @@ export function findTranslation(
     }
 
     return results;
+}
+
+export function createTestComponent(component: any, props: any) {
+    return React.createElement(component, props);
 }
