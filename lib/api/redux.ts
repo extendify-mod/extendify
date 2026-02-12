@@ -1,6 +1,8 @@
 import { registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
+import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
+import type { useSelector as useSelectorRedux } from "react-redux";
 import type { Store } from "redux";
 
 const { context } = registerContext({
@@ -9,6 +11,12 @@ const { context } = registerContext({
 });
 
 export let globalStore: Store;
+export const useSelector: typeof useSelectorRedux = findModuleExportLazy(
+    exportFilters.byCode({
+        matches: [/{equalityFn:\i/, /^(?!.*===).*/],
+        mode: "all"
+    })
+);
 
 registerPatch(context, {
     find: "ANONYMOUS_DEFERRED_ACTION_KEY",
