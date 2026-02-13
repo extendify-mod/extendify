@@ -35,12 +35,12 @@ function exposePrivateModule(content: string, requireName: string) {
 
 function generateSourceMap(content: string, scriptUrl: string) {
     const sourceMap = {
-        version: 3,
         file: scriptUrl,
+        mappings: "",
+        names: [],
         sources: [scriptUrl],
         sourcesContent: [content],
-        names: [],
-        mappings: ""
+        version: 3
     };
     const encodedMap = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
 
