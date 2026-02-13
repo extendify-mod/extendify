@@ -104,8 +104,10 @@ async function configureAdManagers() {
 }
 
 async function changeReduxState() {
+    globalStore.dispatch({ type: "ADS_DISABLED" });
     globalStore.dispatch({ isPremium: true, type: "ADS_PREMIUM" });
     globalStore.dispatch({ isHptoHidden: true, type: "ADS_HPTO_HIDDEN" });
+    globalStore.dispatch({ type: "ADS_POST_HIDE_HPTO" });
 
     logger.info("Changed Redux state");
 }
