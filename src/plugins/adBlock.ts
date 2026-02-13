@@ -1,9 +1,10 @@
 import { registerPlugin } from "@api/context/plugin";
 import { platform, productState } from "@api/platform";
+import { globalStore } from "@api/redux";
 import type { AdsTestingClient, SlotSettingsClient, SlotsClient } from "@shared/types/spotify/ads";
 import { exportFilters, findModuleExport } from "@webpack/module";
 
-registerPlugin({
+const { logger } = registerPlugin({
     authors: ["7elia"],
     description: "Block ads on Spotify",
     name: "AdBlock",
@@ -13,6 +14,7 @@ registerPlugin({
         await configureAdManagers();
         await configureProductState();
         await configureTestingClient();
+        await changeReduxState();
     }
 });
 
@@ -52,19 +54,25 @@ async function configureSlotsClient() {
             }
         );
     }
+
+    logger.info("Configured slots client");
 }
 
 // TODO: (await resolveApi("ProductStateAPI").productStateApi.getValues()).pairs["financial-product"]
 async function configureProductState() {
+    const overrides = {
+        pairs: {
+            ads: "0",
+            catalogue: "premium",
+            type: "premium"
+        }
+    };
+
     productState.productStateApi.subValues({ keys: ["ads", "catalogue", "premium"] }, () => {
-        productState.productStateApi.putOverridesValues({
-            pairs: {
-                ads: "0",
-                catalogue: "premium",
-                type: "premium"
-            }
-        });
+        productState.productStateApi.putOverridesValues(overrides);
     });
+
+    productState.productStateApi.putOverridesValues(overrides);
 }
 
 async function configureTestingClient() {
@@ -73,6 +81,8 @@ async function configureTestingClient() {
     );
 
     testingClient.addPlaytime({ seconds: -1000000000000000 });
+
+    logger.info("Configured testing client");
 }
 
 async function configureAdManagers() {
@@ -89,4 +99,13 @@ async function configureAdManagers() {
     leaderboard.disableLeaderboard();
     sponsoredPlaylist.disable();
     vto.manager.disable();
+
+    logger.info("Configured ad managers");
+}
+
+async function changeReduxState() {
+    globalStore.dispatch({ isPremium: true, type: "ADS_PREMIUM" });
+    globalStore.dispatch({ isHptoHidden: true, type: "ADS_HPTO_HIDDEN" });
+
+    logger.info("Changed Redux state");
 }
