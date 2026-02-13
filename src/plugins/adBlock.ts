@@ -1,22 +1,32 @@
+import { registerInterval } from "@api/context";
 import { registerPlugin } from "@api/context/plugin";
 import { platform, productState } from "@api/platform";
 import { globalStore } from "@api/redux";
-import type { AdsTestingClient, SlotSettingsClient, SlotsClient } from "@shared/types/spotify/ads";
-import { exportFilters, findModuleExport } from "@webpack/module";
+import type { SlotSettingsClient, SlotsClient } from "@shared/types/spotify/ads";
+import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
-const { logger } = registerPlugin({
+const slotsClient = findModuleExportLazy<SlotsClient>(
+    exportFilters.byProps("clearAllAds", "getSlots")
+);
+const settingsClient = findModuleExportLazy<SlotSettingsClient>(
+    exportFilters.byProps("updateAdServerEndpoint")
+);
+
+const { plugin } = registerPlugin({
     authors: ["7elia"],
     description: "Block ads on Spotify",
     name: "AdBlock",
-    platforms: ["desktop", "browser"],
-    async start() {
-        await configureSlotsClient();
-        await configureAdManagers();
-        await configureProductState();
-        await configureTestingClient();
-        await changeReduxState();
-    }
+    platforms: ["desktop", "browser"]
 });
+
+registerInterval(plugin, configure, 10_000);
+registerInterval(plugin, configureReduxState, 1000);
+
+async function configure() {
+    await configureSlotsClient();
+    await configureAdManagers();
+    configureProductState();
+}
 
 async function configureSlotsClient() {
     if (!platform) {
@@ -24,12 +34,6 @@ async function configureSlotsClient() {
     }
 
     const { audio } = platform.getAdManagers();
-    const slotsClient = await findModuleExport<SlotsClient>(
-        exportFilters.byProps("clearAllAds", "getSlots")
-    );
-    const settingsClient = await findModuleExport<SlotSettingsClient>(
-        exportFilters.byProps("updateAdServerEndpoint")
-    );
 
     const slots = await slotsClient.getSlots();
     for (const slot of slots.adSlots) {
@@ -49,17 +53,15 @@ async function configureSlotsClient() {
                     url: "https://poop.com"
                 });
                 await settingsClient.updateSlotEnabled({ enabled: false, slotId });
-                await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: "0" });
-                await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: "0" });
+                await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: BigInt(0) });
+                await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: BigInt(0) });
             }
         );
     }
-
-    logger.info("Configured slots client");
 }
 
 // TODO: (await resolveApi("ProductStateAPI").productStateApi.getValues()).pairs["financial-product"]
-async function configureProductState() {
+function configureProductState() {
     const overrides = {
         pairs: {
             ads: "0",
@@ -73,16 +75,6 @@ async function configureProductState() {
     });
 
     productState.productStateApi.putOverridesValues(overrides);
-}
-
-async function configureTestingClient() {
-    const testingClient = await findModuleExport<AdsTestingClient>(
-        exportFilters.byProps("addPlaytime")
-    );
-
-    testingClient.addPlaytime({ seconds: -1000000000000000 });
-
-    logger.info("Configured testing client");
 }
 
 async function configureAdManagers() {
@@ -99,15 +91,20 @@ async function configureAdManagers() {
     leaderboard.disableLeaderboard();
     sponsoredPlaylist.disable();
     vto.manager.disable();
-
-    logger.info("Configured ad managers");
 }
 
-async function changeReduxState() {
+function configureReduxState() {
+    if (!globalStore) {
+        return;
+    }
+
+    const { root } = globalStore.getState().ads;
+    if (!root.adsEnabled && root.isHptoHidden && root.isPremium) {
+        return;
+    }
+
     globalStore.dispatch({ type: "ADS_DISABLED" });
     globalStore.dispatch({ isPremium: true, type: "ADS_PREMIUM" });
     globalStore.dispatch({ isHptoHidden: true, type: "ADS_HPTO_HIDDEN" });
     globalStore.dispatch({ type: "ADS_POST_HIDE_HPTO" });
-
-    logger.info("Changed Redux state");
 }

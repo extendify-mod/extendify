@@ -80,7 +80,7 @@ export interface SlotsClient {
 
 export interface SlotSettingsClient {
     updateAdServerEndpoint(params: { slotIds: string[]; url: string }): Promise<void>;
-    updateDisplayTimeInterval(params: { slotId: string; timeInterval: string }): Promise<void>;
+    updateDisplayTimeInterval(params: { slotId: string; timeInterval: bigint }): Promise<void>;
     updateSlotEnabled(params: { slotId: string; enabled: boolean }): Promise<void>;
-    updateStreamTimeInterval(params: { slotId: string; timeInterval: string }): Promise<void>;
+    updateStreamTimeInterval(params: { slotId: string; timeInterval: bigint }): Promise<void>;
 }
