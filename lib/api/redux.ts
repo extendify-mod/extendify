@@ -1,4 +1,5 @@
 import { registerContext } from "@api/context";
+import { emitEvent } from "@api/context/event";
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
@@ -28,4 +29,6 @@ registerPatch(context, {
 
 exportFunction(context, function loadGlobalStore(store) {
     globalStore = store;
+
+    emitEvent("reduxLoaded", store);
 });
