@@ -1,3 +1,4 @@
+import { registerEventListener } from "@api/context/event";
 import { isPlugin, type Plugin } from "@api/context/plugin";
 import { isPluginEnabled } from "@api/context/settings";
 import { contexts, plugins } from "@api/registry";
@@ -35,6 +36,35 @@ export function registerContext(context: Context): {
             name: `${context.loggerPrefix ?? "Context"}/${context.name}`
         })
     };
+}
+
+export function registerInterval(
+    context: Context,
+    callback: () => any,
+    delay: number,
+    instant: boolean = true
+) {
+    if (instant) {
+        callback();
+    }
+
+    let interval: any;
+
+    registerEventListener(context, "contextEnabled", c => {
+        if (c.name !== context.name || interval) {
+            return;
+        }
+
+        interval = setInterval(callback, delay);
+    });
+
+    registerEventListener(context, "contextDisabled", c => {
+        if (c.name !== context.name || !interval) {
+            return;
+        }
+
+        clearInterval(interval);
+    });
 }
 
 /**
