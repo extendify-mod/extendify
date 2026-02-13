@@ -84,13 +84,25 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
     }
 }
 
+function sanitizeSrc(src: string) {
+    const firstBlock = src.indexOf("{");
+    const firstParenth = src.indexOf("(");
+
+    if (firstParenth < firstBlock && firstParenth !== 0) {
+        src = src.substring(firstParenth);
+    }
+
+    return src.replaceAll("\n", "");
+}
+
 export function patchModule<T>(module: T, id: string): T {
     if (typeof module !== "function") {
         return module;
     }
 
     const patchedBy: Set<string> = new Set();
-    let src = `0,${module.toString().replaceAll("\n", "")}`;
+
+    let src = `0,${sanitizeSrc(module.toString())}`;
 
     for (let i = 0; i < patches.length; i++) {
         const patch = patches[i];

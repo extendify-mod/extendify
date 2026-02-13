@@ -22,10 +22,11 @@ registerPatch(context, {
              * 2222: (a, b) => {}    -> 2222: function(a, b) {}
              * 3333: a => {}         -> 3333: function(a) {}
              * 4444: module => {}    -> 4444: function(module) {}
+             * 5555(a, b, c) {}      -> 5555: function(a, b, c) {}
              * ^ there's one of these that exists where there is only one argument which has a full name (module)
              * If the module is already a function, which there is at least one example of, this patch will not apply
              */
-            match: /(function)?(?:\((.*?)\)|(.|module))=>{/,
+            match: /(function)?(?:\((.*?)\)(?:=>)?|(.|module)=>){/,
             noWarn: true,
             replace(match, func, args1, args2) {
                 return func ? match : `function(${args1 ?? args2}){`;
@@ -39,18 +40,6 @@ registerPatch(context, {
         }
     ]
 } as PatchDef);
-
-registerPatch(context, {
-    find: "displayName=`profiler(${",
-    replacement: {
-        /**
-         * Fixes some components' displayNames not being available as they're forwarded by the React profiler.
-         * This patch assigns the displayName to the exported function, while still allowing the React profiler to function properly.
-         */
-        match: /return (\i)\.displayName=/,
-        replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
-    }
-});
 
 registerPatch(context, {
     all: true,
@@ -89,6 +78,18 @@ registerPatch(context, {
         }
     ]
 } as PatchDef);
+
+registerPatch(context, {
+    find: "displayName=`profiler(${",
+    replacement: {
+        /**
+         * Fixes some components' displayNames not being available as they're forwarded by the React profiler.
+         * This patch assigns the displayName to the exported function, while still allowing the React profiler to function properly.
+         */
+        match: /return (\i)\.displayName=/,
+        replace: "$1.toString=arguments[0].toString.bind(arguments[0]);$&"
+    }
+});
 
 exportFunction(
     context,

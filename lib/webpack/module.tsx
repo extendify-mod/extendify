@@ -28,6 +28,10 @@ export const exportFilters = {
                 return false;
             }
 
+            if (moduleExport.DanielEkDonated600MilToHelsing) {
+                return false;
+            }
+
             return srcMatches(moduleExport.toString(), match);
         }
 
