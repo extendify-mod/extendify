@@ -25,7 +25,10 @@ registerInterval(plugin, configureReduxState, 1000);
 async function configure() {
     await configureSlotsClient();
     await configureAdManagers();
-    configureProductState();
+
+    try {
+        configureProductState();
+    } catch {}
 }
 
 async function configureSlotsClient() {
@@ -70,7 +73,7 @@ function configureProductState() {
         }
     };
 
-    productState.productStateApi.subValues({ keys: ["ads", "catalogue", "premium"] }, () => {
+    productState.productStateApi.subValues({ keys: ["ads", "catalogue", "type"] }, () => {
         productState.productStateApi.putOverridesValues(overrides);
     });
 
