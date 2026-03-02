@@ -1,7 +1,9 @@
 import { registerInterval } from "@api/context";
+import { exportFunction, registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
-import { platform, productState } from "@api/platform";
+import { platform, productState, registerApiOverride } from "@api/platform";
 import { globalStore } from "@api/redux";
+import type { ProductStateAPI } from "@shared/types/spotify";
 import type { SlotSettingsClient, SlotsClient } from "@shared/types/spotify/ads";
 import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
@@ -22,13 +24,52 @@ const { plugin } = registerPlugin({
 registerInterval(plugin, configure, 10_000);
 registerInterval(plugin, configureReduxState, 1000);
 
+registerPatch(plugin, {
+    find: "PLAY_AT_FIRST_TAP_HAD_DEFERRED_ACTIONS",
+    replacement: {
+        match: /(\.\.\.\i,productState:)(\i\.data)/,
+        replace: "$1$exp.modifyProductStateRaw($2)"
+    }
+});
+
+registerPatch(plugin, {
+    find: "GraphQL batched query failed",
+    replacement: {
+        match: /(initialProductState:)(\i),/,
+        replace: "$1$exp.modifyProductStateRaw($2),"
+    }
+});
+
+function modifyProductStateRaw(values: any) {
+    return {
+        ...values,
+        ads: "0",
+        catalogue: "premium",
+        type: "premium"
+    };
+}
+
+exportFunction(plugin, modifyProductStateRaw);
+
+registerApiOverride(plugin, "ProductStateAPI", async function getValues(this: ProductStateAPI) {
+    const values = await (this as any).getValues_orig();
+    return modifyProductStateRaw(values);
+});
+
+registerApiOverride(
+    plugin,
+    "ProductStateAPI",
+    async function getCachedValues(this: ProductStateAPI) {
+        const values = await (this as any).getCachedValues_orig();
+        return modifyProductStateRaw(values);
+    }
+);
+
 async function configure() {
     await configureSlotsClient();
     await configureAdManagers();
 
-    try {
-        configureProductState();
-    } catch {}
+    configureProductState();
 }
 
 async function configureSlotsClient() {
@@ -40,26 +81,30 @@ async function configureSlotsClient() {
 
     const slots = await slotsClient.getSlots();
     for (const slot of slots.adSlots) {
-        audio.inStreamApi.adsCoreConnector.subscribeToSlot(
-            slot.slotId ?? slot.slot_id,
-            async data => {
-                const slotId = data?.adSlotEvent?.slotId;
-                if (!slotId) {
-                    return;
-                }
+        const slotId = slot.slotId ?? slot.slot_id;
+        if (!slotId) {
+            continue;
+        }
 
-                audio.inStreamApi.adsCoreConnector.clearSlot(slotId);
-                slotsClient.clearAllAds({ slotId });
+        async function clearSlot() {
+            slotsClient.clearAllAds({ slotId });
 
-                await settingsClient.updateAdServerEndpoint({
-                    slotIds: [slotId],
-                    url: "https://poop.com"
-                });
-                await settingsClient.updateSlotEnabled({ enabled: false, slotId });
-                await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: BigInt(0) });
-                await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: BigInt(0) });
-            }
-        );
+            await settingsClient.updateAdServerEndpoint({
+                slotIds: [slotId],
+                url: "https://poop.com"
+            });
+            await settingsClient.updateSlotEnabled({ enabled: false, slotId });
+            await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: BigInt(0) });
+            await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: BigInt(0) });
+        }
+
+        await clearSlot();
+
+        audio.inStreamApi.adsCoreConnector.subscribeToSlot(slotId, async () => {
+            audio.inStreamApi.adsCoreConnector.clearSlot(slotId);
+
+            await clearSlot();
+        });
     }
 }
 
