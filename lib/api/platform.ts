@@ -98,6 +98,13 @@ function overrideApi(context: string, enable: boolean) {
             value: enable ? override.replacement : override.original,
             writable: true
         });
+
+        Object.defineProperty(instance, `${override.fnName}_orig`, {
+            configurable: true,
+            enumerable: true,
+            value: enable ? override.original : undefined,
+            writable: true
+        });
     }
 }
 
