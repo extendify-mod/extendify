@@ -44,15 +44,15 @@ export function registerInterval(
     delay: number,
     instant: boolean = true
 ) {
-    if (instant) {
-        callback();
-    }
-
     let interval: any;
 
     registerEventListener(context, "contextEnabled", c => {
         if (c.name !== context.name || interval) {
             return;
+        }
+
+        if (instant) {
+            callback();
         }
 
         interval = setInterval(callback, delay);
