@@ -4,7 +4,7 @@ import { exportFunction, registerPatch } from "@api/context/patch";
 import { exportFilters, findModuleExportLazy } from "@webpack/module";
 
 import type { UseSelector } from "react-redux";
-import type { Store } from "redux";
+import type { combineReducers as CombineReducers, Store } from "redux";
 
 const { context } = registerContext({
     name: "Redux",
@@ -17,6 +17,17 @@ export const useSelector = findModuleExportLazy<UseSelector<any>>(
         matches: [/{equalityFn:\i/, /^(?!.*===).*/],
         mode: "all"
     })
+);
+/**
+ * https://github.com/reduxjs/redux/blob/master/src/combineReducers.ts#L123
+ *
+ * Can be found as 333->HY as of 1.2.84.476
+ *
+ * The reason this works is because it includes the `assertReducerShape`
+ * function in the combineReducers function.
+ */
+export const combineReducers = findModuleExportLazy<typeof CombineReducers>(
+    exportFilters.byCode(/type:\i\.PROBE_UNKNOWN_ACTION\(\)/)
 );
 
 registerPatch(context, {
