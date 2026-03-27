@@ -12,7 +12,7 @@ const { plugin } = registerPlugin({
 registerPatch(plugin, {
     find: "feedback.link-copied",
     replacement: {
-        match: /(const{shareUrl:\i,shareId:\i})=(\i)/,
+        match: /((?:const|let){shareUrl:\i,shareId:\i})=(\i)/,
         replace: "$1={...$2,shareUrl:$exp.removeShareId($2.shareUrl)}"
     }
 });
