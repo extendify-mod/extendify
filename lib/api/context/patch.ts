@@ -146,3 +146,22 @@ export function executePatch(
 export function contextHasPatches(contextName: string): boolean {
     return patches.filter(patch => patch.context.name === contextName).length >= 1;
 }
+
+export function stringifyMatch(match: AnyMatch): string {
+    if (typeof match === "string") {
+        return match;
+    }
+
+    if (match instanceof RegExp) {
+        return match.toString();
+    }
+
+    if ("matches" in match) {
+        return JSON.stringify({
+            ...match,
+            matches: match.matches.map(v => stringifyMatch(v))
+        });
+    }
+
+    return JSON.stringify(match);
+}
