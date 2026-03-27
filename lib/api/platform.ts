@@ -33,20 +33,20 @@ registerPatch(context, {
     find: /{createPlatform(?:Desktop|Web):\i}/,
     replacement: [
         {
-            match: /(;const \i=)(await async function\(\){.*?}(?:})?\(\))/,
-            replace: "$1$exp.loadPlatform($2)"
+            match: /({createPlatform(?:Desktop|Web):\i}=.*?return )(\i\(\i\))/,
+            replace: "$1$exp.loadPlatform(await $2)"
         }
     ]
 });
 
-exportFunction(context, function loadPlatform(value: Platform): Platform {
+exportFunction(context, function loadPlatform(value: Platform): Promise<Platform> {
     platform = value;
 
     emitEvent("platformLoaded");
 
     createPlayerEvents();
 
-    return value;
+    return Promise.resolve(value);
 });
 
 registerEventListener(context, "contextEnabled", context => {
