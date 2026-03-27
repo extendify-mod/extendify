@@ -21,8 +21,6 @@ export const useSelector = findModuleExportLazy<UseSelector<any>>(
 /**
  * https://github.com/reduxjs/redux/blob/master/src/combineReducers.ts#L123
  *
- * Can be found as 333->HY as of 1.2.84.476
- *
  * The reason this works is because it includes the `assertReducerShape`
  * function in the combineReducers function.
  */
@@ -33,7 +31,14 @@ export const combineReducers = findModuleExportLazy<typeof CombineReducers>(
 registerPatch(context, {
     find: "ANONYMOUS_DEFERRED_ACTION_KEY",
     replacement: {
-        match: /(\i)=\i\({session:\i,features:\i,seoExperiment:\i},{.*?}\);/,
+        match: {
+            // FIXME: remove 1st match when it's no longer needed
+            matches: [
+                /(\i)=\i\({session:\i,features:\i,seoExperiment:\i},{.*?}\);/,
+                /(\i)=function\(\i,\i\){let \i,{platform:.*?\({session:\i,features:\i,seoExperiment:\i},{.*?}\);/
+            ],
+            mode: "any"
+        },
         replace: "$&$exp.loadGlobalStore($1);"
     }
 });
