@@ -1,7 +1,7 @@
 import type { Context } from "@api/context";
 import { patches } from "@api/registry";
 import { PROPS_ARG_NAME } from "@shared/constants";
-import { type AnyMatch, createExtendedRegExp, type Match } from "@shared/match";
+import { type AnyMatch, createExtendedRegExp } from "@shared/match";
 import type { AnyFn, TargetPlatform } from "@shared/types";
 
 export interface PatchConditions {
@@ -48,7 +48,7 @@ export interface PatchReplacement extends PatchConditions {
      *
      * You can use `\i` in your regex to match variable names and keywords.
      */
-    match: Match;
+    match: AnyMatch;
     /**
      * A string or callback function containing the text to replace.
      *
@@ -113,17 +113,29 @@ function modifyReplacement(context: Context, replace: string | ReplaceFn) {
 export function executePatch(
     context: Context,
     src: string,
-    match: Match,
+    match: AnyMatch,
     replace: string | ReplaceFn
 ): string {
     replace = modifyReplacement(context, replace);
 
     if (match instanceof RegExp) {
         match = createExtendedRegExp(match);
-    } else {
+    } else if (typeof match === "string") {
         // Force the match to be a regex so that you can use $& in the replace string
         // or a replace function.
         match = new RegExp(escapeRegEx(match));
+    } else {
+        let newSrc = src;
+
+        for (const m of match.matches) {
+            newSrc = executePatch(context, newSrc, m, replace);
+
+            if (newSrc !== src && match.mode === "any") {
+                return newSrc;
+            }
+        }
+
+        return newSrc;
     }
 
     // @ts-expect-error

@@ -158,7 +158,7 @@ export function patchModule<T>(module: T, id: string): T {
 
                 if (newSrc === src && !patch.noWarn && !replacement.noWarn) {
                     logger.warn(
-                        `Patch by ${patch.context.name} had no effect (Module id is ${id}): ${replacement.match}`
+                        `Patch by ${patch.context.name} had no effect (Module id is ${id}): ${JSON.stringify(replacement.match)}`
                     );
 
                     if (DEVELOPMENT) {
@@ -188,7 +188,7 @@ export function patchModule<T>(module: T, id: string): T {
                 }
 
                 logger.error(
-                    `Patch by ${patch.context.name} errored (Module id is ${id}): ${replacement.match}\n`,
+                    `Patch by ${patch.context.name} errored (Module id is ${id}): ${JSON.stringify(replacement.match)}\n`,
                     e
                 );
 
