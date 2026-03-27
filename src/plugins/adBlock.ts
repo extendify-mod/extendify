@@ -14,7 +14,7 @@ const settingsClient = findModuleExportLazy<SlotSettingsClient>(
     exportFilters.byProps("updateAdServerEndpoint")
 );
 
-const { plugin } = registerPlugin({
+const { plugin, logger } = registerPlugin({
     authors: ["7elia"],
     description: "Block ads on Spotify",
     name: "AdBlock",
@@ -25,7 +25,7 @@ registerInterval(plugin, configure, 10_000);
 registerInterval(plugin, configureReduxState, 1000);
 
 registerPatch(plugin, {
-    find: "PLAY_AT_FIRST_TAP_HAD_DEFERRED_ACTIONS",
+    find: 'type:"PLAY_AT_FIRST_TAP_HAD_DEFERRED_ACTIONS"',
     replacement: {
         match: /(\.\.\.\i,productState:)(\i\.data)/,
         replace: "$1$exp.modifyProductStateRaw($2)"
@@ -33,7 +33,7 @@ registerPatch(plugin, {
 });
 
 registerPatch(plugin, {
-    find: "GraphQL batched query failed",
+    find: '"xpui"',
     replacement: {
         match: /(initialProductState:)(\i),/,
         replace: "$1$exp.modifyProductStateRaw($2),"
@@ -66,14 +66,18 @@ registerApiOverride(
 );
 
 async function configure() {
-    await configureSlotsClient();
+    try {
+        await configureSlotsClient();
+    } catch {
+        logger.warn("Blocking slotted ads might be patched");
+    }
     await configureAdManagers();
-
     configureProductState();
 }
 
+/** I'm pretty sure this is patched */
 async function configureSlotsClient() {
-    if (!platform) {
+    if (!platform || !slotsClient) {
         return;
     }
 
