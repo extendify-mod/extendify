@@ -48,6 +48,12 @@ function generateSourceMap(content: string, scriptUrl: string) {
     return `\n//# sourceMappingURL=data:application/json;base64,${encodedMap}`;
 }
 
+function createScript(content: string) {
+    const elem = document.createElement("script");
+    elem.src = URL.createObjectURL(new Blob([content], { type: "script/js" }));
+    document.body.appendChild(elem);
+}
+
 async function loadEntrypoint() {
     if (ENTRYPOINTS.length === 0) {
         logger.info("No entrypoints available");
@@ -87,14 +93,14 @@ async function loadEntrypoint() {
     }
 
     const requireName = text.match(
-        createExtendedRegExp(/}(__webpack_require__|\i)\.m=(?:__webpack_modules__|\i)/)
+        createExtendedRegExp(/}(?:if\()?(__webpack_require__|\i)\.m=(?:__webpack_modules__|\i)/)
     )?.[1];
     if (!requireName) {
         logger.error("Couldn't find require name in entrypoint");
+        createScript(text);
         return;
-    } else {
-        logger.info(`Found require name ${requireName}`);
     }
+    logger.info(`Found require name ${requireName}`);
 
     let script = exposePrivateModule(`// Original name: ${scriptUrl}\n${text}`, requireName);
 
@@ -102,9 +108,7 @@ async function loadEntrypoint() {
         script += generateSourceMap(script, scriptUrl);
     }
 
-    const elem = document.createElement("script");
-    elem.src = URL.createObjectURL(new Blob([script], { type: "script/js" }));
-    document.body.appendChild(elem);
+    createScript(script);
 
     logger.info("Successfully patched and loaded entrypoint");
     return;
