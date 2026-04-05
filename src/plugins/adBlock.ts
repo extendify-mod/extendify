@@ -1,139 +1,91 @@
-import { registerInterval } from "@api/context";
-import { exportFunction, registerPatch } from "@api/context/patch";
+import { registerEventListener } from "@api/context/event";
 import { registerPlugin } from "@api/context/plugin";
-import { platform, productState, registerApiOverride } from "@api/platform";
-import { globalStore } from "@api/redux";
-import type { ProductStateAPI } from "@shared/types/spotify";
-import type { SlotSettingsClient, SlotsClient } from "@shared/types/spotify/ads";
-import { exportFilters, findModuleExportLazy } from "@webpack/module";
+import { isPluginEnabled } from "@api/context/settings";
+import {
+    productStateService,
+    registerInterceptor,
+    settingsService,
+    slotsService
+} from "@api/esperanto";
+import { platform } from "@api/platform";
+import type {
+    Platform,
+    ProductStateRaw,
+    SettingsService,
+    SlotsService
+} from "@shared/types/spotify";
 
-const slotsClient = findModuleExportLazy<SlotsClient>(
-    exportFilters.byProps("clearAllAds", "getSlots")
-);
-const settingsClient = findModuleExportLazy<SlotSettingsClient>(
-    exportFilters.byProps("updateAdServerEndpoint")
-);
+import type { Store } from "redux";
 
-const { plugin, logger } = registerPlugin({
-    authors: ["7elia"],
+const MAX_UINT64 = 2n ** 64n - 1n;
+
+const platformPromise = Promise.withResolvers<Platform>();
+const reduxPromise = Promise.withResolvers<Store>();
+const callbacks: { cancel: () => void }[] = [];
+
+const { plugin } = registerPlugin({
+    authors: ["7elia", "davri"],
     description: "Block ads on Spotify",
     name: "AdBlock",
-    platforms: ["desktop", "browser"]
-});
-
-registerInterval(plugin, configure, 10_000);
-registerInterval(plugin, configureReduxState, 1000);
-
-registerPatch(plugin, {
-    find: 'type:"PLAY_AT_FIRST_TAP_HAD_DEFERRED_ACTIONS"',
-    replacement: {
-        match: /(\.\.\.\i,productState:)(\i\.data)/,
-        replace: "$1$exp.modifyProductStateRaw($2)"
+    platforms: ["desktop", "browser"],
+    async start() {
+        await platformPromise.promise.then(configureAdManagers);
+        await reduxPromise.promise.then(configureReduxState);
+        await Promise.all([slotsService, settingsService])
+            .then(args => configureServices(...args))
+            .then(cbs => callbacks.push(...cbs));
+    },
+    stop() {
+        // remove existing callbacks to prevent memory leaks
+        callbacks.forEach(cb => void cb.cancel());
+        callbacks.length = 0;
     }
 });
 
-registerPatch(plugin, {
-    find: '"xpui"',
-    replacement: {
-        match: /(initialProductState:)(\i),/,
-        replace: "$1$exp.modifyProductStateRaw($2),"
-    }
+registerEventListener(plugin, "platformLoaded", () =>
+    platformPromise.resolve(platform as Platform)
+);
+registerEventListener(plugin, "reduxLoaded", store => reduxPromise.resolve(store));
+
+registerInterceptor(productStateService, "GetValues", {
+    onResponse: ({ message }) => modifyProductStateRaw(message)
+});
+registerInterceptor(productStateService, "SubValues", {
+    onResponse: ({ message }) => modifyProductStateRaw(message)
 });
 
-function modifyProductStateRaw(values: any) {
-    return {
-        ...values,
+function modifyProductStateRaw(data: ProductStateRaw) {
+    if (!isPluginEnabled(plugin)) return;
+    Object.assign(data.pairs, {
         ads: "0",
         catalogue: "premium",
         type: "premium"
-    };
+    });
 }
 
-exportFunction(plugin, modifyProductStateRaw);
-
-registerApiOverride(plugin, "ProductStateAPI", async function getValues(this: ProductStateAPI) {
-    const values = await (this as any).getValues_orig();
-    return modifyProductStateRaw(values);
-});
-
-registerApiOverride(
-    plugin,
-    "ProductStateAPI",
-    async function getCachedValues(this: ProductStateAPI) {
-        const values = await (this as any).getCachedValues_orig();
-        return modifyProductStateRaw(values);
-    }
-);
-
-async function configure() {
-    try {
-        await configureSlotsClient();
-    } catch {
-        logger.warn("Blocking slotted ads might be patched");
-    }
-    await configureAdManagers();
-    configureProductState();
-}
-
-/** I'm pretty sure this is patched */
-async function configureSlotsClient() {
-    if (!platform || !slotsClient) {
-        return;
-    }
-
-    const { audio } = platform.getAdManagers();
-
-    const slots = await slotsClient.getSlots();
-    for (const slot of slots.adSlots) {
-        const slotId = slot.slotId ?? slot.slot_id;
-        if (!slotId) {
-            continue;
-        }
-
+async function configureServices(slotsService: SlotsService, settingsService: SettingsService) {
+    const slots = await slotsService.getSlots();
+    return slots.adSlots.map(({ slotId }) => {
         async function clearSlot() {
-            slotsClient.clearAllAds({ slotId });
+            await slotsService.clearAllAds({ slotId });
 
-            await settingsClient.updateAdServerEndpoint({
+            await settingsService.updateAdServerEndpoint({
                 slotIds: [slotId],
                 url: "https://poop.com"
             });
-            await settingsClient.updateSlotEnabled({ enabled: false, slotId });
-            await settingsClient.updateStreamTimeInterval({ slotId, timeInterval: BigInt(0) });
-            await settingsClient.updateDisplayTimeInterval({ slotId, timeInterval: BigInt(0) });
+            await settingsService.updateSlotEnabled({ enabled: false, slotId });
+            await settingsService.updateStreamTimeInterval({ slotId, timeInterval: MAX_UINT64 });
+            await settingsService.updateDisplayTimeInterval({ slotId, timeInterval: MAX_UINT64 });
+            await settingsService.updateExpiryTimeInterval({ slotId, timeInterval: MAX_UINT64 });
         }
 
-        await clearSlot();
+        clearSlot();
 
-        audio.inStreamApi.adsCoreConnector.subscribeToSlot(slotId, async () => {
-            audio.inStreamApi.adsCoreConnector.clearSlot(slotId);
-
-            await clearSlot();
-        });
-    }
-}
-
-// TODO: (await resolveApi("ProductStateAPI").productStateApi.getValues()).pairs["financial-product"]
-function configureProductState() {
-    const overrides = {
-        pairs: {
-            ads: "0",
-            catalogue: "premium",
-            type: "premium"
-        }
-    };
-
-    productState.productStateApi.subValues({ keys: ["ads", "catalogue", "type"] }, () => {
-        productState.productStateApi.putOverridesValues(overrides);
+        return slotsService.subSlot({ slotId }, clearSlot);
     });
-
-    productState.productStateApi.putOverridesValues(overrides);
 }
 
-async function configureAdManagers() {
-    if (!platform) {
-        return;
-    }
-
+async function configureAdManagers(platform: Platform) {
     const { audio, billboard, inStreamApi, leaderboard, sponsoredPlaylist, vto } =
         platform.getAdManagers();
 
@@ -145,11 +97,7 @@ async function configureAdManagers() {
     vto.manager.disable();
 }
 
-function configureReduxState() {
-    if (!globalStore) {
-        return;
-    }
-
+function configureReduxState(globalStore: Store) {
     const { root } = globalStore.getState().ads;
     if (!root.adsEnabled && root.isHptoHidden && root.isPremium) {
         return;
