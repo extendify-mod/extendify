@@ -1,20 +1,31 @@
-export function createLazy<T>(getter: () => T): T {
-    let cache: T | undefined;
+const unconfigurable = ["arguments", "caller", "prototype"];
 
-    function getTarget() {
-        if (!cache) {
-            cache = getter();
-        }
+const value = Symbol();
 
-        return cache;
+type Dummy<T> = (() => T | undefined) & { [value]?: T };
+
+const handler: ProxyHandler<Dummy<unknown>> = {
+    getOwnPropertyDescriptor: (target, p) => {
+        const obj = ((typeof p !== "string" || !unconfigurable.includes(p)) && target()) || {};
+        return Reflect.getOwnPropertyDescriptor(obj, p);
+    },
+    ownKeys: target => {
+        const keys = Reflect.ownKeys(target() || {});
+        return [...keys, ...unconfigurable.filter(key => !keys.includes(key))];
     }
+};
 
-    return new Proxy(() => {}, {
-        apply(_, thisArg, argArray) {
-            return Reflect.apply(getTarget() as any, thisArg, argArray);
-        },
-        get(_, prop, receiver) {
-            return Reflect.get(getTarget() as any, prop, receiver);
-        }
-    }) as T;
+for (const method of Reflect.ownKeys(Reflect).filter(key => typeof key === "string")) {
+    handler[method as keyof typeof handler] ??= (target, ...args: unknown[]) => {
+        return (Reflect as any)[method](target() || {}, ...args);
+    };
+}
+
+export function createLazy<T>(getter: () => T): T {
+    const dummy: Dummy<T> = () => {
+        if (!dummy[value]) dummy[value] = getter();
+        return dummy[value];
+    };
+
+    return new Proxy(dummy, handler) as T;
 }
