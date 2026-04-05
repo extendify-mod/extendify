@@ -11,7 +11,6 @@ const { logger } = registerContext({
 
 export type EventType =
     | "platformLoaded"
-    | "esperantoLoaded"
     | "reduxLoaded"
     | "play"
     | "pause"
@@ -24,7 +23,6 @@ export type EventType =
 
 export interface EventArgs {
     platformLoaded: [];
-    esperantoLoaded: [];
     reduxLoaded: [store: Store];
     play: [state: PlayerState];
     pause: [state: PlayerState];

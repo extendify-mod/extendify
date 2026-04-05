@@ -1,13 +1,12 @@
-import { registerEventListener } from "@api/context/event";
 import { registerPlugin } from "@api/context/plugin";
-import { isPluginEnabled } from "@api/context/settings";
 import {
     productStateService,
     registerInterceptor,
     settingsService,
     slotsService
 } from "@api/esperanto";
-import { platform } from "@api/platform";
+import { platformPromise } from "@api/platform";
+import { globalStorePromise } from "@api/redux";
 import type {
     Platform,
     ProductStateRaw,
@@ -19,8 +18,6 @@ import type { Store } from "redux";
 
 const MAX_UINT64 = 2n ** 64n - 1n;
 
-const platformPromise = Promise.withResolvers<Platform>();
-const reduxPromise = Promise.withResolvers<Store>();
 const callbacks: { cancel: () => void }[] = [];
 
 const { plugin } = registerPlugin({
@@ -29,8 +26,8 @@ const { plugin } = registerPlugin({
     name: "AdBlock",
     platforms: ["desktop", "browser"],
     async start() {
-        await platformPromise.promise.then(configureAdManagers);
-        await reduxPromise.promise.then(configureReduxState);
+        await platformPromise.then(configureAdManagers);
+        await globalStorePromise.then(configureReduxState);
         await Promise.all([slotsService, settingsService])
             .then(args => configureServices(...args))
             .then(cbs => callbacks.push(...cbs));
@@ -42,20 +39,14 @@ const { plugin } = registerPlugin({
     }
 });
 
-registerEventListener(plugin, "platformLoaded", () =>
-    platformPromise.resolve(platform as Platform)
-);
-registerEventListener(plugin, "reduxLoaded", store => reduxPromise.resolve(store));
-
-registerInterceptor(productStateService, "GetValues", {
+registerInterceptor(plugin, productStateService, "GetValues", {
     onResponse: ({ message }) => modifyProductStateRaw(message)
 });
-registerInterceptor(productStateService, "SubValues", {
+registerInterceptor(plugin, productStateService, "SubValues", {
     onResponse: ({ message }) => modifyProductStateRaw(message)
 });
 
 function modifyProductStateRaw(data: ProductStateRaw) {
-    if (!isPluginEnabled(plugin)) return;
     Object.assign(data.pairs, {
         ads: "0",
         catalogue: "premium",

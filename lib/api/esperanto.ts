@@ -1,4 +1,4 @@
-import { registerContext } from "@api/context";
+import { type Context, isContextEnabled, registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
 import { createLazy } from "@shared/lazy";
 import type { ProductStateService, SettingsService, SlotsService } from "@shared/types/spotify";
@@ -22,7 +22,7 @@ export const productStateService = resolveService<ProductStateService>(
 
 interface ServiceOptions {
     subscriptions: Set<(service: EsperantoService) => void>;
-    interceptors: Map<string, Set<Interceptor>>;
+    interceptors: Map<string, Set<{ interceptor: Interceptor; enabled: () => boolean }>>;
 }
 
 const { context, logger } = registerContext({
@@ -57,14 +57,14 @@ exportFunction(context, function register(service: EsperantoService): void {
     service.options = {
         onRequest: data => {
             onRequest?.(data);
-            for (const { onRequest: req } of interceptors.get(data.method) ?? []) {
-                req?.(data);
+            for (const { enabled, interceptor } of interceptors.get(data.method) ?? []) {
+                if (enabled()) interceptor.onRequest?.(data);
             }
         },
         onResponse: data => {
             onResponse?.(data);
-            for (const { onResponse: res } of interceptors.get(data.method) ?? []) {
-                res?.(data);
+            for (const { enabled, interceptor } of interceptors.get(data.method) ?? []) {
+                if (enabled()) interceptor.onResponse?.(data);
             }
         }
     };
@@ -95,6 +95,7 @@ export async function registerInterceptor<
     T extends EsperantoService,
     TMethod extends EsperantoMethods<T>
 >(
+    context: Context,
     service: T | Promise<T>,
     method: TMethod,
     options: ExtractInterceptor<T, TMethod>
@@ -118,5 +119,5 @@ export async function registerInterceptor<
         interceptors.set(method, methodInterceptors);
     }
 
-    methodInterceptors.add(options);
+    methodInterceptors.add({ enabled: () => isContextEnabled(context), interceptor: options });
 }
