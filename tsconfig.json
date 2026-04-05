@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "lib": ["DOM", "ESNext", "ESNext.Iterator"],
-        "target": "es6",
+        "target": "es2020",
         "module": "preserve",
         "moduleDetection": "force",
         "jsx": "preserve",
