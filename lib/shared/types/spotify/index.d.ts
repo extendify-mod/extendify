@@ -181,6 +181,7 @@ export interface ProductStateAPI {
         putOverridesValues(values: any): void;
         subValues(opts: { keys: string[] }, callback: () => void);
     };
+    cache: { clear: () => void };
 }
 
 export interface CosmosAPI {

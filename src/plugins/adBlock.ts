@@ -5,7 +5,7 @@ import {
     settingsService,
     slotsService
 } from "@api/esperanto";
-import { platformPromise } from "@api/platform";
+import { platformPromise, productState } from "@api/platform";
 import { globalStorePromise } from "@api/redux";
 import type {
     Platform,
@@ -26,6 +26,8 @@ const { plugin } = registerPlugin({
     name: "AdBlock",
     platforms: ["desktop", "browser"],
     async start() {
+        if ("cache" in productState) productState.cache.clear();
+
         await platformPromise.then(configureAdManagers);
         await globalStorePromise.then(configureReduxState);
         await Promise.all([slotsService, settingsService])
