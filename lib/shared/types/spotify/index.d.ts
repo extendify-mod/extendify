@@ -1,10 +1,10 @@
 import type { AdManagers } from "@shared/types/spotify/ads";
+import type { EsperantoService } from "@shared/types/spotify/esperanto";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
 import type { User } from "@shared/types/spotify/user";
 
 import type { History } from "history";
 
-import type { EsperantoService } from "./esperanto";
 import type { SettingsAPI } from "./settings";
 
 export interface Platform {
