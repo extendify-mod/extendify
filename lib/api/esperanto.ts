@@ -99,7 +99,9 @@ export function resolveService<T extends EsperantoService>(id: string): Promise<
 }
 
 export function resolveServiceLazy<T extends EsperantoService>(id: string): T {
-    const proxy = createLazy(resolveService<T>(id));
+    const cache = services.get(id);
+
+    const proxy = createLazy(cache ? () => cache as T : resolveService<T>(id));
     serviceIds.set(proxy, id);
 
     return proxy;
