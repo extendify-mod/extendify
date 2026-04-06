@@ -21,11 +21,16 @@ for (const method of Reflect.ownKeys(Reflect).filter(key => typeof key === "stri
     };
 }
 
-export function createLazy<T>(getter: () => T): T {
+export function createLazy<T>(getter: (() => T) | PromiseLike<T>): T {
     const dummy: Dummy<T> = () => {
-        if (!dummy[value]) dummy[value] = getter();
+        if (typeof getter === "function") dummy[value] ??= getter();
         return dummy[value];
     };
+
+    if ("then" in getter)
+        getter.then(resolved => {
+            dummy[value] = resolved;
+        });
 
     return new Proxy(dummy, handler) as T;
 }
