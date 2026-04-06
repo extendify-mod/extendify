@@ -58,13 +58,17 @@ exportFunction(context, function register(service: EsperantoService): void {
     service.options = {
         onRequest: data => {
             onRequest?.(data);
-            for (const { enabled, interceptor } of interceptors.get(data.method) ?? []) {
+
+            const options = interceptors.get(data.method) ?? [];
+            for (const { enabled, interceptor } of options) {
                 if (enabled()) interceptor.onRequest?.(data);
             }
         },
         onResponse: data => {
             onResponse?.(data);
-            for (const { enabled, interceptor } of interceptors.get(data.method) ?? []) {
+
+            const options = interceptors.get(data.method) ?? [];
+            for (const { enabled, interceptor } of options) {
                 if (enabled()) interceptor.onResponse?.(data);
             }
         }
@@ -72,7 +76,10 @@ exportFunction(context, function register(service: EsperantoService): void {
 
     // The same service can be initialized multiple times (for example to be used in the debug window).
     // Each instance uses the same underlying transport layer, which means we only need to store it once
-    if (services.has(SERVICE_ID)) return;
+    if (services.has(SERVICE_ID)) {
+        return;
+    }
+
     services.set(SERVICE_ID, service);
     serviceIds.set(service, SERVICE_ID);
 
@@ -87,11 +94,16 @@ exportFunction(context, function register(service: EsperantoService): void {
 
 export function resolveService<T extends EsperantoService>(id: string): Promise<T> {
     const cache = services.get(id);
-    const { subscriptions } = getServiceOptions(id);
 
-    const promise = cache
-        ? Promise.resolve(cache as T)
-        : new Promise<T>(resolve => subscriptions.add(service => resolve(service as T)));
+    let promise: Promise<T>;
+    if (cache) {
+        promise = Promise.resolve(cache as T);
+    } else {
+        const { subscriptions } = getServiceOptions(id);
+        promise = new Promise<T>(resolve => {
+            subscriptions.add(service => resolve(service as T));
+        });
+    }
 
     serviceIds.set(promise, id);
 
@@ -133,7 +145,9 @@ export function registerInterceptor<
 ): () => void {
     // Using an inverse lookup map to avoid having to interact with the proxy directly
     const SERVICE_ID = serviceIds.get(service);
-    if (!SERVICE_ID) return () => {};
+    if (!SERVICE_ID) {
+        return () => {};
+    }
 
     validateEsperantoMethod(SERVICE_ID, method);
 
