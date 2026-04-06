@@ -10,6 +10,7 @@ import type {
 } from "@shared/types/spotify/esperanto";
 
 const services = new Map<string, EsperantoService>();
+const serviceIds = new WeakMap<EsperantoService | Promise<EsperantoService>, string>();
 const serviceOptions = new Map<string, ServiceOptions>();
 
 export const slotsService = resolveService<SlotsService>("spotify.ads.esperanto.proto.Slots");
@@ -73,45 +74,67 @@ exportFunction(context, function register(service: EsperantoService): void {
     // Each instance uses the same underlying transport layer, which means we only need to store it once
     if (services.has(SERVICE_ID)) return;
     services.set(SERVICE_ID, service);
+    serviceIds.set(service, SERVICE_ID);
+
+    logger.debug(`Service ${SERVICE_ID} was registered.`);
 
     for (const callback of subscriptions) {
         callback(service);
     }
+
+    subscriptions.clear();
 });
 
 export function resolveService<T extends EsperantoService>(id: string): Promise<T> {
-    return new Promise(resolve => {
-        const { subscriptions } = getServiceOptions(id);
+    const service = services.get(id);
+    if (service) return Promise.resolve(service as T);
 
-        subscriptions.add(service => resolve(service as T));
-    });
+    const { subscriptions } = getServiceOptions(id);
+    const promise = new Promise<T>(resolve => subscriptions.add(service => resolve(service as T)));
+
+    serviceIds.set(promise, id);
+
+    return promise;
 }
 
 export function resolveServiceLazy<T extends EsperantoService>(id: string): T {
-    return createLazy(() => services.get(id)) as T;
+    const proxy = createLazy(resolveService<T>(id));
+    serviceIds.set(proxy, id);
+
+    return proxy;
 }
 
-export async function registerInterceptor<
+async function validateEsperantoMethod(id: string, method: string) {
+    const service = await resolveService(id).catch(() => null);
+    if (!service) {
+        logger.error(`Couldn't find service with id ${id}`);
+        return;
+    }
+
+    if (!(method in service.constructor.DECODERS)) {
+        logger.error(
+            `"${method}" is not a valid method name for ${id}. Try using a different capitalization.`
+        );
+        return;
+    }
+}
+
+export function registerInterceptor<
     T extends EsperantoService,
     TMethod extends EsperantoMethods<T>
 >(
     context: Context,
     service: T | Promise<T>,
     method: TMethod,
-    options: ExtractInterceptor<T, TMethod>
-): Promise<void> {
-    const instance = await service;
-    if (!instance) return;
+    interceptor: ExtractInterceptor<T, TMethod>
+): () => void {
+    // Using an inverse lookup map to avoid having to interact with the proxy directly
+    const SERVICE_ID = serviceIds.get(service);
+    if (!SERVICE_ID) return () => {};
 
-    const { interceptors } = getServiceOptions(instance.constructor.SERVICE_ID);
+    validateEsperantoMethod(SERVICE_ID, method);
 
-    if (!(method in instance.constructor.DECODERS)) {
-        logger.error(
-            `"${method}" is not a valid method name for ${instance.constructor.SERVICE_ID}. ` +
-                `Try using a different capitalization.`
-        );
-        return;
-    }
+    const { interceptors } = getServiceOptions(SERVICE_ID);
 
     let methodInterceptors = interceptors.get(method);
     if (!methodInterceptors) {
@@ -119,5 +142,10 @@ export async function registerInterceptor<
         interceptors.set(method, methodInterceptors);
     }
 
-    methodInterceptors.add({ enabled: () => isContextEnabled(context), interceptor: options });
+    const options = { enabled: () => isContextEnabled(context), interceptor };
+    methodInterceptors.add(options);
+
+    logger.debug(`Registered interceptor for "${method}" on ${SERVICE_ID}`);
+
+    return () => methodInterceptors.delete(options);
 }
