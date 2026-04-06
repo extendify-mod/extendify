@@ -86,11 +86,12 @@ exportFunction(context, function register(service: EsperantoService): void {
 });
 
 export function resolveService<T extends EsperantoService>(id: string): Promise<T> {
-    const service = services.get(id);
-    if (service) return Promise.resolve(service as T);
-
+    const cache = services.get(id);
     const { subscriptions } = getServiceOptions(id);
-    const promise = new Promise<T>(resolve => subscriptions.add(service => resolve(service as T)));
+
+    const promise = cache
+        ? Promise.resolve(cache as T)
+        : new Promise<T>(resolve => subscriptions.add(service => resolve(service as T)));
 
     serviceIds.set(promise, id);
 
