@@ -20,7 +20,7 @@ const MAX_UINT64 = 2n ** 64n - 1n;
 
 const callbacks: { cancel: () => void }[] = [];
 
-const { plugin } = registerPlugin({
+const { plugin, logger } = registerPlugin({
     authors: ["7elia", "Davr1"],
     description: "Block ads on Spotify",
     name: "AdBlock",
@@ -74,6 +74,8 @@ async function configureServices(slotsService: SlotsService, settingsService: Se
 
         clearSlot();
 
+        logger.debug(`Configured slot ${slotId}.`);
+
         return slotsService.subSlot({ slotId }, clearSlot);
     });
 }
@@ -88,6 +90,8 @@ async function configureAdManagers(platform: Platform) {
     leaderboard.disableLeaderboard();
     sponsoredPlaylist.disable();
     vto.manager.disable();
+
+    logger.debug(`Configured ad managers.`);
 }
 
 function configureReduxState(globalStore: Store) {
@@ -100,4 +104,6 @@ function configureReduxState(globalStore: Store) {
     globalStore.dispatch({ isPremium: true, type: "ADS_PREMIUM" });
     globalStore.dispatch({ isHptoHidden: true, type: "ADS_HPTO_HIDDEN" });
     globalStore.dispatch({ type: "ADS_POST_HIDE_HPTO" });
+
+    logger.debug(`Configured redux state.`);
 }
