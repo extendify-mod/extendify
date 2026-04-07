@@ -153,13 +153,33 @@ export function parseScope(code: string, ev: ModuleEval): Record<string, any> {
         }
 
         if (element.type === "VariableDeclaration") {
-            if (element.kind !== "const") {
-                continue;
+            const chain: string[] = [];
+            for (const declaration of element.declarations) {
+                const { init } = declaration;
+
+                if (
+                    init?.type === "CallExpression" &&
+                    (init.callee as Identifier).name?.length === 1
+                ) {
+                    if (
+                        init.arguments?.length === 1 &&
+                        init.arguments?.[0]?.type === "Literal" &&
+                        !Number.isNaN(init.arguments[0].value)
+                    ) {
+                        // These conditions filter out imports.
+                        // We break the chain here because there will also be other
+                        // things like n.n(import) which isn't being caught here.
+                        // From what I can tell a series of imports and initializations
+                        // are always in the same declaration chain so if we find an import
+                        // we can just skip the whole thing.
+                        break;
+                    }
+                }
+
+                chain.push((declaration.id as Identifier).name);
             }
 
-            for (const declaration of element.declarations) {
-                addExport((declaration.id as Identifier).name);
-            }
+            chain.forEach(addExport);
         }
     }
 
