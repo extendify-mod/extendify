@@ -11,6 +11,9 @@ import type { PlayerAPI, PlayerState, Song } from "@shared/types/spotify/player"
 import { diffArrays } from "diff";
 
 export let platform: Platform | undefined;
+const { promise, resolve } = Promise.withResolvers<Platform>();
+export const platformPromise = promise;
+
 export const player = resolveApi<PlayerAPI>("PlayerAPI");
 export const playback = resolveApi<PlaybackAPI>("PlaybackAPI");
 export const remoteConfig = resolveApi<RemoteConfigDebugAPI>("RemoteConfigDebugAPI");
@@ -41,6 +44,7 @@ registerPatch(context, {
 
 exportFunction(context, function loadPlatform(value: Platform): Promise<Platform> {
     platform = value;
+    resolve(value);
 
     emitEvent("platformLoaded");
 

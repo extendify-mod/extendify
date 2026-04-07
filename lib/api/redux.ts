@@ -11,7 +11,10 @@ const { context } = registerContext({
     platforms: ["browser", "desktop"]
 });
 
-export let globalStore: Store;
+export let globalStore: Store | undefined;
+const { promise, resolve } = Promise.withResolvers<Store>();
+export const globalStorePromise = promise;
+
 export const useSelector = findModuleExportLazy<UseSelector<any>>(
     exportFilters.byCode({
         matches: [/{equalityFn:\i/, /^(?!.*===).*/],
@@ -45,6 +48,7 @@ registerPatch(context, {
 
 exportFunction(context, function loadGlobalStore(store) {
     globalStore = store;
+    resolve(store);
 
     emitEvent("reduxLoaded", store);
 });

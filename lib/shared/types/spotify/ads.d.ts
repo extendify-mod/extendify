@@ -68,19 +68,3 @@ export interface Ad {
     trackingEvents: any;
     video: any[];
 }
-
-export interface AdsTestingClient {
-    addPlaytime(opts: { seconds: number });
-}
-
-export interface SlotsClient {
-    clearAllAds(params: { slotId: string }): Promise<void>;
-    getSlots(): Promise<{ adSlots: { slotId: string; slot_id: string }[] }>;
-}
-
-export interface SlotSettingsClient {
-    updateAdServerEndpoint(params: { slotIds: string[]; url: string }): Promise<void>;
-    updateDisplayTimeInterval(params: { slotId: string; timeInterval: bigint }): Promise<void>;
-    updateSlotEnabled(params: { slotId: string; enabled: boolean }): Promise<void>;
-    updateStreamTimeInterval(params: { slotId: string; timeInterval: bigint }): Promise<void>;
-}

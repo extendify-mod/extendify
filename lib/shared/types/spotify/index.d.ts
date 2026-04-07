@@ -1,5 +1,7 @@
-import type { AdManagers, SettingsAPI } from "@shared/types/spotify/ads";
+import type { AdManagers } from "@shared/types/spotify/ads";
+import type { EsperantoService } from "@shared/types/spotify/esperanto";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
+import type { SettingsAPI } from "@shared/types/spotify/settings";
 import type { User } from "@shared/types/spotify/user";
 
 import type { History } from "history";
@@ -178,6 +180,7 @@ export interface ProductStateAPI {
         putOverridesValues(values: any): void;
         subValues(opts: { keys: string[] }, callback: () => void);
     };
+    cache: { clear: () => void };
 }
 
 export interface CosmosAPI {
@@ -214,4 +217,27 @@ export interface SpotifyURI {
     clone(): SpotifyURI;
 }
 
-export type Capabilities = Record<boolean | (() => boolean)>;
+export type Capabilities = Record<string, boolean | (() => boolean)>;
+
+export type SlotsService = EsperantoService<{
+    getSlots: () => { adSlots: { slotId: string }[] };
+    clearAllAds: (request: { slotId: string }) => void;
+    subSlot: (request: { slotId: string }, cb: () => void) => void;
+}>;
+
+export type SettingsService = EsperantoService<{
+    updateAdServerEndpoint: (request: { slotIds: string[]; url: string }) => void;
+    updateSlotEnabled: (request: { slotId: string; enabled: boolean }) => void;
+    updateDisplayTimeInterval: (request: { slotId: string; timeInterval: bigint }) => void;
+    updateStreamTimeInterval: (request: { slotId: string; timeInterval: bigint }) => void;
+    updateExpiryTimeInterval: (request: { slotId: string; timeInterval: bigint }) => void;
+}>;
+
+export interface ProductStateRaw {
+    pairs: Record<string, string>;
+}
+
+export type ProductStateService = EsperantoService<{
+    getValues: () => ProductStateRaw;
+    subValues: (request: null, cb: (response: ProductStateRaw) => void) => void;
+}>;
