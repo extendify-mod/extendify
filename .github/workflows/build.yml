@@ -25,7 +25,7 @@ jobs:
         run: bun run build
       
       - name: Artifact
-        if: github.ref == "refs/heads/master"
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
           name: out
