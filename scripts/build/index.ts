@@ -65,7 +65,7 @@ await bundle.write({
         mangle: false
     },
     minifyInternalExports: true,
-    sourcemap: DEVELOPMENT ? "inline" : "hidden"
+    sourcemap: DEVELOPMENT ? "inline" : undefined
 });
 console.log(`Wrote bundle (${getTimeDifference(bundleWriteStart)} ms)`);
 
