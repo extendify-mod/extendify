@@ -79,7 +79,11 @@ async function loadEntrypoint() {
     let scriptUrl: string = "";
     for (scriptUrl of ENTRYPOINTS) {
         try {
-            text = await (await fetch(scriptUrl)).text();
+            text = await (
+                await fetch(scriptUrl, {
+                    headers: { extendify: JSON.stringify(true) }
+                })
+            ).text();
             logger.info(`Found entrypoint at ${scriptUrl}`);
             break;
         } catch {}
