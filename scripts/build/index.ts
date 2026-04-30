@@ -22,6 +22,10 @@ console.log(`Created dist folder (${getTimeDifference(start)} ms)`);
 
 const assetsCopyStart = performance.now();
 for (const fileName of await readdir(`src/targets/${PLATFORM}`, { recursive: true })) {
+    if (fileName == ".gitkeep") {
+        continue;
+    }
+
     try {
         await copyFile(join("src/targets", PLATFORM, fileName), join("dist", fileName));
     } catch (_) {
