@@ -1,0 +1,62 @@
+name: build-native
+
+on:
+  workflow_dispatch:
+  # push:
+  #   paths: ['packages/native/**']
+  #   branches: [master]
+  # pull_request:
+  #   paths: ['packages/native/**']
+  #   branches: [master]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            output: libextendify_native
+            target: linux_x86_64
+            extension: .so
+          - os: windows-latest
+            output: extendify_native
+            target: windows_x86_64
+            extension: .dll
+          - os: windows-11-arm
+            output: extendify_native
+            target: windows_aarch64
+            extension: .dll
+          - os: macos-latest
+            output: libextendify_native
+            target: macos_arm64
+            extension: .dylib
+          - os: macos-26-intel
+            output: libextendify_native
+            target: macos_intel
+            extension: .dylib
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Download CEF
+        run: |
+          python -m pip install requests
+          python packages/native/scripts/dl_cef.py
+      
+      - name: Build
+        run: cargo build --release
+      
+      - name: Rename output
+        shell: bash
+        run: cp target/release/${{ matrix.output }}${{ matrix.extension }} ${{ matrix.target }}${{ matrix.extension }}
+    
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          files: ${{ matrix.target }}${{ matrix.extension }}

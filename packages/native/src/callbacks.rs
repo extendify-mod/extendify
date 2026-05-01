@@ -52,7 +52,7 @@ fn get(filename: &str) -> Option<String> {
     if !extendify_root.is_empty() {
         let mut path = PathBuf::new();
         path.push(extendify_root);
-        path.push("dist");
+        path.push("packages/mod/dist");
         path.push(filename);
 
         if let Ok(content) = std::fs::read_to_string(path) {

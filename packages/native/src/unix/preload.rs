@@ -1,4 +1,5 @@
 // https://github.com/abutcher-gh/ld_preload_helpers/blob/main/src/lib.rs
+use std::ffi::{c_char, c_void};
 
 #[allow(unused_macros)]
 macro_rules! extern_c_overrides {
@@ -7,7 +8,7 @@ macro_rules! extern_c_overrides {
             #[link(name = "dl")]
             unsafe extern "C" {
                 #[allow(dead_code)]
-                pub fn dlsym(handle: *const libc::c_void, symbol: *const libc::c_char) -> *const libc::c_void;
+                pub fn dlsym(handle: *const c_void, symbol: *const c_char) -> *const c_void;
             }
 
             #[allow(non_camel_case_types)]
@@ -19,7 +20,7 @@ macro_rules! extern_c_overrides {
             #[allow(unused)]
             let $c_api = _dl_resolver.get_or_init(|| {
                 unsafe {
-                    let sym = dlsym(-1isize as *const libc::c_void, concat!(stringify!($c_api), "\0").as_ptr() as *const libc::c_char);
+                    let sym = dlsym(-1isize as *const c_void, concat!(stringify!($c_api), "\0").as_ptr() as *const c_char);
                     if sym.is_null() {
                         panic!("dlsym: Cannot get address for {}", stringify!($c_api));
                     }

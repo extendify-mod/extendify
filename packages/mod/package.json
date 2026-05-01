@@ -1,0 +1,41 @@
+{
+	"name": "mod",
+	"version": "0.0.1",
+	"module": "./src/index.ts",
+	"private": true,
+	"scripts": {
+		"dev": "bun run build-dev && bun run kill-proc && bun run patch && bun run devtools && bun run start-proc",
+		"prod": "bun run build && bun run kill-proc && bun run patch && bun run start-proc",
+		"build": "bun run scripts/build",
+		"build-dev": "bun run scripts/build --dev",
+		"patch": "bun run scripts/patch.ts",
+		"unpatch": "bun run scripts/unpatch.ts",
+		"devtools": "bun run scripts/devtools.ts",
+		"kill-proc": "bun run scripts/proc/kill.ts",
+		"start-proc": "bun run scripts/proc/start.ts",
+		"update": "bun run kill-proc && bun run scripts/update.ts",
+		"postinstall": "bun run scripts/postinstall.ts"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.8",
+		"@types/bun": "1.3.0",
+		"jszip": "^3.10.1",
+		"prettier": "^3.7.1",
+		"redux": "^5.0.1",
+		"rolldown": "1.0.0-beta.42",
+		"react-redux": "^9.2.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"@types/history": "^5.0.0",
+		"@types/react": "18.3.26",
+		"@types/react-router-dom": "^5.3.3",
+		"acorn": "^8.15.0",
+		"acorn-loose": "^8.5.2",
+		"classnames": "^2.5.1",
+		"diff": "^8.0.2",
+		"highlight.js": "^11.11.1"
+	}
+}

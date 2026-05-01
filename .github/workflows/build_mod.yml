@@ -1,16 +1,17 @@
-name: build
+name: build-mod
 
 on:
   workflow_dispatch:
   push:
+    paths: ['packages/mod/**']
     branches: [master]
   pull_request:
+    paths: ['packages/mod/**']
     branches: [master]
 
 jobs:
-  build:
+  build-mod:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
@@ -25,17 +26,17 @@ jobs:
         run: bun install
       
       - name: Build
-        run: bun run build
+        run: bun -F mod build
       
       - name: Artifact
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: out
-          path: dist/
+          path: packages/mod/dist/
       
       - name: Update Release
         if: github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload artifacts dist/* --clobber
+        run: gh release upload artifacts packages/mod/dist/* --clobber
