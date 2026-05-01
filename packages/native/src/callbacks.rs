@@ -48,8 +48,7 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
 }
 
 fn get(filename: &str) -> Option<String> {
-    let extendify_root = env!("EXTENDIFY_ROOT");
-    if !extendify_root.is_empty() {
+    if let Ok(extendify_root) = std::env::var("EXTENDIFY_ROOT") {
         let mut path = PathBuf::new();
         path.push(extendify_root);
         path.push("packages/mod/dist");
