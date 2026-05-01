@@ -6,7 +6,6 @@ use crate::cef::{
     _cef_settings_t, cef_string_t,
 };
 use crate::{log, vtable_hooks};
-use libc;
 use std::ffi::{c_int, c_void};
 
 #[macro_use]

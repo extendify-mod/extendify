@@ -1,10 +1,12 @@
 // https://github.com/abutcher-gh/ld_preload_helpers/blob/main/src/lib.rs
-use std::ffi::{c_char, c_void};
 
 #[allow(unused_macros)]
 macro_rules! extern_c_overrides {
     (unsafe fn $c_api:ident/$real_api:ident($($param_name:ident : $param_type:ty),*) -> $return_type:ty $override_body:block $($more_tokens:tt)*) => {
         pub unsafe fn $real_api($($param_name: $param_type),*) -> $return_type {
+            use std::ffi::{c_char, c_void};
+            use std::sync::OnceLock;
+
             #[link(name = "dl")]
             unsafe extern "C" {
                 #[allow(dead_code)]
@@ -15,7 +17,7 @@ macro_rules! extern_c_overrides {
             type $c_api = fn ($($param_name: $param_type),*) -> $return_type;
 
             #[allow(non_upper_case_globals)]
-            static _dl_resolver: std::sync::OnceLock<$c_api> = std::sync::OnceLock::new();
+            static _dl_resolver: OnceLock<$c_api> = OnceLock::new();
 
             #[allow(unused)]
             let $c_api = _dl_resolver.get_or_init(|| {
