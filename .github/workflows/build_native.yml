@@ -22,10 +22,10 @@ jobs:
             output: extendify_native
             target: windows_x86_64
             extension: .dll
-          - os: windows-11-arm
-            output: extendify_native
-            target: windows_aarch64
-            extension: .dll
+          # - os: windows-11-arm
+          #   output: extendify_native
+          #   target: windows_aarch64
+          #   extension: .dll
           # - os: macos-latest
           #   output: libextendify_native
           #   target: macos_arm64
