@@ -2,12 +2,12 @@ name: build-native
 
 on:
   workflow_dispatch:
-  # push:
-  #   paths: ['packages/native/**']
-  #   branches: [master]
-  # pull_request:
-  #   paths: ['packages/native/**']
-  #   branches: [master]
+  push:
+    paths: ['packages/native/**']
+    branches: [master]
+  pull_request:
+    paths: ['packages/native/**']
+    branches: [master]
 
 jobs:
   build:
@@ -51,12 +51,12 @@ jobs:
       - name: Build
         run: cargo build --release
       
-      - name: Rename output
+      - name: Rename Output
         shell: bash
         run: cp target/release/${{ matrix.output }}${{ matrix.extension }} ${{ matrix.target }}${{ matrix.extension }}
     
       - name: Update Release
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload native ${{ matrix.target }}${{ matrix.extension }} --clobber

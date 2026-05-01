@@ -36,7 +36,7 @@ jobs:
           path: packages/mod/dist/
       
       - name: Update Release
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload artifacts packages/mod/dist/* --clobber
