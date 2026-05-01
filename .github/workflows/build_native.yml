@@ -26,14 +26,14 @@ jobs:
             output: extendify_native
             target: windows_aarch64
             extension: .dll
-          # - os: macos-latest
-          #   output: libextendify_native
-          #   target: macos_arm64
-          #   extension: .dylib
-          # - os: macos-26-intel
-          #   output: libextendify_native
-          #   target: macos_intel
-          #   extension: .dylib
+          - os: macos-latest
+            output: libextendify_native
+            target: macos_arm64
+            extension: .dylib
+          - os: macos-26-intel
+            output: libextendify_native
+            target: macos_intel
+            extension: .dylib
 
     runs-on: ${{ matrix.os }}
     permissions:

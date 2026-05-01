@@ -20,7 +20,7 @@ def get_cef_os() -> str:
         result += ("x" if is_mac else "") + "64"
     elif arch == "x86":
         result += "32"
-    elif arch == "aarch64":
+    elif arch in ["aarch64", "arm64"]:
         result += "arm64"
     elif arch == "arm":
         result += arch
@@ -37,7 +37,7 @@ def get_version_arch() -> str:
             return "amd64"
         raise Exception("Only x64 is available on Linux")
     
-    if arch == "aarch64":
+    if arch in ["aarch64", "arm64"]:
         return "arm64"
     elif platform == "win32" and arch in ["x86_64", "amd64"]:
         return "x64"
