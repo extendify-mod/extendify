@@ -1,3 +1,8 @@
+/target
+/cef
+/.vscode
+
+spotify_hook.log
 # folders
 node_modules/
 dist/
