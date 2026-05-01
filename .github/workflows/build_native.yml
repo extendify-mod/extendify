@@ -55,8 +55,8 @@ jobs:
         shell: bash
         run: cp target/release/${{ matrix.output }}${{ matrix.extension }} ${{ matrix.target }}${{ matrix.extension }}
     
-      - name: Upload to release
-        uses: softprops/action-gh-release@v2
-        if: github.event_name == 'workflow_dispatch'
-        with:
-          files: ${{ matrix.target }}${{ matrix.extension }}
+      - name: Update Release
+        if: github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload native ${{ matrix.target }}${{ matrix.extension }} --clobber
