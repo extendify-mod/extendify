@@ -20,9 +20,6 @@ features = [
     "Win32_System_LibraryLoader",
 ]
 
-[target.'cfg(unix)'.dependencies]
-libc = "0.2"
-
 [dependencies]
 ureq = "3.3.0"
 
