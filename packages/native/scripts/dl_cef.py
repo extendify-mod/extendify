@@ -197,6 +197,7 @@ def clone_cef_build(build_url: str) -> str:
 
     print(f"Extracted all files from CEF build to {os.path.realpath(cef_path)}")
 
+    tar.close()
     os.remove(temp_file)
     print("Removed cef_build file")
 

@@ -3,7 +3,12 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-search=native=./cef/Release");
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+
+    println!(
+        "cargo:rustc-link-search=native={}/cef/Release",
+        manifest_dir
+    );
     #[cfg(target_os = "windows")]
     println!("cargo:rustc-link-lib=libcef");
     #[cfg(target_os = "linux")]
