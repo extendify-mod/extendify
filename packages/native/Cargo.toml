@@ -8,7 +8,7 @@ name = "extendify_native"
 crate-type = ["cdylib"]
 
 [target.'cfg(windows)'.dependencies]
-minhook = "0.9.0"
+slim-detours-sys = "0.4.0"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.61.2"
