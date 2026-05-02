@@ -4,10 +4,12 @@ use crate::cef::{
     _cef_settings_t, cef_string_t,
 };
 use crate::{log, vtable_hooks};
-use minhook::MinHook;
-use std::ffi::{c_int, c_void};
+use slim_detours_sys::{
+    SlimDetoursAttach, SlimDetoursTransactionBegin, SlimDetoursTransactionCommit,
+};
+use std::ffi::{CString, c_int, c_void};
 use windows_sys::Win32::Foundation::HINSTANCE;
-use windows_sys::Win32::System::LibraryLoader::LoadLibraryW;
+use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, GetProcAddress, LoadLibraryW};
 use windows_sys::Win32::System::SystemServices::{DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH};
 use windows_sys::core::BOOL;
 
@@ -28,59 +30,84 @@ pub extern "system" fn DllMain(
     1
 }
 
+fn get_libcef_name() -> Vec<u16> {
+    "libcef.dll"
+        .encode_utf16()
+        .chain(std::iter::once(0))
+        .collect()
+}
+
+fn ensure_libcef() {
+    let name = get_libcef_name();
+
+    unsafe {
+        let module = GetModuleHandleW(name.as_ptr());
+        if module.is_null() {
+            log("Force loading CEF");
+
+            LoadLibraryW(name.as_ptr());
+        }
+    }
+}
+
 macro_rules! define_hook {
     ($symbol:expr, $hook:expr, $original:expr) => {
         unsafe {
-            match MinHook::create_hook_api("libcef.dll", $symbol, $hook as _) {
-                Ok(original) => {
-                    $original = Some(std::mem::transmute(original));
-                    log(format!("Created {} hook", stringify!($symbol)));
+            let module = GetModuleHandleW(get_libcef_name().as_ptr());
+            if module.is_null() {
+                log("Cef is not loaded");
+                return;
+            }
+
+            let symbol_c = CString::new($symbol).unwrap();
+            if let Some(target) = GetProcAddress(module, symbol_c.as_ptr() as _) {
+                $original = Some(std::mem::transmute(target));
+
+                SlimDetoursTransactionBegin();
+                SlimDetoursAttach(std::ptr::addr_of_mut!($original) as _, $hook as _);
+                let status = SlimDetoursTransactionCommit();
+
+                if status >= 0 {
+                    log(format!("Created hook for {}", $symbol));
+                } else {
+                    log(format!("Hook for {} failed {}", $symbol, status));
                 }
-                Err(e) => {
-                    log(format!(
-                        "Couldn't create {} hook {}",
-                        stringify!($symbol),
-                        e
-                    ));
-                }
+            } else {
+                log(format!("Couldn't find target symbol {}", $symbol));
             }
         }
     };
 }
 
+macro_rules! define_inline_hook {
+    ($target: expr, $hook: expr, $original: expr) => {
+        $original = Some(std::mem::transmute($target));
+
+        SlimDetoursTransactionBegin();
+        SlimDetoursAttach(std::ptr::addr_of_mut!($original) as _, $hook as _);
+        let status = SlimDetoursTransactionCommit();
+
+        if status >= 0 {
+            log(format!("Created inline hook {}", stringify!($hook)));
+        } else {
+            log(format!(
+                "Failed to create inlike hook {} {}",
+                stringify!($hook),
+                status
+            ));
+        }
+    };
+}
+
 fn init_hooks() {
-    log("Force-loading CEF");
-
-    let name: Vec<u16> = "libcef.dll"
-        .encode_utf16()
-        .chain(std::iter::once(0))
-        .collect();
-    unsafe { LoadLibraryW(name.as_ptr()) };
-
-    log(format!("Initializing hooks on PID {}", std::process::id()));
+    ensure_libcef();
 
     define_hook!("cef_initialize", cef_initialize_hook, CEF_INITIALIZE_OG);
     define_hook!("cef_execute_process", cef_process_hook, CEF_PROCESS_OG);
     define_hook!("cef_browser_view_create", cef_view_hook, CEF_VIEW_OG);
-
-    unsafe {
-        if let Err(e) = MinHook::enable_all_hooks() {
-            log(format!("Couldn't enable hooks {e}"));
-        }
-    }
 }
 
-fn deinit_hooks() {
-    log("Uninitializing hooks");
-
-    unsafe {
-        if let Err(e) = MinHook::disable_all_hooks() {
-            log(format!("Couldn't disable hooks {e}"));
-        }
-
-        MinHook::uninitialize();
-    }
-}
+fn deinit_hooks() {}
 
 static mut CEF_INITIALIZE_OG: Option<
     unsafe extern "C" fn(
@@ -125,21 +152,11 @@ unsafe extern "C" fn cef_process_hook(
             let rph = (*app).get_render_process_handler.unwrap()(app);
             if !rph.is_null() {
                 if let Some(og) = (*rph).on_context_created {
-                    match MinHook::create_hook(og as _, vtable_hooks::on_context_created_hook as _)
-                    {
-                        Ok(original) => {
-                            vtable_hooks::ON_CONTEXT_CREATED_OG =
-                                Some(std::mem::transmute(original));
-                            log("Created on_context_created hook");
-                        }
-                        Err(e) => {
-                            log(format!("Failed to hook on_context_created {e}"));
-                        }
-                    }
-
-                    if let Err(e) = MinHook::enable_hook(og as _) {
-                        log(format!("couldn't enable on_context_created hook {e}"));
-                    }
+                    define_inline_hook!(
+                        og,
+                        vtable_hooks::on_context_created_hook,
+                        vtable_hooks::ON_CONTEXT_CREATED_OG
+                    );
                 }
             }
         }
@@ -175,11 +192,11 @@ unsafe extern "C" fn cef_view_hook(
         let req_handler = (*client).get_request_handler.unwrap()(client);
         let og = (*req_handler).get_resource_request_handler.unwrap();
 
-        if let Ok(original) = MinHook::create_hook(og as _, vtable_hooks::res_handler_hook as _) {
-            vtable_hooks::RES_HANDLER_OG = std::mem::transmute(original);
-            log("Created res handler hook");
-        }
-        let _ = MinHook::enable_hook(og as _);
+        define_inline_hook!(
+            og,
+            vtable_hooks::res_handler_hook,
+            vtable_hooks::RES_HANDLER_OG
+        );
 
         if let Some(func) = CEF_VIEW_OG {
             return func(client, url, settings, extra_info, request_context, delegate);
