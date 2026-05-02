@@ -4,10 +4,8 @@ on:
   workflow_dispatch:
   push:
     paths: ['packages/native/**']
-    branches: [master]
   pull_request:
     paths: ['packages/native/**']
-    branches: [master]
 
 jobs:
   build:
@@ -22,10 +20,10 @@ jobs:
             output: extendify_native
             target: windows_x86_64
             extension: .dll
-          # - os: windows-11-arm
-          #   output: extendify_native
-          #   target: windows_aarch64
-          #   extension: .dll
+          - os: windows-11-arm
+            output: extendify_native
+            target: windows_aarch64
+            extension: .dll
           # - os: macos-latest
           #   output: libextendify_native
           #   target: macos_arm64
@@ -56,7 +54,7 @@ jobs:
         run: cp target/release/${{ matrix.output }}${{ matrix.extension }} ${{ matrix.target }}${{ matrix.extension }}
     
       - name: Update Release
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload native ${{ matrix.target }}${{ matrix.extension }} --clobber
