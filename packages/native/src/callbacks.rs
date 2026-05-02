@@ -1,8 +1,8 @@
-use crate::cef::utils::stoc;
+use crate::cef::utils::{ctos, stoc};
 use crate::cef::{_cef_frame_t, _cef_settings_t};
 use crate::log;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering::Relaxed};
+use std::sync::Mutex;
 use ureq;
 
 const URL_BASE: &str = "https://github.com/extendify-mod/extendify/releases/download/artifacts/";
@@ -16,10 +16,25 @@ pub fn on_entrypoint(settings: *mut _cef_settings_t) {
     }
 }
 
-static INJECTED: AtomicBool = AtomicBool::new(false);
+static INJECTED: Mutex<Vec<String>> = Mutex::new(vec![]);
 
 pub fn on_frame(frame: *mut _cef_frame_t) {
-    if INJECTED.load(Relaxed) {
+    if !crate::is_renderer() {
+        return;
+    }
+
+    if let Ok(mut guard) = INJECTED.lock() {
+        let id = unsafe { ctos((*frame).get_identifier.unwrap()(frame)) };
+
+        if guard.contains(&id) {
+            return;
+        }
+
+        log(format!("Found new frame id {id} ({})", std::process::id()));
+
+        guard.push(id);
+    } else {
+        log("Lock failed");
         return;
     }
 
@@ -43,8 +58,6 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
             log("Injected styles");
         }
     }
-
-    INJECTED.store(true, Relaxed);
 }
 
 fn get(filename: &str) -> Option<String> {
