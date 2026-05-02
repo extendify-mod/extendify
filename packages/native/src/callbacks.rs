@@ -1,6 +1,6 @@
 use crate::cef::utils::{ctos, stoc};
 use crate::cef::{_cef_frame_t, _cef_settings_t};
-use crate::log;
+use crate::{is_renderer, log};
 use std::path::PathBuf;
 use std::sync::Mutex;
 use ureq;
@@ -19,7 +19,7 @@ pub fn on_entrypoint(settings: *mut _cef_settings_t) {
 static INJECTED: Mutex<Vec<String>> = Mutex::new(vec![]);
 
 pub fn on_frame(frame: *mut _cef_frame_t) {
-    if !crate::is_renderer() {
+    if !is_renderer() {
         return;
     }
 
