@@ -21,7 +21,6 @@ $C = @{
 }
 
 function Write-Banner {
-    Clear-Host
     Write-Host ""
     Write-Host "  $($C.Magenta)$($C.Bold)███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗ ██╗███████╗██╗   ██╗$($C.Reset)"
     Write-Host "  $($C.Magenta)$($C.Bold)██╔════╝╚██╗██╔╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██║██╔════╝╚██╗ ██╔╝$($C.Reset)"
@@ -40,16 +39,16 @@ function Write-Step {
     Write-Host "  $($C.Cyan)$($C.Bold)[$Num]$($C.Reset) $($C.White)$Text$($C.Reset)"
 }
 
-function Write-Info  { param([string]$Msg) Write-Host "      $($C.Dim)$($C.White)→ $Msg$($C.Reset)" }
-function Write-Ok    { param([string]$Msg) Write-Host "      $($C.Green)✔  $Msg$($C.Reset)" }
-function Write-Warn  { param([string]$Msg) Write-Host "      $($C.Yellow)⚠  $Msg$($C.Reset)" }
-function Write-Err   { param([string]$Msg) Write-Host "      $($C.Red)✖  $Msg$($C.Reset)" }
+function Write-Info { param([string]$Msg) Write-Host "      $($C.Dim)$($C.White)→ $Msg$($C.Reset)" }
+function Write-Ok { param([string]$Msg) Write-Host "      $($C.Green)✔  $Msg$($C.Reset)" }
+function Write-Warn { param([string]$Msg) Write-Host "      $($C.Yellow)⚠  $Msg$($C.Reset)" }
+function Write-Err { param([string]$Msg) Write-Host "      $($C.Red)✖  $Msg$($C.Reset)" }
 
 function Write-ProgressBar {
     param(
-        [int] $Percent,
-        [string] $Label = "",
-        [int] $Width = 40
+        [int]$Percent,
+        [string]$Label = "",
+        [int]$Width = 40
     )
     $filled = [int]([Math]::Round($Percent / 100 * $Width))
     $empty = $Width - $filled
@@ -165,36 +164,46 @@ Write-Host ""
 # MS store check
 Write-Step 2 "Checking for Microsoft Store version of Spotify…"
 
-$storeApp = Get-AppxPackage -Name "SpotifyAB.SpotifyMusic" -ErrorAction SilentlyContinue
+try {
+    Import-Module Appx -UseWindowsPowerShell -SkipEditionCheck
+}
+catch {}
 
-if ($storeApp) {
-    Write-Warn "Found Spotify from the Microsoft Store (v$($storeApp.Version))."
-    Write-Host ""
-
-    $uninstall = Prompt-YesNo "Uninstall the Store version before continuing?"
-
-    if ($uninstall) {
-        Write-Info "Uninstalling Store Spotify…"
-        Write-FakeProgress -Label "Removing package…" -DurationMs 2500
-
-        try {
-            $storeApp | Remove-AppxPackage -ErrorAction Stop
-            Write-Ok "Microsoft Store Spotify removed."
+try {
+    $storeApp = Get-AppxPackage -Name "SpotifyAB.SpotifyMusic" -ErrorAction SilentlyContinue
+    
+    if ($storeApp) {
+        Write-Warn "Found Spotify from the Microsoft Store (v$($storeApp.Version))."
+        Write-Host ""
+    
+        $uninstall = Prompt-YesNo "Uninstall the Store version before continuing?"
+    
+        if ($uninstall) {
+            Write-Info "Uninstalling Store Spotify…"
+            Write-FakeProgress -Label "Removing package…" -DurationMs 2500
+    
+            try {
+                $storeApp | Remove-AppxPackage -ErrorAction Stop
+                Write-Ok "Microsoft Store Spotify removed."
+            }
+            catch {
+                Write-Err "Could not remove Store Spotify automatically."
+                Write-Info "Please uninstall it manually via Settings → Apps, then re-run this script."
+                Write-Host ""
+                exit 1
+            }
         }
-        catch {
-            Write-Err "Could not remove Store Spotify automatically."
-            Write-Info "Please uninstall it manually via Settings → Apps, then re-run this script."
-            Write-Host ""
-            exit 1
+        else {
+            Write-Warn "Skipping uninstall. You may end up with two Spotify installations."
+            Write-Warn "If anything breaks, remove the Store version and reinstall via this script."
         }
     }
     else {
-        Write-Warn "Skipping uninstall. You may end up with two Spotify installations."
-        Write-Warn "If anything breaks, remove the Store version and reinstall via this script."
+        Write-Ok "No Microsoft Store Spotify found."
     }
 }
-else {
-    Write-Ok "No Microsoft Store Spotify found."
+catch {
+    Write-Warn "Couldn't check Microsoft Store packages."
 }
 
 Write-Host ""
