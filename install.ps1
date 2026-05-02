@@ -20,6 +20,10 @@ $C = @{
     BgBlue = "`e[44m"
 }
 
+if ((Get-Process -Id $PID).ProcessName -eq "powershell") {
+    foreach ($key in @($C.Keys)) { $C[$key] = "" }
+}
+
 function Write-Banner {
     Write-Host ""
     Write-Host "  $($C.Magenta)$($C.Bold)███████╗██╗  ██╗████████╗███████╗███╗   ██╗██████╗ ██╗███████╗██╗   ██╗$($C.Reset)"
@@ -127,7 +131,6 @@ function Prompt-YesNo {
 function Get-Architecture {
     $arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
     if ($arch -match "ARM") {
-        # Distinguish ARM64 from ARM32
         if ([Environment]::Is64BitOperatingSystem) { return "arm64" }
         else { return "arm32" }
     }
@@ -165,7 +168,7 @@ Write-Host ""
 Write-Step 2 "Checking for Microsoft Store version of Spotify…"
 
 try {
-    Import-Module Appx -UseWindowsPowerShell -SkipEditionCheck
+    Import-Module Appx -UseWindowsPowerShell -WarningAction SilentlyContinue
 }
 catch {}
 
@@ -179,7 +182,7 @@ try {
         $uninstall = Prompt-YesNo "Uninstall the Store version before continuing?"
     
         if ($uninstall) {
-            Write-Info "Uninstalling Store Spotify…"
+            Write-Info "Uninstalling Spotify from MS Store…"
             Write-FakeProgress -Label "Removing package…" -DurationMs 2500
     
             try {
@@ -187,7 +190,7 @@ try {
                 Write-Ok "Microsoft Store Spotify removed."
             }
             catch {
-                Write-Err "Could not remove Store Spotify automatically."
+                Write-Err "Could not remove Spotify automatically from MS Store."
                 Write-Info "Please uninstall it manually via Settings → Apps, then re-run this script."
                 Write-Host ""
                 exit 1
