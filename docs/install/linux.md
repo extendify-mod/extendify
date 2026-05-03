@@ -36,4 +36,3 @@ $ spotify-launcher
 ```
 
 and we'll be injected!
-
