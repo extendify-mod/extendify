@@ -29,4 +29,5 @@ To manually install Extendify, you must do the following:
 2. Download the Native DLL for your system architecture.
    (Downloads: [x64](https://github.com/extendify-mod/extendify/releases/download/native/windows_x86_64.dll), [arm64](https://github.com/extendify-mod/extendify/releases/download/native/windows_aarch64.dll))
 3. Place said DLL next to the `Spotify.exe` file. (Found at `%AppData%\Spotify`)
-4. Launch Spotify
+4. Rename the DLL to `version.dll`.
+5. Launch Spotify.
