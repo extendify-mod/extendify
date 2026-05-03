@@ -4,6 +4,7 @@
 <p align="center">
     <img src="https://img.shields.io/github/actions/workflow/status/extendify-mod/extendify/build_mod.yml" />
     <img src="https://img.shields.io/github/actions/workflow/status/extendify-mod/extendify/build_native.yml?label=build%20native" />
+    <img src="https://rust-reportcard.xuri.me/badge/github.com/extendify-mod/extendify" />
 </p>
 
 ---
