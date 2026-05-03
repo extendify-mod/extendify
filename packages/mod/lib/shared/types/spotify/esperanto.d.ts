@@ -53,9 +53,10 @@ export type ExtractInterceptor<
 type MethodInterceptor<
     T extends Record<string, unknown> = Record<string, unknown>,
     TMethod extends CallableProps<T> = CallableProps<T>
-> = InferMethodTypes<T[TMethod]> extends [infer Req, infer Res, infer Stream extends boolean]
-    ? Interceptor<Req, Res, TMethod, Stream> & { [__key]: EsperantoMethodName<TMethod> }
-    : never;
+> =
+    InferMethodTypes<T[TMethod]> extends [infer Req, infer Res, infer Stream extends boolean]
+        ? Interceptor<Req, Res, TMethod, Stream> & { [__key]: EsperantoMethodName<TMethod> }
+        : never;
 
 type InferMethodTypes<T> = T extends (req: infer Request) => infer Response
     ? [Request, Response, false]

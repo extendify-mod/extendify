@@ -82,7 +82,7 @@ export default function (props: Props) {
                                 id={key}
                                 key={key}
                                 onChange={value => {
-                                    if (!settingsValues || !settingsValues.has(props.plugin.name)) {
+                                    if (!settingsValues?.has(props.plugin.name)) {
                                         return;
                                     }
 

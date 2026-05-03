@@ -7,11 +7,11 @@
 }
 
 .ext-codeblock code {
-    white-space: pre;
     width: 100%;
-    background-color: transparent;
     text-wrap-mode: wrap;
+    white-space: pre;
     user-select: text;
+    background-color: transparent;
 }
 
 .ext-codeblock-actions {
