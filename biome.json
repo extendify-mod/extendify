@@ -31,7 +31,11 @@
         }
     },
     "files": {
-        "includes": ["packages/mod/{src,lib,scripts}/**/*.{ts,tsx,css,js,html,json}"]
+        "includes": [
+            "./**/*.{ts,tsx,css,js,html,json}",
+            "!./packages/native/**/*",
+            "!./node_modules/**/*"
+        ]
     },
     "formatter": {
         "attributePosition": "auto",

@@ -1,32 +1,32 @@
 {
-	"name": "mod",
-	"version": "0.0.1",
-	"module": "./src/index.ts",
-	"private": true,
-	"scripts": {
-		"dev": "bun run build-dev && bun run kill-proc && bun run devtools && bun run start-proc",
-		"prod": "bun run build && bun run kill-proc && bun run start-proc",
-		"build": "bun run scripts/build",
-		"build-dev": "bun run scripts/build --dev",
-		"devtools": "bun run scripts/devtools.ts",
-		"kill-proc": "bun run scripts/proc/kill.ts",
-		"start-proc": "bun run scripts/proc/start.ts",
-		"update": "bun run kill-proc && bun run scripts/update.ts"
-	},
-	"devDependencies": {
-		"jszip": "^3.10.1",
-		"redux": "^5.0.1",
-		"rolldown": "1.0.0-beta.42",
-		"react-redux": "^9.2.0",
-		"@types/history": "^5.0.0",
-		"@types/react": "18.3.26",
-		"@types/react-router-dom": "^5.3.3"
-	},
-	"dependencies": {
-		"acorn": "^8.15.0",
-		"acorn-loose": "^8.5.2",
-		"classnames": "^2.5.1",
-		"diff": "^8.0.2",
-		"highlight.js": "^11.11.1"
-	}
+    "dependencies": {
+        "acorn": "^8.15.0",
+        "acorn-loose": "^8.5.2",
+        "classnames": "^2.5.1",
+        "diff": "^8.0.2",
+        "highlight.js": "^11.11.1"
+    },
+    "devDependencies": {
+        "@types/history": "^5.0.0",
+        "@types/react": "18.3.26",
+        "@types/react-router-dom": "^5.3.3",
+        "jszip": "^3.10.1",
+        "react-redux": "^9.2.0",
+        "redux": "^5.0.1",
+        "rolldown": "1.0.0-beta.42"
+    },
+    "module": "./src/index.ts",
+    "name": "mod",
+    "private": true,
+    "scripts": {
+        "build": "bun run scripts/build",
+        "build-dev": "bun run scripts/build --dev",
+        "dev": "bun run build-dev && bun run kill-proc && bun run devtools && bun run start-proc",
+        "devtools": "bun run scripts/devtools.ts",
+        "kill-proc": "bun run scripts/proc/kill.ts",
+        "prod": "bun run build && bun run kill-proc && bun run start-proc",
+        "start-proc": "bun run scripts/proc/start.ts",
+        "update": "bun run kill-proc && bun run scripts/update.ts"
+    },
+    "version": "0.0.1"
 }
