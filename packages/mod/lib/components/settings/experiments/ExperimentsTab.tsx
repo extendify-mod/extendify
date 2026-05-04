@@ -2,7 +2,6 @@ import "../extendifyPage.css";
 
 import { getLocalValue } from "@api/experiment";
 import { remoteConfig } from "@api/platform";
-import { useEffect, useState } from "@api/react";
 import type { ExtendifyTabProps } from "@components/settings";
 import { Experiment } from "@components/settings/experiments";
 import { Text } from "@components/spotify";

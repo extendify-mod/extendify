@@ -88,10 +88,10 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
     return styles;
 }
 
-function serializeOverrides(overrides: StyleSheetOverride[]): string {
+function serializeOverrides(overrides?: StyleSheetOverride[]): string {
     let content = "";
 
-    if (!overrides.length) {
+    if (!overrides?.length) {
         return content;
     }
 

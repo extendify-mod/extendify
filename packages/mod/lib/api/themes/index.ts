@@ -18,6 +18,14 @@ const { context, logger } = registerContext({
     platforms: ["desktop", "browser"]
 });
 
+export const DEFAULT_THEME = {
+    base: "dark",
+    builtIn: true,
+    description: "Spotify's built-in dark theme",
+    name: "Spotify Dark",
+    overrides: []
+};
+
 const options = registerContextOptions(context, {
     enabledTheme: {
         default: "Spotify Dark",
@@ -26,13 +34,7 @@ const options = registerContextOptions(context, {
     },
     savedThemes: {
         default: JSON.stringify([
-            {
-                base: "dark",
-                builtIn: true,
-                description: "Spotify's built-in dark theme",
-                name: "Spotify Dark",
-                overrides: []
-            },
+            DEFAULT_THEME,
             {
                 base: "light",
                 builtIn: true,
