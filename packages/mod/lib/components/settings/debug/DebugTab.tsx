@@ -3,10 +3,9 @@ import "./debugTab.css";
 
 import { resolveApi } from "@api/platform";
 import { useEffect, useState } from "@api/react";
-import { CodeBlock } from "@components/codeBlock";
 import type { Icon } from "@components/icons";
 import { ButtonPrimary, Text } from "@components/spotify";
-import { exportFilters, findAllModuleExports, findModuleExport } from "@webpack/module";
+import { exportFilters, findAllModuleExports } from "@webpack/module";
 
 import type { ComponentType } from "react";
 
@@ -17,14 +16,9 @@ async function copyLogPath() {
 
 export default function () {
     const [icons, setIcons] = useState<ComponentType<Icon>[]>([]);
-    const [pkg, setPkg] = useState<string>();
 
     useEffect(() => {
         setIcons(Array.from(new Set(findAllModuleExports(exportFilters.byCode("svgContent:")))));
-
-        findModuleExport(exportFilters.byProps("name", "description", "version")).then(pkg => {
-            setPkg(JSON.stringify(pkg, null, 4));
-        });
     }, []);
 
     return (
@@ -35,10 +29,6 @@ export default function () {
             <div>
                 <ButtonPrimary onClick={copyLogPath}>Copy Log Path</ButtonPrimary>
             </div>
-            <Text as="span" variant="titleSmall">
-                Internal
-            </Text>
-            <CodeBlock code={pkg} language="json" />
             <Text as="span" variant="titleSmall">
                 Icons
             </Text>
