@@ -10,5 +10,6 @@ export const plugins: Set<Plugin> = new Set();
 export const contextOptions: Map<string, ContextOptions> = new Map();
 export const settingsValues: Map<string, ContextSettings> = new Map();
 export const patches: Patch[] = [];
+export const allPatches: Patch[] = [];
 export const moduleCache: WebpackRawModules = {};
 export const overriddenFunctions: ApiOverride[] = [];

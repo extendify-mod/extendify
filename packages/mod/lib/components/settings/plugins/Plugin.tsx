@@ -47,7 +47,7 @@ export default function (props: Props) {
                         setPluginEnabled(props.plugin, value);
 
                         if (contextHasPatches(props.plugin.name)) {
-                            props.onRestartNeeded?.(props.plugin.name);
+                            props.onRestartNeeded?.(props.plugin.name, value);
                         }
                     }}
                     value={enabled}

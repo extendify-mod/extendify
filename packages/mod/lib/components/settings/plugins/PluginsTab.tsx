@@ -1,6 +1,7 @@
 import "../extendifyPage.css";
 import "./plugin.css";
 
+import { contextHasAppliedPatches } from "@api/context/patch";
 import { useState } from "@api/react";
 import { plugins } from "@api/registry";
 import type { ExtendifyTabProps } from "@components/settings";
@@ -10,11 +11,11 @@ import { ButtonSecondary, Text } from "@components/spotify";
 export default function ({ searchQuery }: ExtendifyTabProps) {
     const [needRestart, setNeedRestart] = useState<string[]>([]);
 
-    function onRestartNeeded(plugin: string) {
+    function onRestartNeeded(plugin: string, enabled: boolean) {
         setNeedRestart(prev => {
-            return !prev.includes(plugin)
-                ? [...prev, plugin]
-                : prev.filter(name => name !== plugin);
+            const removed = prev.filter(name => name !== plugin);
+            const wasEnabled = contextHasAppliedPatches(plugin);
+            return enabled === wasEnabled ? removed : [...removed, plugin];
         });
     }
 
