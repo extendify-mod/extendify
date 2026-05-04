@@ -37,8 +37,16 @@ function InnerSection(props: InnerSectionProps) {
 }
 
 export default function (props: ExtendifyTabProps) {
-    const [overridden, setOverridden] = useState<AnyExperiment[]>([]);
-    const [experiments, setExperiments] = useState<AnyExperiment[]>([]);
+    const filtered =
+        remoteConfig?._properties.filter(
+            experiment =>
+                !props.searchQuery?.length ||
+                experiment.name.toLowerCase().includes(props.searchQuery) ||
+                experiment.description.toLowerCase().includes(props.searchQuery)
+        ) ?? [];
+
+    const overridden = filtered.filter(e => getLocalValue(e.name) !== e.spec.defaultValue);
+    const experiments = filtered.filter(e => getLocalValue(e.name) === e.spec.defaultValue);
 
     function onOverrideChanged(experiment: AnyExperiment) {
         if (getLocalValue(experiment.name) === experiment.spec.defaultValue) {
@@ -50,29 +58,7 @@ export default function (props: ExtendifyTabProps) {
         setOverridden(prev => [...prev, experiment]);
         setExperiments(prev => prev.filter(exp => exp.name !== experiment.name));
     }
-
-    useEffect(() => {
-        if (!remoteConfig) {
-            return;
-        }
-
-        remoteConfig._properties
-            .filter(
-                experiment =>
-                    !props.searchQuery?.length ||
-                    experiment.name.toLowerCase().includes(props.searchQuery) ||
-                    experiment.description.toLowerCase().includes(props.searchQuery)
-            )
-            .forEach(experiment => {
-                const localValue = getLocalValue(experiment.name);
-
-                if (localValue === experiment.spec.defaultValue) {
-                    setExperiments(prev => [...prev, experiment]);
-                } else {
-                    setOverridden(prev => [...prev, experiment]);
-                }
-            });
-    }, [remoteConfig]);
+    console.log(props);
 
     return (
         <div className="ext-settings-section-layout">

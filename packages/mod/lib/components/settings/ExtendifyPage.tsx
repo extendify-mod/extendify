@@ -7,7 +7,7 @@ import { PluginsTab } from "@components/settings/plugins";
 import { ThemesTab } from "@components/settings/themes";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
 
-import type { ReactElement, RefObject } from "react";
+import type { ComponentProps, ComponentType, RefObject } from "react";
 
 export interface ExtendifyTabProps {
     searchQuery?: string;
@@ -15,7 +15,7 @@ export interface ExtendifyTabProps {
 
 interface Tab {
     name: string;
-    component: ReactElement;
+    component: ComponentType<ComponentProps<ExtendifyTabProps>>;
     canSearch: boolean;
 }
 
@@ -41,17 +41,17 @@ export default function () {
     const tabs: Tab[] = [
         {
             canSearch: true,
-            component: <PluginsTab searchQuery={searchQuery} />,
+            component: PluginsTab,
             name: "Plugins"
         },
         {
             canSearch: true,
-            component: <ThemesTab searchQuery={searchQuery} />,
+            component: ThemesTab,
             name: "Themes"
         },
         {
             canSearch: true,
-            component: <ExperimentsTab searchQuery={searchQuery} />,
+            component: ExperimentsTab,
             name: "Experiments"
         }
     ];
@@ -59,7 +59,7 @@ export default function () {
     if (DEVELOPMENT) {
         tabs.push({
             canSearch: false,
-            component: <DebugTab />,
+            component: DebugTab,
             name: "Debug"
         });
     }
@@ -67,10 +67,15 @@ export default function () {
     const [activeTab, setActiveTab] = useState<Tab>(
         tabs[0] ?? {
             canSearch: false,
-            component: <></>,
+            component: () => <></>,
             name: "Error"
         }
     );
+
+    function changeTab(tab: Tab) {
+        setActiveTab(tab);
+        setSearchQuery("");
+    }
 
     return (
         <>
@@ -79,7 +84,7 @@ export default function () {
                     {tabs.map(tab => (
                         <SettingsHeaderChip
                             label={tab.name}
-                            onClick={() => setActiveTab(tab)}
+                            onClick={() => changeTab(tab)}
                             selected={tab.name === activeTab.name}
                         />
                     ))}
@@ -102,7 +107,14 @@ export default function () {
                     )}
                 </div>
             </div>
-            {activeTab.component ?? <></>}
+            {(() => {
+                if (!activeTab.component) {
+                    return "error";
+                }
+
+                const Component: typeof Tab.component = activeTab.component;
+                return <Component searchQuery={searchQuery} />;
+            })()}
         </>
     );
 }
