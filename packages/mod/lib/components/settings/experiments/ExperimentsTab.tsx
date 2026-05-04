@@ -57,7 +57,6 @@ export default function (props: ExtendifyTabProps) {
         setOverridden(prev => [...prev, experiment]);
         setExperiments(prev => prev.filter(exp => exp.name !== experiment.name));
     }
-    console.log(props);
 
     return (
         <div className="ext-settings-section-layout">
