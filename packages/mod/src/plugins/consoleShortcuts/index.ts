@@ -37,6 +37,9 @@ const { logger } = registerPlugin({
             pluginOptions: {
                 get: () => contextOptions
             },
+            ReactVersion: {
+                get: () => React.version
+            },
             settingsValues: {
                 get: () => settingsValues
             },
