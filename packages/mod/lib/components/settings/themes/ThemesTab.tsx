@@ -2,7 +2,13 @@ import "../extendifyPage.css";
 import "./theme.css";
 
 import { useState } from "@api/react";
-import { getSavedThemes, type Theme as ThemeType } from "@api/themes";
+import {
+    DEFAULT_THEME,
+    enableTheme,
+    getEnabledTheme,
+    getSavedThemes,
+    type Theme as ThemeType
+} from "@api/themes";
 import { PlusIcon } from "@components/icons";
 import type { ExtendifyTabProps } from "@components/settings";
 import { Theme, ThemeModal } from "@components/settings/themes";
@@ -19,23 +25,49 @@ const defaultNewTheme: ThemeType = {
 export default function ({ searchQuery }: ExtendifyTabProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [newTheme, setNewTheme] = useState<ThemeType>(defaultNewTheme);
+    const [themes, setThemes] = useState(filterThemes());
 
-    const filteredThemes = getSavedThemes().filter(
-        theme =>
-            !searchQuery?.length ||
-            theme.name.toLowerCase().includes(searchQuery) ||
-            theme.description.toLowerCase().includes(searchQuery)
-    );
+    function filterThemes() {
+        return getSavedThemes().filter(
+            theme =>
+                !searchQuery?.length ||
+                theme.name.toLowerCase().includes(searchQuery) ||
+                theme.description.toLowerCase().includes(searchQuery)
+        );
+    }
+
+    function refreshThemes() {
+        setThemes(filterThemes());
+    }
+
+    function onThemeDeleted() {
+        refreshThemes();
+
+        if (!getEnabledTheme()) {
+            enableTheme(DEFAULT_THEME);
+        }
+
+        refreshThemes();
+    }
 
     return (
         <>
-            <ThemeModal isOpen={modalOpen} onClose={() => setModalOpen(false)} theme={newTheme} />
+            <ThemeModal
+                isOpen={modalOpen}
+                onClose={() => {
+                    setModalOpen(false);
+                    refreshThemes();
+                }}
+                theme={newTheme}
+            />
+
             <div className="ext-settings-section-layout">
                 <div className="ext-settings-grid">
-                    {filteredThemes.map(theme => (
-                        <Theme theme={theme} />
+                    {themes.map(theme => (
+                        <Theme onDeleted={onThemeDeleted} theme={theme} />
                     ))}
                 </div>
+
                 <ButtonPrimary
                     className="ext-theme-new-button"
                     iconLeading={() => <PlusIcon />}

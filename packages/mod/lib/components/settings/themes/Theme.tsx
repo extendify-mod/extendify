@@ -11,6 +11,7 @@ import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 
 interface Props {
     theme: Theme;
+    onDeleted(): void;
 }
 
 const { context } = registerContext({
@@ -33,10 +34,6 @@ export default function (props: Props) {
 
     useEffect(() => {
         const listener = registerEventListener(context, "themeChanged", newTheme => {
-            if (!enabled) {
-                return;
-            }
-
             setEnabled(newTheme.name === props.theme.name);
         });
 
@@ -62,17 +59,22 @@ export default function (props: Props) {
                         {props.theme.name}
                     </Text>
                     {!props.theme.builtIn && (
-                        <ButtonTertiary
-                            aria-label={`Delete ${props.theme.name}`}
-                            iconOnly={() => <GarbageIcon />}
-                            onClick={() => removeTheme(props.theme)}
-                        />
+                        <>
+                            <ButtonTertiary
+                                aria-label={`Delete ${props.theme.name}`}
+                                iconOnly={() => <GarbageIcon />}
+                                onClick={() => {
+                                    removeTheme(props.theme);
+                                    props.onDeleted();
+                                }}
+                            />
+                            <ButtonTertiary
+                                aria-label={`Modify ${props.theme.name}`}
+                                iconOnly={() => <GearIcon />}
+                                onClick={() => setModalOpen(true)}
+                            />
+                        </>
                     )}
-                    <ButtonTertiary
-                        aria-label={`Modify ${props.theme.name}`}
-                        iconOnly={() => <GearIcon />}
-                        onClick={() => setModalOpen(true)}
-                    />
                     <Toggle onSelected={onToggle} value={enabled} />
                 </div>
                 <Text

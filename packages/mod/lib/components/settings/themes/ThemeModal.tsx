@@ -18,8 +18,7 @@ import {
 } from "@api/themes/styles";
 import { Select, type SelectOption, TextInput } from "@components/input";
 import { Modal, ModalFooter } from "@components/modal";
-import { Text } from "@components/spotify";
-import { DEFAULT_THEME_DESC, DEFAULT_THEME_NAME } from "@shared/constants";
+import { ThemeVariable } from "@components/settings/themes";
 
 interface Props {
     theme: Theme;
@@ -68,11 +67,6 @@ export default function (props: Props) {
     function onMetadataChange() {
         setInvalidInputReason(undefined);
         let valid = true;
-
-        if (name === DEFAULT_THEME_NAME || description === DEFAULT_THEME_DESC) {
-            setInvalidInputReason("Theme metadata cannot be default");
-            valid = false;
-        }
 
         if (!name.length || !description.length) {
             setInvalidInputReason("Theme metadata cannot be empty");
@@ -140,6 +134,22 @@ export default function (props: Props) {
         props.onClose();
     }
 
+    function onVariableChanged(variable: StyleSheetVariable, value: string) {
+        for (const style of styles ?? []) {
+            if (style !== selectedStyle) {
+                continue;
+            }
+
+            for (const ogVariable of style.variables) {
+                if (ogVariable.key !== variable.key) {
+                    continue;
+                }
+
+                ogVariable.value = value;
+            }
+        }
+    }
+
     if (!styles) {
         return <></>;
     }
@@ -182,12 +192,10 @@ export default function (props: Props) {
             {selectedStyle && (
                 <div className="ext-theme-modal-variables">
                     {selectedStyle.variables.map(variable => (
-                        <div className="ext-theme-modal-variable">
-                            <Text as="span" variant="bodyMediumBold">
-                                {variable.readableName}:
-                            </Text>
-                            <input type="color" value={variable.value} />
-                        </div>
+                        <ThemeVariable
+                            onValueChanged={value => onVariableChanged(variable, value)}
+                            variable={variable}
+                        />
                     ))}
                 </div>
             )}
