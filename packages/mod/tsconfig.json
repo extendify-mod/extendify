@@ -1,28 +1,23 @@
 {
     "compilerOptions": {
-        "lib": ["DOM", "ESNext", "ESNext.Iterator"],
-        "target": "es2020",
-        "module": "preserve",
-        "moduleDetection": "force",
-        "jsx": "preserve",
+        "allowImportingTsExtensions": true,
         "allowJs": true,
 
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "verbatimModuleSyntax": true,
-        "noEmit": true,
+        "baseUrl": ".",
+        "jsx": "preserve",
+        "lib": ["DOM", "ESNext", "ESNext.Iterator"],
+        "module": "preserve",
+        "moduleDetection": "force",
 
-        "strict": true,
-        "skipLibCheck": true,
+        "moduleResolution": "bundler",
+        "noEmit": true,
         "noFallthroughCasesInSwitch": true,
-        "noUncheckedIndexedAccess": true,
         "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": false,
+        "noUncheckedIndexedAccess": true,
 
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "noPropertyAccessFromIndexSignature": false,
-
-        "baseUrl": ".",
         "paths": {
             "@api/*": ["lib/api/*"],
 
@@ -32,7 +27,12 @@
 
             "@webpack": ["lib/webpack/index.ts"],
             "@webpack/*": ["lib/webpack/*"]
-        }
+        },
+        "skipLibCheck": true,
+
+        "strict": true,
+        "target": "es2020",
+        "verbatimModuleSyntax": true
     },
     "include": ["src/**/*", "lib/**/*"]
 }

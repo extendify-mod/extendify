@@ -31,11 +31,7 @@
         }
     },
     "files": {
-        "includes": [
-            "./**/*.{ts,tsx,css,js,html,json}",
-            "!./packages/native/**/*",
-            "!./node_modules/**/*"
-        ]
+        "includes": ["**/*.{ts,tsx,css,js,html,json}", "!packages/native/**/*"]
     },
     "formatter": {
         "attributePosition": "auto",
@@ -72,5 +68,10 @@
                 "noExplicitAny": "off"
             }
         }
+    },
+    "vcs": {
+        "clientKind": "git",
+        "enabled": true,
+        "useIgnoreFile": true
     }
 }
