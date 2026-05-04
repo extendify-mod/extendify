@@ -22,6 +22,8 @@ import type {
 
 declare global {
     interface Window {
+        ReactVersion: string;
+
         wreq: typeof wreq;
         platform: typeof platform;
         globalStore: typeof Store;
