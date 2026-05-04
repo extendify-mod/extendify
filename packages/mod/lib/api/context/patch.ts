@@ -1,5 +1,5 @@
 import type { Context } from "@api/context";
-import { patches } from "@api/registry";
+import { allPatches, patches } from "@api/registry";
 import { PROPS_ARG_NAME } from "@shared/constants";
 import { type AnyMatch, createExtendedRegExp } from "@shared/match";
 import type { AnyFn, TargetPlatform } from "@shared/types";
@@ -73,7 +73,10 @@ window.exportedFunctions = {};
  */
 export function registerPatch(owner: Context, ...newPatches: PatchDef[]) {
     for (const patch of newPatches) {
-        patches.push({ context: owner, ...patch });
+        const patchDef = { context: owner, ...patch };
+
+        patches.push(patchDef);
+        allPatches.push(patchDef);
     }
 }
 
@@ -144,7 +147,22 @@ export function executePatch(
 }
 
 export function contextHasPatches(contextName: string): boolean {
-    return patches.filter(patch => patch.context.name === contextName).length >= 1;
+    return allPatches.filter(patch => patch.context.name === contextName).length >= 1;
+}
+
+export function contextHasAppliedPatches(contextName: string): boolean {
+    const registered = allPatches.filter(patch => patch.context.name === contextName);
+    if (registered.length <= 0) {
+        return false;
+    }
+
+    for (const registeredPatch of registered) {
+        if (!patches.includes(registeredPatch)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 export function stringifyMatch(match: AnyMatch): string {
