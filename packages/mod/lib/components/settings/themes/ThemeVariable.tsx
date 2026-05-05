@@ -3,17 +3,18 @@ import type { StyleSheetVariable } from "@api/themes";
 import { Text } from "@components/spotify";
 
 interface ThemeVariableProps {
-    variable: StyleSheetVariable;
+    value: string;
+    name: string;
     onValueChanged(value: string): void;
 }
 
 export default function (props: ThemeVariableProps) {
-    const [colorValue, setColorValue] = useState(props.variable.value);
+    const [colorValue, setColorValue] = useState(props.value);
 
     return (
         <div className="ext-theme-modal-variable">
             <Text as="span" variant="bodyMediumBold">
-                {props.variable.readableName}:
+                {props.name}:
             </Text>
             <input
                 onChange={event => {
