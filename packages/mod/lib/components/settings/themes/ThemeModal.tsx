@@ -134,6 +134,24 @@ export default function (props: Props) {
         props.onClose();
     }
 
+    function getVariableValue(set: StyleSheet, variable: StyleSheetVariable): string {
+        for (const override of props.theme.overrides) {
+            if (override.selector !== set.selector) {
+                continue;
+            }
+
+            for (const overridenVar of override.variables) {
+                if (overridenVar.key !== variable.key) {
+                    continue;
+                }
+
+                return overridenVar.value;
+            }
+        }
+
+        return variable.value;
+    }
+
     function onVariableChanged(variable: StyleSheetVariable, value: string) {
         for (const style of styles ?? []) {
             if (style !== selectedStyle) {
@@ -193,8 +211,9 @@ export default function (props: Props) {
                 <div className="ext-theme-modal-variables">
                     {selectedStyle.variables.map(variable => (
                         <ThemeVariable
+                            name={variable.readableName}
                             onValueChanged={value => onVariableChanged(variable, value)}
-                            variable={variable}
+                            value={getVariableValue(selectedStyle, variable)}
                         />
                     ))}
                 </div>
