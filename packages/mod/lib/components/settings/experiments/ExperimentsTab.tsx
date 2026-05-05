@@ -44,18 +44,17 @@ export default function (props: ExtendifyTabProps) {
                 experiment.description.toLowerCase().includes(props.searchQuery)
         ) ?? [];
 
-    const overridden = filtered.filter(e => getLocalValue(e.name) !== e.spec.defaultValue);
-    const experiments = filtered.filter(e => getLocalValue(e.name) === e.spec.defaultValue);
+    let overridden = filtered.filter(e => getLocalValue(e.name) !== e.spec.defaultValue);
+    let experiments = filtered.filter(e => getLocalValue(e.name) === e.spec.defaultValue);
 
     function onOverrideChanged(experiment: AnyExperiment) {
         if (getLocalValue(experiment.name) === experiment.spec.defaultValue) {
-            setOverridden(prev => prev.filter(exp => exp.name !== experiment.name));
-            setExperiments(prev => [...prev, experiment]);
-            return;
+            overridden = prev => prev.filter(exp => exp.name !== experiment.name);
+            experiments = prev => [...prev, experiment];
+        } else {
+            overridden = prev => [...prev, experiment];
+            experiments = prev => prev.filter(exp => exp.name !== experiment.name);
         }
-
-        setOverridden(prev => [...prev, experiment]);
-        setExperiments(prev => prev.filter(exp => exp.name !== experiment.name));
     }
 
     return (
