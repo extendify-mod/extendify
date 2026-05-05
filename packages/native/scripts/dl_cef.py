@@ -36,14 +36,14 @@ def get_version_arch() -> str:
         if arch == "x86_64":
             return "amd64"
         raise Exception("Only x64 is available on Linux")
-    
+
     if arch in ["aarch64", "arm64"]:
         return "arm64"
     elif platform == "win32" and arch in ["x86_64", "amd64"]:
         return "x64"
     elif platform == "darwin" and arch == "x86_64":
         return "intel"
-    
+
     raise Exception(f"No Spotify release available for {platform} with arch {arch}")
 
 def get_version_key() -> str:
@@ -61,15 +61,15 @@ def get_project_root() -> str:
 
 def get_latest_version() -> str:
     print("Fetching Spotify releases...")
-    
+
     version_key = get_version_key()
     version_arch = get_version_arch()
 
     res = requests.get(VERSIONS).json()
-    for value in res.values(): 
+    for value in res.values():
         if not version_key in value:
             continue
-        
+
         version = value[version_key]
 
         if not version_arch in version:
@@ -85,7 +85,7 @@ def download_version(url: str) -> str:
 
     with open(file_path, "wb") as f:
         print("Downloading Spotify release...")
-        
+
         res = requests.get(url)
 
         if res._content is None:
@@ -115,11 +115,11 @@ def read_cef_version(spotify_path: str) -> str:
         tar = tarfile.open(os.path.join(temp_folder, "data.tar.gz"))
         tar.extractall(temp_folder, filter="data")
     elif platform == "darwin":
-        raise Exception("Macos isn't fully implemented yet in the install script, open a PR")
+        subprocess.run(["tar", "-xjf", spotify_path, "-C", temp_folder]).check_returncode()
 
     for root, _, files in os.walk(temp_folder, topdown=False):
         for file_name in files:
-            if not "libcef." in file_name:
+            if "libcef." not in file_name or file_name != "Chromium Embedded Framework":
                 continue
 
             libcef_path = os.path.join(root, file_name)
@@ -129,9 +129,9 @@ def read_cef_version(spotify_path: str) -> str:
             content = f.read()
             result = LIBCEF_REGEX.findall(content.decode(errors="replace"))[0]
             f.close()
-            
+
             print(f"Found CEF version {result}")
-            
+
             os.remove(spotify_path)
             print("Removed Spotify path")
             shutil.rmtree(root)
@@ -182,7 +182,7 @@ def clone_cef_build(build_url: str) -> str:
         print("Removed old CEF build")
 
     print("Extracting CEF build")
-    
+
     tar = tarfile.open(temp_file)
     for member in tar.getmembers():
         if not member.name.startswith("cef_binary_"):
@@ -211,4 +211,3 @@ if __name__ == "__main__":
     clone_cef_build(build_url)
 
     print("Success!")
-
