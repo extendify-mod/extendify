@@ -14,12 +14,10 @@
       "name": "mod",
       "version": "0.0.1",
       "dependencies": {
-        "@uiw/react-color-colorful": "^2.10.1",
         "acorn": "^8.15.0",
         "acorn-loose": "^8.5.2",
         "classnames": "^2.5.1",
         "diff": "^8.0.2",
-        "highlight.js": "^11.11.1",
       },
       "devDependencies": {
         "@types/history": "^5.0.0",
@@ -111,18 +109,6 @@
 
     "@types/use-sync-external-store": ["@types/use-sync-external-store@0.0.6", "", {}, "sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg=="],
 
-    "@uiw/color-convert": ["@uiw/color-convert@2.10.1", "", { "peerDependencies": { "@babel/runtime": ">=7.19.0" } }, "sha512-/Z3YfBiX+SErRM59yQH88Id+Xy/k10nnkfTuqhX6RB2yYUcG57DoFqb6FudhiQ5fwzKvKf1k4xq9lfT1UTFUKQ=="],
-
-    "@uiw/react-color-alpha": ["@uiw/react-color-alpha@2.10.1", "", { "dependencies": { "@uiw/color-convert": "2.10.1", "@uiw/react-drag-event-interactive": "2.10.1" }, "peerDependencies": { "@babel/runtime": ">=7.19.0", "react": ">=16.9.0", "react-dom": ">=16.9.0" } }, "sha512-3mllAyb3TgC0lRWGMLiwawgCuv3jIQWnarnxwggZ87HWvL4GLCWuVRxheYdLJTjAc6qd4Cd+d0jHMfkKXIdMFA=="],
-
-    "@uiw/react-color-colorful": ["@uiw/react-color-colorful@2.10.1", "", { "dependencies": { "@uiw/color-convert": "2.10.1", "@uiw/react-color-alpha": "2.10.1", "@uiw/react-color-hue": "2.10.1", "@uiw/react-color-saturation": "2.10.1" }, "peerDependencies": { "@babel/runtime": ">=7.19.0", "react": ">=16.9.0", "react-dom": ">=16.9.0" } }, "sha512-hjP7x/QMCYEO2bvjWQMGpjk3PUlqllwBF1432+qb705kB+HhjN5kucqQa9UZdoEiHfk10f91qAK9wCYXtNH8ZQ=="],
-
-    "@uiw/react-color-hue": ["@uiw/react-color-hue@2.10.1", "", { "dependencies": { "@uiw/color-convert": "2.10.1", "@uiw/react-color-alpha": "2.10.1" }, "peerDependencies": { "@babel/runtime": ">=7.19.0", "react": ">=16.9.0", "react-dom": ">=16.9.0" } }, "sha512-88O/gDu68U0cJp9ijn3cfnPOQfTY0jGWKbyBCMnHTEeiePBo+oMyuWZ3YU3Vp1zOXRD0SWcp3wNfuIYLOl77yg=="],
-
-    "@uiw/react-color-saturation": ["@uiw/react-color-saturation@2.10.1", "", { "dependencies": { "@uiw/color-convert": "2.10.1", "@uiw/react-drag-event-interactive": "2.10.1" }, "peerDependencies": { "@babel/runtime": ">=7.19.0", "react": ">=16.9.0", "react-dom": ">=16.9.0" } }, "sha512-d6aE8oR5RVtIwM6V5+pBkClhs33VyCKzUWXi+Gf4qNwPoOKD9mQ4pqGd3nvqBzwNtnnX1gzyGAN1vDdSh7cV1A=="],
-
-    "@uiw/react-drag-event-interactive": ["@uiw/react-drag-event-interactive@2.10.1", "", { "peerDependencies": { "@babel/runtime": ">=7.19.0", "react": ">=16.9.0", "react-dom": ">=16.9.0" } }, "sha512-eArtX/XdSrg5aQs8CV0vne9vChybw2GkNZCP9H68zjBBzucuYgjURqKBJ/+3jid06YpRZ5zz/YTnAlySqOt0Ag=="],
-
     "acorn": ["acorn@8.16.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw=="],
 
     "acorn-loose": ["acorn-loose@8.5.2", "", { "dependencies": { "acorn": "^8.15.0" } }, "sha512-PPvV6g8UGMGgjrMu+n/f9E/tCSkNQ2Y97eFvuVdJfG11+xdIeDcLyNdC8SHcrHbRqkfwLASdplyR6B6sKM1U4A=="],
@@ -138,8 +124,6 @@
     "csstype": ["csstype@3.2.3", "", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
 
     "diff": ["diff@8.0.4", "", {}, "sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw=="],
-
-    "highlight.js": ["highlight.js@11.11.1", "", {}, "sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w=="],
 
     "history": ["history@5.3.0", "", { "dependencies": { "@babel/runtime": "^7.7.6" } }, "sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ=="],
 
@@ -161,8 +145,6 @@
 
     "react": ["react@19.2.5", "", {}, "sha512-llUJLzz1zTUBrskt2pwZgLq59AemifIftw4aB7JxOqf1HY2FDaGDxgwpAPVzHU1kdWabH7FauP4i1oEeer2WCA=="],
 
-    "react-dom": ["react-dom@19.2.5", "", { "dependencies": { "scheduler": "^0.27.0" }, "peerDependencies": { "react": "^19.2.5" } }, "sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag=="],
-
     "react-redux": ["react-redux@9.2.0", "", { "dependencies": { "@types/use-sync-external-store": "^0.0.6", "use-sync-external-store": "^1.4.0" }, "peerDependencies": { "@types/react": "^18.2.25 || ^19", "react": "^18.0 || ^19", "redux": "^5.0.0" }, "optionalPeers": ["@types/react", "redux"] }, "sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g=="],
 
     "readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
@@ -172,8 +154,6 @@
     "rolldown": ["rolldown@1.0.0-beta.43", "", { "dependencies": { "@oxc-project/types": "=0.94.0", "@rolldown/pluginutils": "1.0.0-beta.43", "ansis": "=4.2.0" }, "optionalDependencies": { "@rolldown/binding-android-arm64": "1.0.0-beta.43", "@rolldown/binding-darwin-arm64": "1.0.0-beta.43", "@rolldown/binding-darwin-x64": "1.0.0-beta.43", "@rolldown/binding-freebsd-x64": "1.0.0-beta.43", "@rolldown/binding-linux-arm-gnueabihf": "1.0.0-beta.43", "@rolldown/binding-linux-arm64-gnu": "1.0.0-beta.43", "@rolldown/binding-linux-arm64-musl": "1.0.0-beta.43", "@rolldown/binding-linux-x64-gnu": "1.0.0-beta.43", "@rolldown/binding-linux-x64-musl": "1.0.0-beta.43", "@rolldown/binding-openharmony-arm64": "1.0.0-beta.43", "@rolldown/binding-wasm32-wasi": "1.0.0-beta.43", "@rolldown/binding-win32-arm64-msvc": "1.0.0-beta.43", "@rolldown/binding-win32-ia32-msvc": "1.0.0-beta.43", "@rolldown/binding-win32-x64-msvc": "1.0.0-beta.43" }, "bin": { "rolldown": "bin/cli.mjs" } }, "sha512-6RcqyRx0tY1MlRLnjXPp/849Rl/CPFhzpGGwNPEPjKwqBMqPq/Rbbkxasa8s0x+IkUk46ty4jazb5skZ/Vgdhw=="],
 
     "safe-buffer": ["safe-buffer@5.1.2", "", {}, "sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g=="],
-
-    "scheduler": ["scheduler@0.27.0", "", {}, "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q=="],
 
     "setimmediate": ["setimmediate@1.0.5", "", {}, "sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA=="],
 
