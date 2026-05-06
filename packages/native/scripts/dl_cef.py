@@ -119,7 +119,7 @@ def read_cef_version(spotify_path: str) -> str:
 
     for root, _, files in os.walk(temp_folder, topdown=False):
         for file_name in files:
-            if "libcef." not in file_name or file_name != "Chromium Embedded Framework":
+            if "libcef." not in file_name and file_name != "Chromium Embedded Framework":
                 continue
 
             libcef_path = os.path.join(root, file_name)
