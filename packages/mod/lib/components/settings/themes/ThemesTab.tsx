@@ -4,12 +4,13 @@ import {
     enableTheme,
     getEnabledTheme,
     getSavedThemes,
+    saveTheme,
     type Theme as ThemeType
 } from "@api/themes";
-import { PlusIcon } from "@components/icons";
+import { BookshelfIcon, PlusIcon } from "@components/icons";
 import type { ExtendifyTabProps } from "@components/settings";
 import { Theme, ThemeModal } from "@components/settings/themes";
-import { ButtonPrimary } from "@components/spotify";
+import { ButtonPrimary, ButtonSecondary } from "@components/spotify";
 import { DEFAULT_THEME_DESC, DEFAULT_THEME_NAME } from "@shared/constants";
 
 const defaultNewTheme: ThemeType = {
@@ -38,13 +39,30 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
     }
 
     function onThemeDeleted() {
-        refreshThemes();
-
         if (!getEnabledTheme()) {
             enableTheme(DEFAULT_THEME);
         }
 
         refreshThemes();
+    }
+
+    async function importFromClipboard() {
+        const content = await navigator.clipboard.readText();
+        if (!content) {
+            return;
+        }
+
+        try {
+            const parsed: ThemeType = JSON.parse(atob(content));
+            if (!parsed?.name || !parsed.description || !parsed.base || parsed.builtIn) {
+                return;
+            }
+
+            saveTheme(parsed);
+            enableTheme(parsed);
+
+            refreshThemes();
+        } catch {}
     }
 
     return (
@@ -70,16 +88,23 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
                     ))}
                 </div>
 
-                <ButtonPrimary
-                    className="ext-theme-new-button"
-                    iconLeading={() => <PlusIcon />}
-                    onClick={() => {
-                        setNewTheme(defaultNewTheme);
-                        setModalOpen(true);
-                    }}
-                >
-                    New Theme
-                </ButtonPrimary>
+                <div className="ext-theme-button-row">
+                    <ButtonPrimary
+                        iconLeading={() => <PlusIcon />}
+                        onClick={() => {
+                            setNewTheme(defaultNewTheme);
+                            setModalOpen(true);
+                        }}
+                    >
+                        New Theme
+                    </ButtonPrimary>
+                    <ButtonSecondary
+                        iconLeading={() => <BookshelfIcon />}
+                        onClick={importFromClipboard}
+                    >
+                        Import Theme
+                    </ButtonSecondary>
+                </div>
             </div>
         </>
     );
