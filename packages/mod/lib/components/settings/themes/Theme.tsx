@@ -2,7 +2,7 @@ import { registerContext } from "@api/context";
 import { registerEventListener, removeEventListener } from "@api/context/event";
 import { useEffect, useState } from "@api/react";
 import { enableTheme, getEnabledTheme, removeTheme, type Theme } from "@api/themes";
-import { GarbageIcon, GearIcon } from "@components/icons";
+import { GarbageIcon, GearIcon, ShareIcon } from "@components/icons";
 import { ThemeModal } from "@components/settings/themes";
 import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 
@@ -67,6 +67,15 @@ export default function (props: Props) {
                                 onClick={() => {
                                     removeTheme(props.theme);
                                     props.onDeleted();
+                                }}
+                            />
+                            <ButtonTertiary
+                                aria-label={`Copy to Clipboard`}
+                                iconOnly={() => <ShareIcon />}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(
+                                        btoa(JSON.stringify(props.theme))
+                                    );
                                 }}
                             />
                             <ButtonTertiary

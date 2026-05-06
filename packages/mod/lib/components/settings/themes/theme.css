@@ -1,3 +1,7 @@
-.ext-theme-new-button {
+.ext-theme-button-row {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+    justify-content: center;
     margin-top: 32px;
 }
