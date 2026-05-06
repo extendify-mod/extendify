@@ -1,6 +1,3 @@
-import "../extendifyPage.css";
-import "./debugTab.css";
-
 import { resolveApi } from "@api/platform";
 import { useEffect, useState } from "@api/react";
 import type { Icon } from "@components/icons";

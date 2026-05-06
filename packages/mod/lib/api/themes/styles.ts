@@ -88,6 +88,27 @@ export async function parseBaseStyleSheet(base: ThemeBase): Promise<StyleSheet[]
     return styles;
 }
 
+export function mergeWithOverrides(styles: StyleSheet[], overrides: StyleSheetOverride[]) {
+    const overrideMap = new Map(overrides.map(o => [o.selector, o]));
+
+    for (const style of styles) {
+        const override = overrideMap.get(style.selector);
+        if (!override) {
+            continue;
+        }
+
+        const varMap = new Map(override.variables.map(v => [v.key, v]));
+
+        for (const variable of style.variables) {
+            const overriddenVar = varMap.get(variable.key);
+
+            if (overriddenVar) {
+                variable.value = overriddenVar.value;
+            }
+        }
+    }
+}
+
 function serializeOverrides(overrides?: StyleSheetOverride[]): string {
     let content = "";
 

@@ -1,5 +1,3 @@
-import "./optionType.css";
-
 import type { SliderContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { TextInput } from "@components/input";

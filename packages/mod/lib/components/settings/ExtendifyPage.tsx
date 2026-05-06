@@ -1,5 +1,3 @@
-import "./extendifyPage.css";
-
 import { useRef, useState } from "@api/react";
 import { DebugTab } from "@components/settings/debug";
 import { ExperimentsTab } from "@components/settings/experiments";
@@ -7,7 +5,7 @@ import { PluginsTab } from "@components/settings/plugins";
 import { ThemesTab } from "@components/settings/themes";
 import { Chip, FilterProvider, SearchBar, Text } from "@components/spotify";
 
-import type { ComponentProps, ComponentType, RefObject } from "react";
+import type { ComponentType, RefObject } from "react";
 
 export interface ExtendifyTabProps {
     searchQuery?: string;
@@ -15,7 +13,7 @@ export interface ExtendifyTabProps {
 
 interface Tab {
     name: string;
-    component: ComponentType<ComponentProps<ExtendifyTabProps>>;
+    component: ComponentType<ExtendifyTabProps>;
     canSearch: boolean;
 }
 

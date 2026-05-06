@@ -1,6 +1,3 @@
-import "../extendifyPage.css";
-import "./plugin.css";
-
 import { contextHasAppliedPatches } from "@api/context/patch";
 import { useState } from "@api/react";
 import { plugins } from "@api/registry";

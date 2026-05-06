@@ -7,7 +7,6 @@
         "lib": ["DOM", "ESNext"],
         "module": "preserve",
         "moduleDetection": "force",
-
         "moduleResolution": "bundler",
         "noEmit": true,
         "noFallthroughCasesInSwitch": true,
@@ -21,7 +20,6 @@
             "@shared/*": ["../lib/shared/*"]
         },
         "skipLibCheck": true,
-
         "strict": true,
         "target": "esnext",
         "verbatimModuleSyntax": true

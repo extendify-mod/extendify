@@ -1,5 +1,3 @@
-import "./index.css";
-
 import { registerPatch } from "@api/context/patch";
 import { registerPlugin } from "@api/context/plugin";
 

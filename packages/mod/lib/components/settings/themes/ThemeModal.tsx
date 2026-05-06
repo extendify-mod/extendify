@@ -1,5 +1,3 @@
-import "./themeModal.css";
-
 import { useEffect, useState } from "@api/react";
 import {
     enableTheme,
@@ -11,6 +9,7 @@ import {
     type ThemeBase
 } from "@api/themes";
 import {
+    mergeWithOverrides,
     parseBaseStyleSheet,
     type StyleSheet,
     type StyleSheetOverride,
@@ -40,29 +39,34 @@ export default function (props: Props) {
     const [invalidInputReason, setInvalidInputReason] = useState<string>();
 
     const [styles, setStyles] = useState<StyleSheet[]>();
-    const [selectedStyle, setSelectedStyle] = useState<StyleSheet>();
+    const [selectedStyle, setSelectedStyle] = useState<StyleSheet | undefined>();
     const [stylesSelectOpts, setStylesSelectOpts] = useState<SelectOption<StyleSheet>[]>([]);
 
-    useEffect(onMetadataChange, []);
-
     useEffect(() => {
-        parseBaseStyleSheet(themeBase).then(styles => {
-            if (!styles) {
-                return;
-            }
+        onMetadataChange();
+        onThemeBaseChanged(props.theme.base);
+    }, []);
 
-            setStyles(styles);
-            setStylesSelectOpts(
-                styles.map(style => {
-                    return {
-                        label: style.readableName,
-                        value: style
-                    };
-                })
-            );
-            setSelectedStyle(styles[0]);
-        });
-    }, [themeBase]);
+    async function onThemeBaseChanged(value: ThemeBase) {
+        const newStyles = await parseBaseStyleSheet(value);
+        if (!newStyles) {
+            return;
+        }
+
+        mergeWithOverrides(newStyles, props.theme.overrides);
+
+        setThemeBase(value);
+        setStyles(newStyles);
+        setStylesSelectOpts(
+            newStyles.map(s => {
+                return {
+                    label: s.readableName,
+                    value: s
+                };
+            })
+        );
+        setSelectedStyle(newStyles[0]);
+    }
 
     function onMetadataChange() {
         setInvalidInputReason(undefined);
@@ -99,7 +103,6 @@ export default function (props: Props) {
 
             for (const variable of style.variables) {
                 const defaultVar = defaultStyle.variables.find(v => v.key === variable.key);
-
                 if (!defaultVar) {
                     continue;
                 }
@@ -185,7 +188,7 @@ export default function (props: Props) {
                         value={name}
                     />
                     <Select
-                        onSelect={option => option && setThemeBase(option.value)}
+                        onSelect={option => option && onThemeBaseChanged(option.value)}
                         options={themeBaseOptions}
                         value={themeBaseOptions[0]}
                     />
@@ -200,9 +203,16 @@ export default function (props: Props) {
                 />
                 <div className="ext-theme-modal-style-select">
                     <Select
-                        onSelect={value => setSelectedStyle(value?.value)}
+                        key={`${themeBase} selector`}
+                        onSelect={value => value && setSelectedStyle(value.value)}
                         options={stylesSelectOpts}
-                        value={stylesSelectOpts[0]}
+                        value={
+                            (selectedStyle &&
+                                stylesSelectOpts?.find(
+                                    v => v.value.selector === selectedStyle.selector
+                                )) ||
+                            stylesSelectOpts[0]
+                        }
                     />
                 </div>
             </div>
@@ -211,6 +221,7 @@ export default function (props: Props) {
                 <div className="ext-theme-modal-variables">
                     {selectedStyle.variables.map(variable => (
                         <ThemeVariable
+                            key={`${themeBase} ${selectedStyle.readableName} ${variable.key}`}
                             name={variable.readableName}
                             onValueChanged={value => onVariableChanged(variable, value)}
                             value={getVariableValue(selectedStyle, variable)}

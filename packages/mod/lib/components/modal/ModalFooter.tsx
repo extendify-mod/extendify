@@ -1,6 +1,4 @@
-import "./modal.css";
-
-import { ButtonPrimary, ButtonSecondary, Tooltip } from "@components/spotify";
+import { ButtonPrimary, ButtonSecondary, LabelTooltip } from "@components/spotify";
 
 interface Props {
     confirmText?: string;
@@ -27,12 +25,16 @@ export default function (props: Props) {
     return (
         <div className="ext-modal-footer">
             {props.confirmTooltip ? (
-                <Tooltip label={props.confirmTooltip}>{confirm}</Tooltip>
+                <LabelTooltip label={props.confirmTooltip}>{confirm}</LabelTooltip>
             ) : (
                 confirm
             )}
 
-            {props.cancelTooltip ? <Tooltip label={props.cancelTooltip}>{cancel}</Tooltip> : cancel}
+            {props.cancelTooltip ? (
+                <LabelTooltip label={props.cancelTooltip}>{cancel}</LabelTooltip>
+            ) : (
+                cancel
+            )}
         </div>
     );
 }
