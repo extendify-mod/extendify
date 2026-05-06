@@ -1,6 +1,3 @@
-import "../extendifyPage.css";
-import "./plugin.css";
-
 import { contextHasPatches } from "@api/context/patch";
 import type { Plugin } from "@api/context/plugin";
 import { contextHasOptions, isPluginEnabled, setPluginEnabled } from "@api/context/settings";
@@ -11,7 +8,7 @@ import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 
 interface Props {
     plugin: Plugin;
-    onRestartNeeded?(name: string): void;
+    onRestartNeeded?(name: string, enabled: boolean): void;
 }
 
 export default function (props: Props) {
@@ -23,7 +20,9 @@ export default function (props: Props) {
             <PluginModal
                 isOpen={modalOpened}
                 onClose={() => setModalOpened(false)}
-                onRestartNeeded={() => props.onRestartNeeded?.(props.plugin.name)}
+                onRestartNeeded={(enabled: boolean) =>
+                    props.onRestartNeeded?.(props.plugin.name, enabled)
+                }
                 plugin={props.plugin}
             />
             <div className="ext-settings-container-header">

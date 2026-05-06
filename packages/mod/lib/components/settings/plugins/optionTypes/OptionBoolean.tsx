@@ -1,5 +1,3 @@
-import "./optionType.css";
-
 import type { BooleanContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { OptionType, type OptionTypeProps } from "@components/settings/plugins/optionTypes";

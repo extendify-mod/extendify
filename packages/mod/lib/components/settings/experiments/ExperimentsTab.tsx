@@ -1,5 +1,3 @@
-import "../extendifyPage.css";
-
 import { getLocalValue } from "@api/experiment";
 import { remoteConfig } from "@api/platform";
 import type { ExtendifyTabProps } from "@components/settings";

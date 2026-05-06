@@ -18,7 +18,7 @@ const { context, logger } = registerContext({
     platforms: ["desktop", "browser"]
 });
 
-export const DEFAULT_THEME = {
+export const DEFAULT_THEME: Theme = {
     base: "dark",
     builtIn: true,
     description: "Spotify's built-in dark theme",

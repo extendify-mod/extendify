@@ -1,12 +1,12 @@
 import { getKwarg, hasArg } from "@scripts/args";
 import { entrypoints, webpackChunkName } from "@scripts/build/config";
-import { exists, getTimeDifference, stringify } from "@scripts/utils";
+import { getTimeDifference, stringify } from "@scripts/utils";
 import type { TargetPlatform } from "@shared/types";
 
 import { rolldown } from "rolldown";
 import { importGlobPlugin } from "rolldown/experimental";
 
-import { copyFile, mkdir, readdir, rm } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const DEVELOPMENT = hasArg("dev");
@@ -73,14 +73,18 @@ await bundle.write({
 });
 console.log(`Wrote bundle (${getTimeDifference(bundleWriteStart)} ms)`);
 
-if (await exists("dist/dist")) {
-    const fixStart = performance.now();
-    for (const fileName of await readdir("dist/dist", { recursive: true })) {
-        await copyFile(join("dist", "dist", fileName), join("dist", fileName));
+const cssProbeStart = performance.now();
+let allCss = "";
+for (const fileName of await readdir(".", { recursive: true })) {
+    if (!fileName.endsWith(".css")) {
+        continue;
     }
 
-    await rm("dist/dist", { force: true, recursive: true });
-    console.log(`Fixed dist/dist (${getTimeDifference(fixStart)} ms)`);
+    const content = (await readFile(fileName)).toString();
+    allCss += content;
 }
+
+await writeFile("dist/extendify.css", allCss);
+console.log(`Bundled CSS (${getTimeDifference(cssProbeStart)} ms)`);
 
 console.log(`Build finished (${getTimeDifference(start)} ms)`);

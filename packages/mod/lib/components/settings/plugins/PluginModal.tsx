@@ -1,8 +1,6 @@
-import "./plugin.css";
-import "./pluginModal.css";
-
 import type { Plugin } from "@api/context/plugin";
 import type { ContextOptionType } from "@api/context/settings";
+import { isPluginEnabled } from "@api/context/settings";
 import { contextOptions, settingsValues } from "@api/registry";
 import { Modal, ModalFooter } from "@components/modal";
 import {
@@ -13,7 +11,7 @@ import {
     OptionString,
     type OptionTypeProps
 } from "@components/settings/plugins/optionTypes";
-import { Link, Text, Tooltip } from "@components/spotify";
+import { LabelTooltip, Link, Text } from "@components/spotify";
 
 import type { ComponentType } from "react";
 
@@ -21,7 +19,7 @@ interface Props {
     plugin: Plugin;
     isOpen: boolean;
     onClose(): void;
-    onRestartNeeded(): void;
+    onRestartNeeded(enabled: boolean): void;
 }
 
 const componentMap: Record<ContextOptionType, ComponentType<OptionTypeProps<any>>> = {
@@ -54,7 +52,7 @@ export default function (props: Props) {
             </Text>
             <div className="ext-plugin-modal-authors">
                 {props.plugin.authors.map(author => (
-                    <Tooltip label={author} placement="bottom">
+                    <LabelTooltip label={author} placement="bottom">
                         <Link to={`https://github.com/${author}`}>
                             <img
                                 alt={author}
@@ -62,7 +60,7 @@ export default function (props: Props) {
                                 src={`https://github.com/${author}.png`}
                             />
                         </Link>
-                    </Tooltip>
+                    </LabelTooltip>
                 ))}
             </div>
 
@@ -93,7 +91,7 @@ export default function (props: Props) {
                                     values[key] = value;
 
                                     if (option.restartNeeded) {
-                                        props.onRestartNeeded();
+                                        props.onRestartNeeded(isPluginEnabled(props.plugin));
                                     }
                                 }}
                                 schema={option}

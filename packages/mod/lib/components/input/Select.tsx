@@ -1,5 +1,3 @@
-import "./select.css";
-
 import classNames from "classnames";
 import type { ComponentProps } from "react";
 

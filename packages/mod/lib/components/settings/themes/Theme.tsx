@@ -1,6 +1,3 @@
-import "../extendifyPage.css";
-import "./theme.css";
-
 import { registerContext } from "@api/context";
 import { registerEventListener, removeEventListener } from "@api/context/event";
 import { useEffect, useState } from "@api/react";
@@ -12,6 +9,7 @@ import { ButtonTertiary, Chip, Text, Toggle } from "@components/spotify";
 interface Props {
     theme: Theme;
     onDeleted(): void;
+    onSave(): void;
 }
 
 const { context } = registerContext({
@@ -46,7 +44,10 @@ export default function (props: Props) {
         <>
             <ThemeModal
                 isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={() => {
+                    setModalOpen(false);
+                    props.onSave();
+                }}
                 theme={props.theme}
             />
             <div className="ext-settings-container">

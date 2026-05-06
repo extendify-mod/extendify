@@ -1,5 +1,3 @@
-import "./optionType.css";
-
 import type { SelectContextOption } from "@api/context/settings";
 import { useState } from "@api/react";
 import { Select } from "@components/input";

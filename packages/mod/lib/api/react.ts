@@ -8,6 +8,7 @@ export let useMemo: typeof React.useMemo;
 export let useRef: typeof React.useRef;
 export let useReducer: typeof React.useReducer;
 export let useCallback: typeof React.useCallback;
+export let forwardRef: typeof React.forwardRef;
 
 window.ExtendifyFragment = Symbol.for("react.fragment");
 window.ExtendifyCreateElement = () => {};
@@ -16,5 +17,14 @@ findModule<typeof React>("useState").then(module => {
     window.ExtendifyCreateElement = module.createElement;
 
     React = module;
-    ({ useState, useEffect, useLayoutEffect, useMemo, useRef, useReducer, useCallback } = React);
+    ({
+        useState,
+        useEffect,
+        useLayoutEffect,
+        useMemo,
+        useRef,
+        useReducer,
+        useCallback,
+        forwardRef
+    } = React);
 });

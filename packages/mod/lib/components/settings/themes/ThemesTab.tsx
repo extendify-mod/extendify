@@ -1,6 +1,3 @@
-import "../extendifyPage.css";
-import "./theme.css";
-
 import { useState } from "@api/react";
 import {
     DEFAULT_THEME,
@@ -64,7 +61,12 @@ export default function ({ searchQuery }: ExtendifyTabProps) {
             <div className="ext-settings-section-layout">
                 <div className="ext-settings-grid">
                     {themes.map(theme => (
-                        <Theme onDeleted={onThemeDeleted} theme={theme} />
+                        <Theme
+                            key={`${theme.name} ${theme.description}`}
+                            onDeleted={onThemeDeleted}
+                            onSave={refreshThemes}
+                            theme={theme}
+                        />
                     ))}
                 </div>
 

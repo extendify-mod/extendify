@@ -136,15 +136,24 @@ export const FilterProvider = findModuleComponent<PropsWithChildren<{ uri?: stri
     })
 );
 
-export const Tooltip = findModuleComponent<
-    PropsWithChildren<{
-        label?: string;
-        renderInline?: boolean;
-        showDelay?: number;
-        disabled?: boolean;
-        placement?: "top" | "bottom" | "left" | "right";
-        labelClassName?: string;
-    }>
+interface TooltipProps {
+    renderInline?: boolean;
+    showDelay?: number;
+    disabled?: boolean;
+    placement?: "top" | "bottom" | "left" | "right";
+    preventScrollingWhileOpen?: boolean;
+}
+
+export const Tooltip = findModuleComponent<PropsWithChildren<TooltipProps & { content: any }>>(
+    exportFilters.byCode(/placement:"top-start",menu:\i/)
+);
+export const LabelTooltip = findModuleComponent<
+    PropsWithChildren<
+        TooltipProps & {
+            label?: string;
+            labelClassName?: string;
+        }
+    >
 >(
     exportFilters.byCode({
         matches: ["renderInline", "showDelay"],

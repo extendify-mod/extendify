@@ -1,5 +1,3 @@
-import "./modal.css";
-
 import { useEffect } from "@api/react";
 import { CloseIcon } from "@components/icons";
 import { ButtonTertiary, ModalWrapper, Text } from "@components/spotify";

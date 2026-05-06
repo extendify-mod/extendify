@@ -1,5 +1,3 @@
-import "./optionType.css";
-
 import type { AnyContextOption } from "@api/context/settings";
 import { Text } from "@components/spotify";
 

@@ -1,5 +1,3 @@
-import "./textInput.css";
-
 import { Text } from "@components/spotify";
 
 import classNames from "classnames";

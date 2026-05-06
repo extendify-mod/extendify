@@ -1,5 +1,3 @@
-import "./experiment.css";
-
 import { getLocalValue } from "@api/experiment";
 import { remoteConfig } from "@api/platform";
 import { useState } from "@api/react";
@@ -8,7 +6,7 @@ import {
     ExperimentNumber,
     ExperimentSelect
 } from "@components/settings/experiments/experimentTypes";
-import { ButtonTertiary, Text, Tooltip } from "@components/spotify";
+import { ButtonTertiary, LabelTooltip, Text } from "@components/spotify";
 import type { AnyExperiment } from "@shared/types/spotify/experiments";
 
 interface ExperimentProps {
@@ -49,9 +47,9 @@ export default function (props: ExperimentProps) {
                     {props.experiment.name}
                 </Text>
                 {changed && (
-                    <Tooltip label="Reset to default" placement="top">
+                    <LabelTooltip label="Reset to default" placement="top">
                         <ButtonTertiary iconOnly={() => <GarbageIcon />} onClick={resetValue} />
-                    </Tooltip>
+                    </LabelTooltip>
                 )}
             </div>
             <Text as="span" variant="bodySmall">
