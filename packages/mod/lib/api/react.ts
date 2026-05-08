@@ -1,6 +1,7 @@
 import { findModule } from "@webpack/module";
 
 export let React: typeof import("react");
+export let ReactDOM: typeof import("react-dom") & typeof import("react-dom/client");
 export let useState: typeof React.useState;
 export let useEffect: typeof React.useEffect;
 export let useLayoutEffect: typeof React.useLayoutEffect;
@@ -27,4 +28,8 @@ findModule<typeof React>("useState").then(module => {
         useCallback,
         forwardRef
     } = React);
+});
+
+findModule<typeof ReactDOM>("createRoot").then(module => {
+    ReactDOM = module;
 });
