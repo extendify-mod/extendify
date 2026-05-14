@@ -9,6 +9,9 @@ import type {
     ExtractInterceptor,
     Interceptor
 } from "@shared/types/spotify/esperanto";
+import { exportFilters, findModuleExport } from "@webpack/module";
+
+import { registerEventListener } from "./context/event";
 
 export const slotsService = resolveService<SlotsService>("spotify.ads.esperanto.proto.Slots");
 export const settingsService = resolveService<SettingsService>(
@@ -29,12 +32,50 @@ const { context, logger } = registerContext({
 });
 
 registerPatch(context, {
+    find: "EsperantoTransport",
+    replacement: {
+        match: /(\i\.executeEsperantoCall),(\i\.cancelEsperantoCall),!1/,
+        replace: "$1,$2,true"
+    }
+});
+
+registerPatch(context, {
     all: true,
     find: "static SERVICE_ID",
     replacement: {
         match: /constructor\(\i,\i=\{\}\)\{this\.transport=\i,this\.options=\i/g,
         replace: "$&;$exp.register(this);"
     }
+});
+
+registerEventListener(context, "platformLoaded", async () => {
+    const transport = await findModuleExport<{
+        subscribeToTraffic(
+            callback: (e: {
+                type: "request" | "response";
+                id: string;
+                payload: Uint8Array;
+                timestamp: number;
+                method?: string;
+                service?: string;
+                isStreaming?: boolean;
+            }) => void
+        ): void;
+    }>(exportFilters.byProps("subscribeToTraffic"));
+
+    transport.subscribeToTraffic(e => {
+        const payload = e.payload.length === 0 ? "Empty payload" : e.payload.join(" ");
+
+        if (e.type === "response") {
+            logger.debug(`Response to ${e.id}:\n${payload}`);
+        } else if (e.type === "request") {
+            logger.debug(
+                `Sending request from ${e.service ?? "UnknownService"}#${e.method ?? "UnknownMethod"} (${e.id}):\n${payload}`
+            );
+        } else {
+            logger.warn(`Unknown traffic type ${e.type} (${e.id}):\n${payload}`);
+        }
+    });
 });
 
 export function getServiceOptions(id: string): ServiceOptions {
