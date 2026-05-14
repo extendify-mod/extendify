@@ -1,5 +1,6 @@
 import { type Context, isContextEnabled, registerContext } from "@api/context";
 import { exportFunction, registerPatch } from "@api/context/patch";
+import { serviceIds, serviceOptions, services } from "@api/registry";
 import { createLazy } from "@shared/lazy";
 import type { ProductStateService, SettingsService, SlotsService } from "@shared/types/spotify";
 import type {
@@ -9,10 +10,6 @@ import type {
     Interceptor
 } from "@shared/types/spotify/esperanto";
 
-const services = new Map<string, EsperantoService>();
-const serviceIds = new WeakMap<EsperantoService | Promise<EsperantoService>, string>();
-const serviceOptions = new Map<string, ServiceOptions>();
-
 export const slotsService = resolveService<SlotsService>("spotify.ads.esperanto.proto.Slots");
 export const settingsService = resolveService<SettingsService>(
     "spotify.ads.esperanto.proto.Settings"
@@ -21,7 +18,7 @@ export const productStateService = resolveService<ProductStateService>(
     "spotify.product_state.esperanto.proto.ProductState"
 );
 
-interface ServiceOptions {
+export interface ServiceOptions {
     subscriptions: Set<(service: EsperantoService) => void>;
     interceptors: Map<string, Set<{ interceptor: Interceptor; enabled: () => boolean }>>;
 }
