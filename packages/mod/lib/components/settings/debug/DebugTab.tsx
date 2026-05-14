@@ -1,3 +1,4 @@
+import type { Query } from "@api/gql";
 import { resolveApi } from "@api/platform";
 import { React, ReactDOM, useEffect, useState } from "@api/react";
 import { moduleCache } from "@api/registry";
@@ -19,9 +20,20 @@ export default function () {
     const [fakeProps, setFakeProps] = useState<string>("{}");
 
     const [icons, setIcons] = useState<ComponentType<Icon>[]>([]);
+    const [queries, setQueries] = useState<Query[]>([]);
 
     useEffect(() => {
         setIcons(Array.from(new Set(findAllModuleExports(exportFilters.byCode("svgContent:")))));
+
+        setQueries(
+            Array.from(
+                new Set(
+                    findAllModuleExports(
+                        exportFilters.byProps("name", "operation", "sha256Hash", "value")
+                    )
+                )
+            )
+        );
     }, []);
 
     return (
@@ -89,6 +101,29 @@ export default function () {
                 </ButtonSecondary>
             </div>
             <div id="create-element-result"></div>
+
+            <Text as="span" variant="titleSmall">
+                GraphQL
+            </Text>
+            <div className="ext-dbg-queries-container">
+                <div className="ext-settings-container">
+                    <Text variant="titleSmall">Query</Text>
+                    {queries
+                        .filter(v => v.operation === "query")
+                        .map(v => (
+                            <Text>{v.name}</Text>
+                        ))}
+                </div>
+
+                <div className="ext-settings-container">
+                    <Text variant="titleSmall">Mutation</Text>
+                    {queries
+                        .filter(v => v.operation === "mutation")
+                        .map(v => (
+                            <Text>{v.name}</Text>
+                        ))}
+                </div>
+            </div>
 
             <Text as="span" variant="titleSmall">
                 Icons

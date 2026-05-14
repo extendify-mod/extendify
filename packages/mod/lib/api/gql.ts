@@ -1,14 +1,16 @@
 import { platform } from "@api/platform";
 import { exportFilters, findAllModuleExports } from "@webpack/module";
 
-interface Query {
+export type Operation = "query" | "mutation";
+
+export interface Query {
     name: string;
-    operation: "query";
+    operation: Operation;
     sha256Hash: string;
     value?: any;
 }
 
-interface QueryResult<T> {
+export interface QueryResult<T> {
     data: T;
 }
 

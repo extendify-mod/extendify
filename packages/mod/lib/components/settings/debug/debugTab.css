@@ -16,3 +16,8 @@
 .ext-dbg-icon-container:hover {
     background-color: hsla(0, 0%, 100%, 0.2);
 }
+
+.ext-dbg-queries-container {
+    display: flex;
+    gap: 14px;
+}
