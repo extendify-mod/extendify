@@ -2,7 +2,9 @@ import type { Context } from "@api/context";
 import type { Patch } from "@api/context/patch";
 import type { Plugin } from "@api/context/plugin";
 import type { ContextOptions, ContextSettings } from "@api/context/settings";
+import type { ServiceOptions } from "@api/esperanto";
 import type { ApiOverride } from "@api/platform";
+import type { EsperantoService } from "@shared/types/spotify/esperanto";
 import type { WebpackRawModules } from "@shared/types/webpack";
 
 export const contexts: Set<Context> = new Set();
@@ -13,3 +15,6 @@ export const patches: Patch[] = [];
 export const allPatches: Patch[] = [];
 export const moduleCache: WebpackRawModules = {};
 export const overriddenFunctions: ApiOverride[] = [];
+export const services = new Map<string, EsperantoService>();
+export const serviceIds = new WeakMap<EsperantoService | Promise<EsperantoService>, string>();
+export const serviceOptions = new Map<string, ServiceOptions>();
