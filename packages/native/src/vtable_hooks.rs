@@ -7,6 +7,8 @@ use crate::cef::{
 use crate::{callbacks, log};
 use std::ffi::c_int;
 
+const ENTRYPOINTS: &[&str] = &["/xpui.js", "/xpui-snapshot.js"];
+
 #[allow(unused)]
 pub static mut ON_CONTEXT_CREATED_OG: Option<
     unsafe extern "C" fn(
@@ -62,7 +64,10 @@ pub unsafe extern "C" fn res_handler_hook(
         callbacks::on_frame(frame);
 
         let url = ctos((*request).get_url.unwrap()(request));
-        if url.ends_with("/xpui.js") || url.ends_with("/xpui-snapshot.js") {
+        if ENTRYPOINTS
+            .iter()
+            .any(|entrypoint| url.ends_with(entrypoint))
+        {
             let header = (*request).get_header_by_name.unwrap()(request, stoc("extendify"));
             if header.is_null() {
                 log("Blocked entrypoint");
