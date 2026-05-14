@@ -3,7 +3,7 @@ import { executeQuery, findQuery } from "@api/gql";
 import { platform, resolveApi } from "@api/platform";
 import { React } from "@api/react";
 import { globalStore } from "@api/redux";
-import { contextOptions, moduleCache, settingsValues } from "@api/registry";
+import { contextOptions, moduleCache, services, settingsValues } from "@api/registry";
 import { wreq } from "@webpack";
 import {
     exportFilters,
@@ -22,6 +22,9 @@ const { logger } = registerPlugin({
     required: DEVELOPMENT,
     async start() {
         Object.defineProperties(window, {
+            esperantoServices: {
+                get: () => services
+            },
             exportFilters: {
                 get: () => exportFilters
             },
