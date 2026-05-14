@@ -1,6 +1,6 @@
 import type { executeQuery, findQuery } from "@api/gql";
 import type { platform, resolveApi } from "@api/platform";
-import type { contextOptions, moduleCache, settingsValues } from "@api/registry";
+import type { contextOptions, moduleCache, services, settingsValues } from "@api/registry";
 import type { wreq } from "@webpack";
 import type {
     exportFilters,
@@ -27,6 +27,7 @@ declare global {
         wreq: typeof wreq;
         platform: typeof platform;
         globalStore: typeof Store;
+        esperantoServices: typeof services;
 
         exportFilters: typeof exportFilters;
         findModuleExport: typeof findModuleExport;
