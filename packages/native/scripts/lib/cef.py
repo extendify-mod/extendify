@@ -87,7 +87,7 @@ def get_cef_build_info(cef_version: str) -> dict:
     raise Exception(f"Couldn't find CEF version info for {get_cef_os()} with version {cef_version}")
 
 def get_cef_build_url(cef_version: str) -> str:
-    build_info = get_cef_build_info(cef_version)
+    version = get_cef_build_info(cef_version)
 
     for file in version["files"]:
         if file["type"] != "minimal":
