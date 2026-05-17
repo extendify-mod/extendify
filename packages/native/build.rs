@@ -2,11 +2,15 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let cef_path = std::env::var("CEF_PATH").unwrap_or_else(|_| {
+        let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
+            .expect("CARGO_MANIFEST_DIR not set");
+        format!("{}/cef", manifest_dir)
+    });
 
     println!(
-        "cargo:rustc-link-search=native={}/cef/Release",
-        manifest_dir
+        "cargo:rustc-link-search=native={}/Release",
+        cef_path
     );
     #[cfg(target_os = "windows")]
     println!("cargo:rustc-link-lib=libcef");
@@ -15,7 +19,7 @@ fn main() {
 
     let builder = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_arg("-I./cef")
+        .clang_arg(format!("-I{}", cef_path))
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: true,
