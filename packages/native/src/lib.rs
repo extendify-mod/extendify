@@ -28,7 +28,9 @@ pub fn log<T: Display>(msg: T) {
 }
 
 pub fn is_renderer() -> bool {
-    std::env::args()
-        .collect::<Vec<_>>()
-        .contains(&String::from("--type=renderer"))
+    if cfg!(windows) {
+        return std::env::args().any(|arg| arg.contains("--type=renderer"));
+    }
+
+    true
 }
