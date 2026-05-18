@@ -106,8 +106,10 @@ pub unsafe extern "C" fn get_req_handler_hook(
         if let Some(func) = GET_REQ_HANDLER_OG {
             let handler = func(self_);
 
-            RES_HANDLER_OG = (*handler).get_resource_request_handler;
-            (*handler).get_resource_request_handler = Some(res_handler_hook);
+            if !handler.is_null() {
+                RES_HANDLER_OG = (*handler).get_resource_request_handler;
+                (*handler).get_resource_request_handler = Some(res_handler_hook);
+            }
 
             return handler;
         }
