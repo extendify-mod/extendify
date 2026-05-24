@@ -1,0 +1,23 @@
+# How to obtain AAS token:
+# 1. Log in at https://accounts.google.com/EmbeddedSetup
+# 2. Get `oauth_token` from your cookie
+# 3. Run `cargo run --package oauth2aas -- <email> <token>`
+
+# NOTE: To access the different channels, you need a different
+#       Google account for every channel.
+
+[webhook]
+url = ""
+debug_url = ""
+
+[stable_channel]
+email = ""
+aas_token = ""
+
+[beta_channel]
+email = ""
+aas_token = ""
+
+[alpha_channel]
+email = ""
+aas_token = ""
