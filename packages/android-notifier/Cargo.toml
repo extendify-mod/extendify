@@ -1,0 +1,19 @@
+[package]
+name = "android-notifier"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+gpapi = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+googleplay-protobuf = "3"
+toml = "1"
+enum-iterator = "2"
+announcer = { path = "../announcer" }
+arsc = { git = "https://github.com/YaxinCheng/arsc.git" }
+zip = "8"
+tempfile = "3"
+regex = "1"

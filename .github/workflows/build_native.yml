@@ -47,7 +47,7 @@ jobs:
           python packages/native/scripts/dl_cef.py
       
       - name: Build
-        run: cargo build --release
+        run: cargo build --package extendify-native --release
       
       - name: Rename Output
         shell: bash

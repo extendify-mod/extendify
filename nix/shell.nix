@@ -1,5 +1,4 @@
 {
-  mkShell,
   bun,
   cargo,
   rustc,
@@ -8,9 +7,16 @@
   clang,
   spotify,
   llvmPackages,
+  pkg-config,
+  openssl,
+  python3,
+  python3Packages,
+
   self,
+  mkShell,
   stdenv,
 }:
+
 mkShell {
   packages = [
     bun
@@ -23,7 +29,13 @@ mkShell {
     clang
     llvmPackages.libclang
 
+    pkg-config
+    openssl
+
     spotify
+
+    python3
+    python3Packages.requests
   ];
 
   env = {

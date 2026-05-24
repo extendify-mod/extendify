@@ -6,10 +6,10 @@
   self,
   stdenv,
 }:
+
 rustPlatform.buildRustPackage {
   pname = "extendify-native";
-  version =
-    (lib.importTOML ../packages/native/Cargo.toml).package.version;
+  version = (lib.importTOML ../packages/native/Cargo.toml).package.version;
 
   src = lib.fileset.toSource {
     root = ../.;
@@ -35,7 +35,7 @@ rustPlatform.buildRustPackage {
     homepage = "https://github.com/extendify-mod/extendify";
     # wtf is the license
     # license = lib.licenses.gpl3;
-    maintainers = [lib.maintainers.fazzi];
-    platforms = ["x86_64-linux"];
+    maintainers = [ lib.maintainers.fazzi ];
+    platforms = [ "x86_64-linux" ];
   };
 }

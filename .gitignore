@@ -2,5 +2,6 @@ node_modules/
 test/
 target/
 __pycache__/
+data/
 
 spotify_hook.log

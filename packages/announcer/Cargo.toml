@@ -1,0 +1,10 @@
+[package]
+name = "announcer"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+derive_builder = "0"
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }

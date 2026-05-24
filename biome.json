@@ -9,16 +9,26 @@
                         "groups": [
                             "*.css",
                             ":BLANK_LINE:",
-
-                            [":ALIAS:", "!:PACKAGE:", "@*/**/*", "@*"],
+                            [
+                                ":ALIAS:",
+                                "!:PACKAGE:",
+                                "@*/**/*",
+                                "@*"
+                            ],
                             ":BLANK_LINE:",
-
-                            [":PACKAGE:", "!:PACKAGE_WITH_PROTOCOL:", "!:NODE:", "!:BUN:"],
+                            [
+                                ":PACKAGE:",
+                                "!:PACKAGE_WITH_PROTOCOL:",
+                                "!:NODE:",
+                                "!:BUN:"
+                            ],
                             ":BLANK_LINE:",
-
-                            [":PACKAGE_WITH_PROTOCOL:", ":NODE:", ":BUN:"],
+                            [
+                                ":PACKAGE_WITH_PROTOCOL:",
+                                ":NODE:",
+                                ":BUN:"
+                            ],
                             ":BLANK_LINE:",
-
                             ":PATH:",
                             ":BLANK_LINE:"
                         ]
@@ -31,7 +41,9 @@
         }
     },
     "files": {
-        "includes": ["**/*.{ts,tsx,css,js,html,json}", "!packages/native/**/*"]
+        "includes": [
+            "packages/{mod}/*.{ts,tsx,css,js,html,json}"
+        ]
     },
     "formatter": {
         "attributePosition": "auto",
