@@ -64,7 +64,7 @@ impl Announcement {
         color: u32,
         channel_name: String,
         version_string: String,
-        platform_string: String,
+        platform_string: &str,
     ) {
         self.json
             .get_mut("components")

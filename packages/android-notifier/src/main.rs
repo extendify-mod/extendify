@@ -37,7 +37,6 @@ async fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
         let details = client.get_latest_version().await?;
         if let Some(old_version) = old.prev_version() {
             if old_version == details.version_code {
-                println!("Same {channel} version {}", details.version_string);
                 continue;
             }
 
@@ -66,7 +65,7 @@ async fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
                     channel.id(),
                     details.version_code
                 ),
-                constants::CACHE_VARIANT.to_string(),
+                "Android",
             );
             announcement.add_map_diff_component("Strings", comparison.strings);
             announcement.add_vec_diff_component("Licenses", comparison.licenses);
