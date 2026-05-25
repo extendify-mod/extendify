@@ -1,10 +1,9 @@
-use crate::channel::Channel;
+use crate::constants::CONFIG_FILE_NAME;
 use announcer::WebhookConfig;
+use announcer::channel::Channel;
 use serde::Deserialize;
 use std::fs::read_to_string;
 use std::path::Path;
-
-const CONFIG_FILE_NAME: &str = "android_notifier.toml";
 
 #[derive(Deserialize)]
 pub struct Config {

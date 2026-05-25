@@ -1,10 +1,8 @@
-use crate::channel::Channel;
+use crate::constants::{DEVICE_NAME, PACKAGE_NAME};
+use announcer::channel::Channel;
 use googleplay_protobuf::DetailsResponse;
 use gpapi::Gpapi;
 use gpapi::error::ErrorKind;
-
-const DEVICE_NAME: &str = "sm_a13_5g";
-const PACKAGE_NAME: &str = "com.spotify.music";
 
 #[derive(Debug)]
 pub struct DownloadFile {

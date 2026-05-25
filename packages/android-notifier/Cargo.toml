@@ -9,9 +9,9 @@ serde = { workspace = true }
 tokio = { workspace = true }
 serde_json = { workspace = true }
 reqwest = { workspace = true }
+enum-iterator = { workspace = true }
 googleplay-protobuf = "3"
 toml = "1"
-enum-iterator = "2"
 announcer = { path = "../announcer" }
 arsc = { git = "https://github.com/YaxinCheng/arsc.git" }
 zip = "8"

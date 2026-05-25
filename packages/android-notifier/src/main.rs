@@ -1,65 +1,89 @@
-use crate::channel::Channel;
 use crate::config::Config;
 use crate::google_play_client::GooglePlayClient;
-use announcer::AnnouncementBuilder;
-use serde_json::json;
-use std::fs::File;
+use announcer::Announcement;
+use announcer::channel::Channel;
+use tokio::time;
 
 mod apk;
 mod cache;
-mod channel;
 mod config;
+mod constants;
 mod google_play_client;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // let config = Config::read();
-    //
-    let channel = Channel::Stable;
-    // let channel_config = config.get_channel_config(&channel);
-    //
-    // let mut client = GooglePlayClient::new(channel, channel_config.email, channel_config.aas_token);
-    // client.initialize().await?;
-    //
-    // let details = client.get_latest_version().await?;
-    // println!("{details:#?}");
-    //
-    // let dl_info = client.get_download_info(details.version_code).await?;
-    // println!("{dl_info:#?}");
-    //
-    // let response = AnnouncementBuilder::default()
-    //     .webhook_url(config.webhook.get_url())
-    //     .json(json!({
-    //         "flags": 1 << 15,
-    //         "components": [
-    //             {
-    //                 "type": 17,
-    //                 "accent_color": channel.color(),
-    //                 "components": [
-    //                     {
-    //                         "type": 10,
-    //                         "content": format!("## New {} Version", channel.pretty_name()),
-    //                     },
-    //                     { "type": 14 },
-    //                     {
-    //                         "type": 10,
-    //                         "content": format!("**{}{} ({})** released for **Android**", details.version_string, channel.id(), details.version_code),
-    //                     },
-    //                 ],
-    //             },
-    //         ],
-    //     }))
-    //     .build()
-    //     .expect("Invalid embed")
-    //     .send()
-    //     .await?;
-    // println!("{}", response);
+async fn main() {
+    let config = Config::read();
 
-    let old = cache::ChannelCache::read(Channel::Stable);
-    let new = cache::ChannelCache::read(Channel::Beta);
+    let mut interval = time::interval(time::Duration::from_mins(1));
 
-    let comparison = new.compare(old);
-    println!("{comparison:#?}");
+    loop {
+        interval.tick().await;
+
+        if let Err(e) = run(&config).await {
+            eprintln!("Crash: {e}");
+        }
+    }
+}
+
+async fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
+    for channel in enum_iterator::all::<Channel>() {
+        let channel_config = config.get_channel_config(&channel);
+
+        let mut client =
+            GooglePlayClient::new(channel, channel_config.email, channel_config.aas_token);
+        client.initialize().await?;
+
+        let old = cache::ChannelCache::read(channel);
+        let details = client.get_latest_version().await?;
+        if let Some(old_version) = old.prev_version() {
+            if old_version == details.version_code {
+                println!("Same {channel} version {}", details.version_string);
+                continue;
+            }
+
+            println!("Found new {channel} version {}", details.version_string);
+        }
+
+        let dl_info = client.get_download_info(details.version_code).await?;
+
+        if let Some(config_apk) = dl_info.splits.iter().find(|v| v.name == "config.en") {
+            let new = cache::ChannelCache::new_from_urls(
+                channel,
+                dl_info.main_apk_url,
+                config_apk.url.clone(),
+            )
+            .await;
+
+            let comparison = new.compare(old);
+
+            let mut announcement = Announcement::new(config.webhook.get_url());
+            announcement.add_version_component(
+                channel.color(),
+                channel.pretty_name(),
+                format!(
+                    "{}{} ({})",
+                    details.version_string,
+                    channel.id(),
+                    details.version_code
+                ),
+                constants::CACHE_VARIANT.to_string(),
+            );
+            announcement.add_map_diff_component("Strings", comparison.strings);
+            announcement.add_vec_diff_component("Licenses", comparison.licenses);
+            announcement.add_vec_diff_component("Remote Allowlist", comparison.remote_allow_list);
+            _ = announcement.send().await;
+
+            new.write();
+            new.set_prev_version(details.version_code);
+
+            println!("Sent announcement for {channel} {}", details.version_string);
+        } else {
+            println!(
+                "Couldn't find config.en for {channel} {}",
+                details.version_code
+            );
+        }
+    }
 
     Ok(())
 }
