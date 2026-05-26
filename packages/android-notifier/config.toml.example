@@ -1,3 +1,5 @@
+# Place at data/android/config.toml
+
 # How to obtain AAS token:
 # 1. Log in at https://accounts.google.com/EmbeddedSetup
 # 2. Get `oauth_token` from your cookie

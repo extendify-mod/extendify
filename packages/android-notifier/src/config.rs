@@ -1,9 +1,8 @@
-use crate::constants::CONFIG_FILE_NAME;
+use crate::constants::{CACHE_VARIANT, CONFIG_FILE_NAME};
 use announcer::WebhookConfig;
 use announcer::channel::Channel;
 use serde::Deserialize;
 use std::fs::read_to_string;
-use std::path::Path;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -15,7 +14,7 @@ pub struct Config {
 
 impl Config {
     pub fn read() -> Config {
-        let config_file_path = Path::new(env!("CARGO_MANIFEST_DIR")).join(CONFIG_FILE_NAME);
+        let config_file_path = announcer::get_data_path(CACHE_VARIANT).join(CONFIG_FILE_NAME);
         if !config_file_path.exists() {
             panic!("No config file found");
         }

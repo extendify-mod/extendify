@@ -1,6 +1,7 @@
 use crate::config::Config;
 use crate::google_play_client::GooglePlayClient;
-use announcer::Announcement;
+use announcer::AnnouncementBuilder;
+use announcer::cache::ChannelCache;
 use announcer::channel::Channel;
 use tokio::time;
 
@@ -33,10 +34,12 @@ async fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
             GooglePlayClient::new(channel, channel_config.email, channel_config.aas_token);
         client.initialize().await?;
 
-        let old = cache::ChannelCache::read(channel);
+        let channel_cache = cache::AndroidChannelCache::new(channel);
+        let old_data = channel_cache.read();
+
         let details = client.get_latest_version().await?;
-        if let Some(old_version) = old.prev_version() {
-            if old_version == details.version_code {
+        if let Some(old_version) = channel_cache.prev_version() {
+            if old_version == details.version_string {
                 continue;
             }
 
@@ -46,34 +49,35 @@ async fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
         let dl_info = client.get_download_info(details.version_code).await?;
 
         if let Some(config_apk) = dl_info.splits.iter().find(|v| v.name == "config.en") {
-            let new = cache::ChannelCache::new_from_urls(
-                channel,
+            let new_data = cache::AndroidCacheData::new_from_urls(
                 dl_info.main_apk_url,
                 config_apk.url.clone(),
             )
             .await;
 
-            let comparison = new.compare(old);
+            let diff = cache::AndroidCacheDiff::from(&old_data, &new_data);
 
-            let mut announcement = Announcement::new(config.webhook.get_url());
-            announcement.add_version_component(
-                channel.color(),
-                channel.pretty_name(),
-                format!(
-                    "{}{} ({})",
-                    details.version_string,
-                    channel.id(),
-                    details.version_code
-                ),
-                "Android",
-            );
-            announcement.add_map_diff_component("Strings", comparison.strings);
-            announcement.add_vec_diff_component("Licenses", comparison.licenses);
-            announcement.add_vec_diff_component("Remote Allowlist", comparison.remote_allow_list);
-            _ = announcement.send().await;
+            let response = AnnouncementBuilder::new(config.webhook.get_url())
+                .add_version_component(
+                    channel.color(),
+                    channel.pretty_name(),
+                    format!(
+                        "{}{} ({})",
+                        details.version_string,
+                        channel.id(),
+                        details.version_code
+                    ),
+                    "Android",
+                )
+                .add_map_diff_component("Strings", diff.strings)
+                .add_vec_diff_component("Licenses", diff.licenses)
+                .add_vec_diff_component("Remote Allowlist", diff.remote_allow_list)
+                .send()
+                .await;
+            println!("Message response: {response:?}");
 
-            new.write();
-            new.set_prev_version(details.version_code);
+            channel_cache.write(&new_data);
+            channel_cache.write_prev_version(&details.version_string);
 
             println!("Sent announcement for {channel} {}", details.version_string);
         } else {

@@ -57,6 +57,6 @@ impl Channel {
     }
 
     pub fn get_data_path(&self, variant: &str) -> PathBuf {
-        PathBuf::from(format!("./data/{variant}/{self}"))
+        crate::get_data_path(variant).join(self.to_string())
     }
 }

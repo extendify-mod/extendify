@@ -1,10 +1,17 @@
+use std::path::PathBuf;
+
 use crate::diff::{MapDiff, VecDiff};
 use reqwest::Client;
 use serde::Deserialize;
 use serde_json::json;
 
+pub mod cache;
 pub mod channel;
 pub mod diff;
+
+pub fn get_data_path(variant: &str) -> PathBuf {
+    return PathBuf::from(format!("./data/{variant}"));
+}
 
 fn push_diff(title: &str, string: String, components: &mut Vec<serde_json::Value>) {
     components.push(json!({
@@ -43,12 +50,12 @@ fn push_diff_container<'a>(
         .unwrap()
 }
 
-pub struct Announcement {
+pub struct AnnouncementBuilder {
     pub webhook_url: String,
     pub json: serde_json::Value,
 }
 
-impl Announcement {
+impl AnnouncementBuilder {
     pub fn new(webhook_url: String) -> Self {
         Self {
             webhook_url: webhook_url,
@@ -60,12 +67,12 @@ impl Announcement {
     }
 
     pub fn add_version_component(
-        &mut self,
+        mut self,
         color: u32,
         channel_name: String,
         version_string: String,
         platform_string: &str,
-    ) {
+    ) -> Self {
         self.json
             .get_mut("components")
             .unwrap()
@@ -87,12 +94,13 @@ impl Announcement {
                         },
                     ],
                 })
-            )
+            );
+        self
     }
 
-    pub fn add_vec_diff_component(&mut self, title: &str, diff: VecDiff) {
+    pub fn add_vec_diff_component(mut self, title: &str, diff: VecDiff) -> Self {
         if !diff.changed() {
-            return;
+            return self;
         }
 
         let diff_components = push_diff_container(title, &mut self.json);
@@ -120,11 +128,13 @@ impl Announcement {
                 diff_components,
             );
         }
+
+        self
     }
 
-    pub fn add_map_diff_component(&mut self, title: &str, diff: MapDiff) {
+    pub fn add_map_diff_component(mut self, title: &str, diff: MapDiff) -> Self {
         if !diff.changed() {
-            return;
+            return self;
         }
 
         let diff_components = push_diff_container(title, &mut self.json);
@@ -164,6 +174,8 @@ impl Announcement {
                 diff_components,
             );
         }
+
+        self
     }
 
     pub async fn send(self) -> Result<String, Box<dyn std::error::Error>> {

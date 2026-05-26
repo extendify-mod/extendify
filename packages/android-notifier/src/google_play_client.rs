@@ -11,6 +11,7 @@ pub struct DownloadFile {
 }
 
 #[derive(Debug)]
+#[allow(unused, dead_code)]
 pub struct DownloadInfo {
     pub main_apk_url: String,
     pub splits: Vec<DownloadFile>,
