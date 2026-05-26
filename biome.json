@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
     "assist": {
         "actions": {
             "source": {
@@ -9,25 +9,11 @@
                         "groups": [
                             "*.css",
                             ":BLANK_LINE:",
-                            [
-                                ":ALIAS:",
-                                "!:PACKAGE:",
-                                "@*/**/*",
-                                "@*"
-                            ],
+                            [":ALIAS:", "!:PACKAGE:", "@*/**/*", "@*"],
                             ":BLANK_LINE:",
-                            [
-                                ":PACKAGE:",
-                                "!:PACKAGE_WITH_PROTOCOL:",
-                                "!:NODE:",
-                                "!:BUN:"
-                            ],
+                            [":PACKAGE:", "!:PACKAGE_WITH_PROTOCOL:", "!:NODE:", "!:BUN:"],
                             ":BLANK_LINE:",
-                            [
-                                ":PACKAGE_WITH_PROTOCOL:",
-                                ":NODE:",
-                                ":BUN:"
-                            ],
+                            [":PACKAGE_WITH_PROTOCOL:", ":NODE:", ":BUN:"],
                             ":BLANK_LINE:",
                             ":PATH:",
                             ":BLANK_LINE:"
@@ -41,9 +27,7 @@
         }
     },
     "files": {
-        "includes": [
-            "packages/{mod}/*.{ts,tsx,css,js,html,json}"
-        ]
+        "includes": ["./*.json", "packages/{mod}/*.{ts,tsx,css,js,html,json}"]
     },
     "formatter": {
         "attributePosition": "auto",
