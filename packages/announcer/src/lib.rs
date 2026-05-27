@@ -9,50 +9,76 @@ pub mod cache;
 pub mod channel;
 pub mod diff;
 
+const CHARACTER_LIMIT: usize = 4000 - 50;
+const MESSAGE_FLAGS: u32 = 1 << 15;
+
 pub fn get_data_path(variant: &str) -> PathBuf {
     return PathBuf::from(format!("./data/{variant}"));
 }
 
-fn push_diff(title: &str, string: String, components: &mut Vec<serde_json::Value>) {
-    components.push(json!({
-        "type": 10,
-        "content": format!("### {title}"),
-    }));
-    components.push(json!({ "type": 14 }));
-    components.push(json!({
-        "type": 10,
-        "content": format!("```diff\n{string}```"),
-    }));
-}
-
-fn push_diff_container<'a>(
+fn create_diff_messages<'a>(
     title: &str,
-    base: &'a mut serde_json::Value,
-) -> &'a mut Vec<serde_json::Value> {
-    let components = base.get_mut("components").unwrap().as_array_mut().unwrap();
-    components.push(json!({
-        "type": 17,
-        "components": [
-            {
+    subtitle: &str,
+    diff_string: String,
+) -> Vec<serde_json::Value> {
+    let content = format!("```diff\n{diff_string}```");
+
+    if content.len() < 4000 {
+        vec![json!({
+            "type": 10,
+            "content": content
+        })]
+    } else {
+        let mut current_chunks: Vec<serde_json::Value> = vec![];
+
+        let mut remaining = diff_string.as_str();
+        while !remaining.is_empty() {
+            let split_at = if remaining.len() <= CHARACTER_LIMIT {
+                remaining.len()
+            } else {
+                remaining[..CHARACTER_LIMIT]
+                    .rfind("\n\n")
+                    .map(|i| i + 1)
+                    .unwrap_or(CHARACTER_LIMIT)
+            };
+
+            let (chunk, rest) = remaining.split_at(split_at);
+            remaining = rest;
+
+            current_chunks.push(json!({
                 "type": 10,
-                "content": format!("## {title}"),
-            },
-        ],
-    }));
-    components
-        .last_mut()
-        .unwrap()
-        .as_object_mut()
-        .unwrap()
-        .get_mut("components")
-        .unwrap()
-        .as_array_mut()
-        .unwrap()
+                "content": format!("```diff\n{chunk}```"),
+            }));
+        }
+
+        current_chunks
+    }
+    .iter()
+    .map(|c| {
+        json!({
+            "flags": MESSAGE_FLAGS,
+            "components": [
+                {
+                    "type": 17,
+                    "components": [
+                        {
+                            "type": 10,
+                            "content": format!("## {title} - {subtitle}"),
+                        },
+                        { "type": 14 },
+                        c
+                    ],
+                },
+            ],
+        })
+    })
+    .collect::<Vec<_>>()
 }
 
 pub struct AnnouncementBuilder {
     pub webhook_url: String,
     pub json: serde_json::Value,
+    message_payloads: Vec<serde_json::Value>,
 }
 
 impl AnnouncementBuilder {
@@ -63,6 +89,7 @@ impl AnnouncementBuilder {
                 "flags": 1 << 15,
                 "components": []
             }),
+            message_payloads: vec![],
         }
     }
 
@@ -73,13 +100,10 @@ impl AnnouncementBuilder {
         version_string: String,
         platform_string: &str,
     ) -> Self {
-        self.json
-            .get_mut("components")
-            .unwrap()
-            .as_array_mut()
-            .unwrap()
-            .push(
-                json!({
+        self.message_payloads.push(json!({
+            "flags": MESSAGE_FLAGS,
+            "components": [
+                {
                     "type": 17,
                     "accent_color": color,
                     "components": [
@@ -93,8 +117,10 @@ impl AnnouncementBuilder {
                             "content": format!("**{version_string}** released for **{platform_string}**")
                         },
                     ],
-                })
-            );
+                },
+            ],
+        }));
+
         self
     }
 
@@ -103,30 +129,28 @@ impl AnnouncementBuilder {
             return self;
         }
 
-        let diff_components = push_diff_container(title, &mut self.json);
-
         if !diff.added.is_empty() {
-            push_diff(
+            self.message_payloads.extend(create_diff_messages(
+                title,
                 "Added",
                 diff.added
                     .iter()
                     .map(|s| format!("+ {s}"))
                     .collect::<Vec<_>>()
-                    .join("\n"),
-                diff_components,
-            );
+                    .join("\n\n"),
+            ));
         }
 
         if !diff.removed.is_empty() {
-            push_diff(
+            self.message_payloads.extend(create_diff_messages(
+                title,
                 "Removed",
                 diff.removed
                     .iter()
                     .map(|s| format!("- {s}"))
                     .collect::<Vec<_>>()
-                    .join("\n"),
-                diff_components,
-            );
+                    .join("\n\n"),
+            ));
         }
 
         self
@@ -137,58 +161,61 @@ impl AnnouncementBuilder {
             return self;
         }
 
-        let diff_components = push_diff_container(title, &mut self.json);
-
         if !diff.added.is_empty() {
-            push_diff(
+            self.message_payloads.extend(create_diff_messages(
+                title,
                 "Added",
                 diff.added
                     .iter()
                     .map(|(key, value)| format!("+ {key}: {value}"))
                     .collect::<Vec<_>>()
                     .join("\n\n"),
-                diff_components,
-            );
+            ));
         }
 
         if !diff.removed.is_empty() {
-            push_diff(
+            self.message_payloads.extend(create_diff_messages(
+                title,
                 "Removed",
                 diff.removed
                     .iter()
                     .map(|(key, value)| format!("- {key}: {value}"))
                     .collect::<Vec<_>>()
                     .join("\n\n"),
-                diff_components,
-            );
+            ));
         }
 
         if !diff.changed.is_empty() {
-            push_diff(
+            self.message_payloads.extend(create_diff_messages(
+                title,
                 "Changed",
                 diff.changed
                     .iter()
                     .map(|(key, value)| format!("- {key}: {}\n+ {key}: {}", value.old, value.new))
                     .collect::<Vec<_>>()
                     .join("\n\n"),
-                diff_components,
-            );
+            ));
         }
 
         self
     }
 
-    pub async fn send(self) -> Result<String, Box<dyn std::error::Error>> {
+    pub async fn send(self) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+        let mut responses: Vec<String> = vec![];
         let client = Client::new();
-        let response = client
-            .post(format!("{}?with_components=true", self.webhook_url))
-            .json(&self.json)
-            .send()
-            .await?
-            .text()
-            .await?;
 
-        Ok(response)
+        for payload in self.message_payloads {
+            let response = client
+                .post(format!("{}?with_components=true", self.webhook_url))
+                .json(&payload)
+                .send()
+                .await?
+                .text()
+                .await?;
+            responses.push(response);
+        }
+
+        Ok(responses)
     }
 }
 
