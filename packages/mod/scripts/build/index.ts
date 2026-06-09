@@ -11,14 +11,15 @@ import { join } from "node:path";
 
 const DEVELOPMENT = hasArg("dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
+const OUT = getKwarg("out") ?? "dist";
 
 const start = performance.now();
 
 try {
-    await rm("dist", { force: true, recursive: true });
+    await rm(OUT, { force: true, recursive: true });
 } catch {}
-await mkdir("dist", { recursive: true });
-console.log(`Created dist folder (${getTimeDifference(start)} ms)`);
+await mkdir(OUT, { recursive: true });
+console.log(`Created output folder (${getTimeDifference(start)} ms)`);
 
 const assetsCopyStart = performance.now();
 for (const fileName of await readdir(`src/targets/${PLATFORM}`, { recursive: true })) {
@@ -27,9 +28,9 @@ for (const fileName of await readdir(`src/targets/${PLATFORM}`, { recursive: tru
     }
 
     try {
-        await copyFile(join("src/targets", PLATFORM, fileName), join("dist", fileName));
+        await copyFile(join("src/targets", PLATFORM, fileName), join(OUT, fileName));
     } catch (_) {
-        await mkdir(join("dist", fileName), { recursive: true });
+        await mkdir(join(OUT, fileName), { recursive: true });
     }
 }
 console.log(`Copied ${PLATFORM} assets (${getTimeDifference(assetsCopyStart)} ms)`);
@@ -61,7 +62,7 @@ console.log(`Created bundle (${getTimeDifference(bundleStart)} ms)`);
 
 const bundleWriteStart = performance.now();
 await bundle.write({
-    file: "dist/extendify.js",
+    file: join(OUT, "extendify.js"),
     format: "iife",
     minify: {
         compress: false,
@@ -84,7 +85,7 @@ for (const fileName of await readdir(".", { recursive: true })) {
     allCss += content;
 }
 
-await writeFile("dist/extendify.css", allCss);
+await writeFile(join(OUT, "extendify.css"), allCss);
 console.log(`Bundled CSS (${getTimeDifference(cssProbeStart)} ms)`);
 
 console.log(`Build finished (${getTimeDifference(start)} ms)`);
