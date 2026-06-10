@@ -9,7 +9,7 @@ use slim_detours_sys::{
 use std::ffi::{CString, c_int, c_void};
 use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, GetProcAddress, LoadLibraryW};
-use windows_sys::Win32::System::SystemServices::{DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH};
+use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows_sys::core::BOOL;
 
 mod version_reimpl;
