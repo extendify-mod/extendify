@@ -10,3 +10,7 @@ data/
 
 # Files
 spotify_hook.log
+
+# Nix :)
+result
+result-*

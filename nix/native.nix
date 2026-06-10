@@ -1,29 +1,38 @@
 {
   rustPlatform,
   clang,
+  pkg-config,
+  openssl,
   llvmPackages,
   lib,
   self,
   stdenv,
 }:
-
 rustPlatform.buildRustPackage {
   pname = "extendify-native";
-  version = (lib.importTOML ../packages/native/Cargo.toml).package.version;
+  version = (lib.importTOML ../crates/extendify-native/Cargo.toml).package.version;
 
   src = lib.fileset.toSource {
     root = ../.;
     fileset = lib.fileset.unions [
-      ../packages/native
+      ../crates
       ../Cargo.lock
       ../Cargo.toml
     ];
   };
 
-  cargoLock.lockFile = ../Cargo.lock;
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+    allowBuiltinFetchGit = true;
+  };
 
   nativeBuildInputs = [
     clang
+    pkg-config
+  ];
+
+  buildInputs = [
+    openssl
   ];
 
   env = {
@@ -35,7 +44,7 @@ rustPlatform.buildRustPackage {
     homepage = "https://github.com/extendify-mod/extendify";
     # wtf is the license
     # license = lib.licenses.gpl3;
-    maintainers = [ lib.maintainers.fazzi ];
-    platforms = [ "x86_64-linux" ];
+    maintainers = [lib.maintainers.fazzi];
+    platforms = ["x86_64-linux"];
   };
 }
