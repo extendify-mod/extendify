@@ -21,7 +21,7 @@ features = [
 ]
 
 [dependencies]
-ureq = "3"
+reqwest = { workspace = true, features = ["blocking"] }
 
 [build-dependencies]
 bindgen = "0"

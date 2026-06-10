@@ -1,30 +1,13 @@
 #![allow(unused_variables)]
 
 use crate::cef::{
-    _cef_app_t, _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t,
-    _cef_client_t, _cef_dictionary_value_t, _cef_main_args_t, _cef_request_context_t,
-    _cef_settings_t, cef_string_t,
+    _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t, _cef_client_t,
+    _cef_dictionary_value_t, _cef_request_context_t, cef_string_t,
 };
 use crate::{log, vtable_hooks};
-use std::ffi::{c_int, c_void};
 
 #[macro_use]
 mod preload;
-
-extern_c_overrides! {
-    unsafe fn cef_initialize/real_cef_initialize(
-        args: *const _cef_main_args_t,
-        settings: *mut _cef_settings_t,
-        app: *mut _cef_app_t,
-        _sandbox: *mut c_void
-    ) -> c_int {
-        log("CEF init call");
-
-        crate::callbacks::on_entrypoint(settings);
-
-        real_cef_initialize(args, settings, app, std::ptr::null_mut())
-    }
-}
 
 extern_c_overrides! {
     unsafe fn cef_browser_view_create/real_cef_browser_view_create(

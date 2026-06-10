@@ -1,22 +1,19 @@
+use crate::cef::_cef_frame_t;
 use crate::cef::utils::{ctos, stoc};
-use crate::cef::{_cef_frame_t, _cef_settings_t};
 use crate::{is_renderer, log};
+use std::fmt::Display;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use ureq;
 
 const URL_BASE: &str = "https://github.com/extendify-mod/extendify/releases/download/artifacts/";
 
-pub fn on_entrypoint(settings: *mut _cef_settings_t) {
+static INJECTED: Mutex<Vec<String>> = Mutex::new(vec![]);
+
+fn execute_java_script<T: Display>(frame: *mut _cef_frame_t, script: T, js: T) {
     unsafe {
-        if (*settings).remote_debugging_port == 0 {
-            (*settings).remote_debugging_port = 9229;
-            log("Enabled remote debugging on port 9229");
-        }
+        (*frame).execute_java_script.unwrap()(frame, stoc(script), stoc(js), 0);
     }
 }
-
-static INJECTED: Mutex<Vec<String>> = Mutex::new(vec![]);
 
 pub fn on_frame(frame: *mut _cef_frame_t) {
     if !is_renderer() {
@@ -24,7 +21,7 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
     }
 
     if let Ok(mut guard) = INJECTED.lock() {
-        let id = unsafe { ctos((*frame).get_identifier.unwrap()(frame)) };
+        let id = ctos(unsafe { (*frame).get_identifier.unwrap()(frame) });
 
         if guard.contains(&id) {
             return;
@@ -40,23 +37,17 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
 
     log("Injecting Extendify");
 
-    unsafe {
-        if let Some(script) = get("extendify.js") {
-            (*frame).execute_java_script.unwrap()(frame, stoc(script), stoc("extendify_script"), 0);
+    if let Some(script) = get("extendify.js") {
+        execute_java_script(frame, "extendify_script", &script);
 
-            log("Injected script");
-        }
+        log("Injected script");
+    }
 
-        if let Some(style) = get("extendify.css") {
-            (*frame).execute_java_script.unwrap()(
-                frame,
-                stoc(include_str!("./inject/styles.js").replace("{{style}}", &style)),
-                stoc("extendify_styles"),
-                0,
-            );
+    if let Some(style) = get("extendify.css") {
+        let script = include_str!("./inject/styles.js").replace("{{style}}", &style);
+        execute_java_script(frame, "extendify_styles", &script);
 
-            log("Injected styles");
-        }
+        log("Injected styles");
     }
 }
 
@@ -75,19 +66,8 @@ fn get(filename: &str) -> Option<String> {
         log("Couldn't open local file, falling back to release");
     }
 
-    match ureq::get(format!("{URL_BASE}/{filename}")).call() {
-        Ok(mut response) => match response.body_mut().read_to_string() {
-            Ok(body) => {
-                return Some(body);
-            }
-            Err(e) => {
-                log(format!("Body failed {e}"));
-            }
-        },
-        Err(e) => {
-            log(format!("Call failed {e}"));
-        }
-    }
-
-    None
+    reqwest::blocking::get(format!("{URL_BASE}/{filename}"))
+        .and_then(|r| r.text())
+        .map_err(|e| log(format!("Request failed: {e}")))
+        .ok()
 }

@@ -8,17 +8,15 @@ pub fn ctos(s: *const cef_string_t) -> String {
         return String::new();
     }
 
-    unsafe {
-        let s = &*s;
+    let s = unsafe { &*s };
 
-        if s.str_.is_null() || s.length == 0 {
-            return String::new();
-        }
-
-        let slice = std::slice::from_raw_parts(s.str_, s.length);
-
-        String::from_utf16_lossy(slice)
+    if s.str_.is_null() || s.length == 0 {
+        return String::new();
     }
+
+    let slice = unsafe { std::slice::from_raw_parts(s.str_, s.length) };
+
+    String::from_utf16_lossy(slice)
 }
 
 extern "C" fn cef_string_dtor(ptr: *mut u16) {
