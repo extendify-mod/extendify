@@ -2,7 +2,6 @@
   cef-binary,
   stdenv,
 }:
-
 cef-binary.override {
   version = "144.0.11";
   gitRevision = "e135be2";

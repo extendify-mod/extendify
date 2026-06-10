@@ -11,12 +11,10 @@
   openssl,
   python3,
   python3Packages,
-
   self,
   mkShell,
   stdenv,
 }:
-
 mkShell {
   packages = [
     bun
