@@ -14,6 +14,7 @@
         "./settings/themes": "./src/settings/themes/index.ts"
     },
     "dependencies": {
+        "classnames": "^2.5.1",
         "@extendify/components": "workspace:*",
         "@extendify/webpack": "workspace:*",
         "@extendify/shared": "workspace:*",
