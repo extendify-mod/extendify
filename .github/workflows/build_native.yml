@@ -44,7 +44,7 @@ jobs:
       - name: Download CEF
         run: |
           python -m pip install requests
-          python packages/native/scripts/dl_cef.py
+          python crates/extendify-native/scripts/dl_cef.py
       
       - name: Build
         run: cargo build --package extendify-native --release
