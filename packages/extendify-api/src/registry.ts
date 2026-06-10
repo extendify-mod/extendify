@@ -1,0 +1,20 @@
+import type { Context } from "@extendify/api/context";
+import type { Patch } from "@extendify/api/context/patch";
+import type { Plugin } from "@extendify/api/context/plugin";
+import type { ContextOptions, ContextSettings } from "@extendify/api/context/settings";
+import type { ServiceOptions } from "@extendify/api/esperanto";
+import type { ApiOverride } from "@extendify/api/platform";
+import type { EsperantoService } from "@extendify/shared/types/spotify/esperanto";
+import type { WebpackRawModules } from "@extendify/shared/types/webpack";
+
+export const contexts: Set<Context> = new Set();
+export const plugins: Set<Plugin> = new Set();
+export const contextOptions: Map<string, ContextOptions> = new Map();
+export const settingsValues: Map<string, ContextSettings> = new Map();
+export const patches: Patch[] = [];
+export const allPatches: Patch[] = [];
+export const moduleCache: WebpackRawModules = {};
+export const overriddenFunctions: ApiOverride[] = [];
+export const services = new Map<string, EsperantoService>();
+export const serviceIds = new WeakMap<EsperantoService | Promise<EsperantoService>, string>();
+export const serviceOptions = new Map<string, ServiceOptions>();

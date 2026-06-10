@@ -1,0 +1,237 @@
+import { moduleCache } from "@extendify/api/registry";
+import { createLazy } from "@extendify/shared/lazy";
+import { type AnyMatch, srcMatches } from "@extendify/shared/match";
+import type { RawModule } from "@extendify/shared/types/webpack";
+import { shouldIgnoreValue } from "@extendify/webpack";
+
+import type { ComponentType } from "react";
+
+export type ExportFilter = (moduleExport: any) => boolean;
+
+interface ExportSubscription<T = unknown> {
+    filter: ExportFilter;
+    callback: (moduleExport: T) => void;
+}
+
+interface ModuleSubscription<T = Record<string, any>> {
+    props: string[];
+    callback: (module: T) => void;
+}
+
+const exportSubscriptions: Set<ExportSubscription> = new Set();
+const moduleSubscriptions: Set<ModuleSubscription> = new Set();
+
+export const exportFilters = {
+    byCode(match: AnyMatch): ExportFilter {
+        function filter(moduleExport: any) {
+            if (typeof moduleExport !== "function") {
+                return false;
+            }
+
+            if (moduleExport.DanielEkDonated600MilToHelsing) {
+                return false;
+            }
+
+            return srcMatches(moduleExport.toString(), match);
+        }
+
+        return moduleExport => {
+            if (filter(moduleExport)) {
+                return true;
+            }
+
+            if (!moduleExport.$$typeof) {
+                return false;
+            }
+
+            if (moduleExport.render) {
+                return filter(moduleExport.render);
+            }
+
+            const { type: moduleType } = moduleExport;
+            if (moduleType) {
+                return moduleType.render ? filter(moduleType.render) : filter(moduleType);
+            }
+
+            return false;
+        };
+    },
+    byEncoreName(name: string): ExportFilter {
+        const filter = exportFilters.byCode({
+            matches: [
+                new RegExp(String.raw`"data-encore-id":\i\.\i\.${name}[},]`),
+                new RegExp(`"data-testid":"${name}"`)
+            ],
+            mode: "any"
+        });
+
+        return moduleExport => {
+            if (moduleExport.displayName === name) {
+                return true;
+            }
+
+            return filter(moduleExport);
+        };
+    },
+    byProps(...props: string[]): ExportFilter {
+        return moduleExport => {
+            if (typeof moduleExport !== "object") {
+                return false;
+            }
+
+            return props.every(prop => prop in moduleExport);
+        };
+    }
+};
+
+function checkExport(moduleExport: any, filter: ExportFilter): boolean {
+    if (shouldIgnoreValue(moduleExport)) {
+        return false;
+    }
+
+    return filter(moduleExport);
+}
+
+function checkSubscription(
+    subscription: ExportSubscription<unknown> | undefined,
+    moduleExport: any
+): boolean {
+    if (!subscription || !checkExport(moduleExport, subscription.filter)) {
+        return false;
+    }
+
+    subscription.callback(moduleExport);
+    exportSubscriptions.delete(subscription);
+
+    return true;
+}
+
+export function onModuleLoaded(module: RawModule) {
+    for (const subscription of exportSubscriptions) {
+        if (checkSubscription(subscription, module.exports)) {
+            continue;
+        }
+
+        if (typeof module.exports !== "object") {
+            continue;
+        }
+
+        for (const child of Object.values(module.exports)) {
+            checkSubscription(subscription, child);
+        }
+    }
+
+    for (const subscription of moduleSubscriptions) {
+        if (typeof module.exports !== "object") {
+            continue;
+        }
+
+        const exportKeys = Object.keys(module.exports);
+        if (subscription.props.every(prop => exportKeys.includes(prop))) {
+            subscription.callback(module.exports);
+            moduleSubscriptions.delete(subscription);
+        }
+    }
+}
+
+export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
+    function createPromise(): Promise<T> {
+        return new Promise(resolve => {
+            exportSubscriptions.add({
+                callback: moduleExport => resolve(moduleExport as T),
+                filter
+            });
+        });
+    }
+
+    return getModuleExport<T>(filter) ?? createPromise();
+}
+
+export function findModuleExportLazy<T>(filter: ExportFilter): T {
+    return createLazy<T>(() => getModuleExport<T>(filter) as T);
+}
+
+function getModuleExport<T>(filter: ExportFilter): T | undefined {
+    return findAllModuleExports<T>(filter)[0];
+}
+
+export function findAllModuleExports<T = any>(filter: ExportFilter): T[] {
+    const results: T[] = [];
+
+    for (const module of Object.values(moduleCache)) {
+        if (!module?.loaded || !module.exports) {
+            continue;
+        }
+
+        if (checkExport(module.exports, filter)) {
+            results.push(module.exports as T);
+            continue;
+        }
+
+        if (typeof module.exports !== "object") {
+            continue;
+        }
+
+        for (const child of Object.values(module.exports)) {
+            if (!checkExport(child, filter)) {
+                continue;
+            }
+
+            results.push(child);
+        }
+    }
+
+    return results;
+}
+
+export async function findModule<T = Record<string, any>>(...props: string[]): Promise<T> {
+    function createPromise(): Promise<T> {
+        return new Promise(resolve => {
+            moduleSubscriptions.add({
+                callback: module => resolve(module as T),
+                props
+            });
+        });
+    }
+
+    for (const module of Object.values(moduleCache)) {
+        if (!module?.loaded || !module.exports) {
+            continue;
+        }
+
+        if (typeof module.exports !== "object") {
+            continue;
+        }
+
+        const exportKeys = Object.keys(module.exports);
+        if (props.every(prop => exportKeys.includes(prop))) {
+            return module.exports as T;
+        }
+    }
+
+    return createPromise();
+}
+
+export type LazyComponent<T> = ComponentType<T> & { hasResolved: boolean };
+
+export function findModuleComponent<T extends object = any>(
+    filter: ExportFilter
+): LazyComponent<T> {
+    let Component: ComponentType<T> | undefined;
+
+    findModuleExport<ComponentType<T>>(filter).then(moduleExport => {
+        Component = moduleExport;
+    });
+
+    const Lazy = (props: T) => {
+        return Component ? <Component {...props} /> : <></>;
+    };
+
+    Object.defineProperty(Lazy, "hasResolved", {
+        get() {
+            return typeof Component !== "undefined";
+        }
+    });
+
+    return Lazy as LazyComponent<T>;
+}

@@ -1,0 +1,71 @@
+import { contextHasPatches } from "@extendify/api/context/patch";
+import type { Plugin } from "@extendify/api/context/plugin";
+import { contextHasOptions, isPluginEnabled, setPluginEnabled } from "@extendify/api/context/settings";
+import { useState } from "@extendify/api/react";
+import { GearIcon, InfoIcon } from "@extendify/components/icons";
+import { PluginModal } from "@extendify/components/settings/plugins";
+import { ButtonTertiary, Chip, Text, Toggle } from "@extendify/components/spotify";
+
+interface Props {
+    plugin: Plugin;
+    onRestartNeeded?(name: string, enabled: boolean): void;
+}
+
+export default function (props: Props) {
+    const [enabled, setEnabled] = useState(isPluginEnabled(props.plugin));
+    const [modalOpened, setModalOpened] = useState(false);
+
+    return (
+        <div className="ext-settings-container">
+            <PluginModal
+                isOpen={modalOpened}
+                onClose={() => setModalOpened(false)}
+                onRestartNeeded={(enabled: boolean) =>
+                    props.onRestartNeeded?.(props.plugin.name, enabled)
+                }
+                plugin={props.plugin}
+            />
+            <div className="ext-settings-container-header">
+                <Text
+                    className="ext-settings-container-title"
+                    semanticColor="textBase"
+                    variant="titleSmall"
+                >
+                    {props.plugin.name}
+                </Text>
+                <ButtonTertiary
+                    aria-label={`Configure ${props.plugin.name}`}
+                    className="ext-plugin-header-icon"
+                    iconOnly={() => (contextHasOptions(props.plugin) ? <GearIcon /> : <InfoIcon />)}
+                    onClick={() => setModalOpened(true)}
+                />
+                <Toggle
+                    disabled={props.plugin.required}
+                    onSelected={value => {
+                        setEnabled(value);
+                        setPluginEnabled(props.plugin, value);
+
+                        if (contextHasPatches(props.plugin.name)) {
+                            props.onRestartNeeded?.(props.plugin.name, value);
+                        }
+                    }}
+                    value={enabled}
+                />
+            </div>
+            <Text
+                className="ext-settings-container-description"
+                semanticColor="textSubdued"
+                variant="bodyMedium"
+            >
+                {props.plugin.description}
+            </Text>
+            <div>
+                {props.plugin.platforms.map(platform => (
+                    <Chip selected={true} selectedColorSet="invertedLight">
+                        {platform}
+                    </Chip>
+                ))}
+            </div>
+        </div>
+    );
+}

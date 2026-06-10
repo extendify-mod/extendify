@@ -1,0 +1,14 @@
+{
+    "name": "@extendify/shared",
+    "private": true,
+    "devDependencies": {
+        "@types/history": "^5.0.0"
+    },
+    "exports": {
+        "./*": "./src/*.ts",
+        "./types": "./src/types/index.d.ts",
+        "./types/*": "./src/types/*.d.ts",
+        "./types/spotify": "./src/types/spotify/index.d.ts",
+        "./types/spotify/*": "./src/types/spotify/*.d.ts"
+    }
+}

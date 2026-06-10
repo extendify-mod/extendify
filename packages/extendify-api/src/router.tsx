@@ -1,0 +1,92 @@
+import { type Context, registerContext } from "@extendify/api/context";
+import { exportFunction, registerPatch } from "@extendify/api/context/patch";
+import { platform } from "@extendify/api/platform";
+import { Route } from "@extendify/components/spotify";
+import { exportFilters, findModuleExportLazy } from "@extendify/webpack/module";
+
+import type { ComponentType } from "react";
+import type RouterDOM from "react-router-dom";
+
+interface Page {
+    context: Context;
+    route: string;
+    component: ComponentType<any>;
+}
+
+type PageDef = Omit<Page, "context">;
+
+const { context, logger } = registerContext({
+    name: "Router",
+    platforms: ["desktop", "browser"]
+});
+
+const registeredPages: Page[] = [];
+
+export const useLocation = findModuleExportLazy<typeof RouterDOM.useLocation>(
+    exportFilters.byCode(/\i\.useContext\(\i\)\.location/)
+);
+// TODO: useNavigationType
+
+registerPatch(context, {
+    find: "spotify:app:home",
+    replacement: [
+        {
+            match: /(type:"locale",uri:"home"}\);return)(\[\(0,.*?\])(}\)\({isDesktop:)/,
+            replace: "$1 $exp.injectPages($2)$3"
+        },
+        {
+            // I don't remember what this is for but I think it had something to do with alignment of custom pages
+            match: /(children:\[)(\(0,\i\.jsx\)\(\i,{}\),)(\(0,\i\.jsxs\)\("div",{className:"main-view-container",)/,
+            replace: "$1$3"
+        }
+    ]
+});
+
+registerPatch(context, {
+    find: "routeContext",
+    replacement: {
+        /**
+         * This patch skips the check that makes sure the type is the actual Route component,
+         * and since we don't pass the Route component, but instead a wrapper component,
+         * this always fails, which throws an error.
+         */
+        match: /\i\.type!==\i/,
+        replace: "false"
+    }
+});
+
+exportFunction(context, function injectPages(children: any[]) {
+    if (!Route.hasResolved) {
+        return children;
+    }
+
+    for (const page of registeredPages) {
+        const { route, component: Component } = page;
+        const key = (route.startsWith("/") ? route.substring(1) : route).replaceAll("/", "-");
+
+        children.push(<Route element={<Component />} key={key} path={route} />);
+    }
+
+    return children;
+});
+
+export function registerPage(owner: Context, page: PageDef) {
+    registeredPages.push({
+        ...page,
+        context: owner
+    });
+
+    logger.debug(`Registered page ${page.route} for context ${owner.name}`);
+}
+
+export function isCustomPage(route?: string) {
+    if (!route) {
+        route = platform?.getHistory().location.pathname;
+    }
+
+    return route ? !!registeredPages.find(page => page.route === route) : false;
+}
+
+export function redirectTo(route: string, state?: any) {
+    platform?.getHistory().push(route, state);
+}

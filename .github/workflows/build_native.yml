@@ -3,9 +3,9 @@ name: build-native
 on:
   workflow_dispatch:
   push:
-    paths: ['packages/native/**']
+    paths: ['crates/extendify-native/**']
   pull_request:
-    paths: ['packages/native/**']
+    paths: ['crates/extendify-native/**']
 
 jobs:
   build:

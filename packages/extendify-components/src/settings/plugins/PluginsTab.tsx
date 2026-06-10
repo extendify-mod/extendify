@@ -1,0 +1,54 @@
+import { contextHasAppliedPatches } from "@extendify/api/context/patch";
+import { useState } from "@extendify/api/react";
+import { plugins } from "@extendify/api/registry";
+import type { ExtendifyTabProps } from "@extendify/components/settings";
+import { Plugin } from "@extendify/components/settings/plugins";
+import { ButtonSecondary, Text } from "@extendify/components/spotify";
+
+export default function ({ searchQuery }: ExtendifyTabProps) {
+    const [needRestart, setNeedRestart] = useState<string[]>([]);
+
+    function onRestartNeeded(plugin: string, enabled: boolean) {
+        setNeedRestart(prev => {
+            const removed = prev.filter(name => name !== plugin);
+            const wasEnabled = contextHasAppliedPatches(plugin);
+            return enabled === wasEnabled ? removed : [...removed, plugin];
+        });
+    }
+
+    const filteredPlugins = plugins
+        .values()
+        .filter(
+            plugin =>
+                !searchQuery?.length ||
+                plugin.name.toLowerCase().includes(searchQuery) ||
+                plugin.description.toLowerCase().includes(searchQuery)
+        )
+        .filter(plugin => plugin.platforms.includes(PLATFORM));
+
+    return (
+        <>
+            <div className="ext-settings-section-layout">
+                {needRestart.length > 0 && (
+                    <div className="ext-settings-container ext-restart-container">
+                        <Text as="span" semanticColor="textBase" variant="titleSmall">
+                            The following plugins require you to restart Spotify:
+                        </Text>
+                        {needRestart.join(", ")}
+                        <div className="ext-restart-button-container">
+                            <ButtonSecondary onClick={() => window.location.reload()}>
+                                Restart
+                            </ButtonSecondary>
+                        </div>
+                    </div>
+                )}
+
+                <div className="ext-settings-grid">
+                    {filteredPlugins.map(plugin => (
+                        <Plugin onRestartNeeded={onRestartNeeded} plugin={plugin} />
+                    ))}
+                </div>
+            </div>
+        </>
+    );
+}

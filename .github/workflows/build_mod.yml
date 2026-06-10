@@ -3,9 +3,9 @@ name: build-mod
 on:
   workflow_dispatch:
   push:
-    paths: ['packages/mod/**']
+    paths: ['packages/**']
   pull_request:
-    paths: ['packages/mod/**']
+    paths: ['packages/**']
 
 jobs:
   build-mod:
@@ -24,17 +24,17 @@ jobs:
         run: bun install
       
       - name: Build
-        run: bun -F mod build
+        run: bun -F @extendify/scripts build
       
       - name: Artifact
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: out
-          path: packages/mod/dist/
+          path: dist/
       
       - name: Update Release
         if: github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload artifacts packages/mod/dist/* --clobber
+        run: gh release upload artifacts dist/* --clobber

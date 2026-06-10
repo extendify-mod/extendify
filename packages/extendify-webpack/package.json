@@ -1,0 +1,16 @@
+{
+    "name": "@extendify/webpack",
+    "private": true,
+    "dependencies": {
+        "acorn": "^8.15.0",
+        "acorn-loose": "^8.5.2",
+        "@extendify/webpack": "workspace:*",
+        "@extendify/shared": "workspace:*",
+        "@extendify/api": "workspace:*"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./*": "./src/*.ts",
+        "./module": "./src/module.tsx"
+    }
+}

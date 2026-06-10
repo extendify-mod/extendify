@@ -1,0 +1,22 @@
+{
+    "name": "@extendify/scripts",
+    "private": true,
+    "dependencies": {
+        "@extendify/scripts": "workspace:*",
+        "@extendify/shared": "workspace:*",
+        "@extendify/entrypoint": "workspace:*"
+    },
+    "scripts": {
+        "build": "bun run src/build",
+        "build-dev": "bun run src/build --dev",
+        "dev": "bun run build-dev && bun run kill-proc && bun run devtools && bun run start-proc",
+        "devtools": "bun run src/devtools.ts",
+        "kill-proc": "bun run src/proc/kill.ts",
+        "prod": "bun run build && bun run kill-proc && bun run start-proc",
+        "start-proc": "bun run src/proc/start.ts",
+        "update": "bun run kill-proc && bun run src/update.ts"
+    },
+    "exports": {
+        "./*": "./src/*.ts"
+    }
+}

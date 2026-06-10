@@ -1,9 +1,9 @@
 [workspace]
 members = [
-    "packages/native",
-    "packages/android-notifier",
-    "packages/oauth2aas",
-    "packages/announcer",
+    "crates/extendify-native",
+    "crates/android-notifier",
+    "crates/oauth2aas",
+    "crates/announcer",
 ]
 resolver = "3"
 

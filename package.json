@@ -2,15 +2,20 @@
     "devDependencies": {
         "@biomejs/biome": "^2.4.15",
         "@types/bun": "^1.3.14",
+        "@types/react": "18.3.1",
+        "@types/react-dom": "18.3.1",
+        "@types/react-router-dom": "^5.3.3",
+        "react-redux": "^9.2.0",
+        "redux": "^5.0.1",
         "typescript": "^6.0.3"
     },
     "name": "extendify",
     "private": true,
     "scripts": {
-        "devtools": "bun -F mod devtools",
-        "update": "bun -F mod update"
+        "devtools": "bun -F @extendify/entrypoint devtools",
+        "update": "bun -F @extendify/entrypoint update"
     },
     "workspaces": [
-        "packages/mod"
+        "packages/*"
     ]
 }

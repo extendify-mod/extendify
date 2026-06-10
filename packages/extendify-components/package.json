@@ -1,0 +1,22 @@
+{
+    "name": "@extendify/components",
+    "private": true,
+    "exports": {
+        "./*": "./src/*.ts",
+        "./input": "./src/input/index.ts",
+        "./modal": "./src/modal/index.ts",
+        "./settings": "./src/settings/index.ts",
+        "./settings/debug": "./src/settings/debug/index.ts",
+        "./settings/experiments": "./src/settings/experiments/index.ts",
+        "./settings/experiments/experimentTypes": "./src/settings/experiments/experimentTypes/index.ts",
+        "./settings/plugins": "./src/settings/plugins/index.ts",
+        "./settings/plugins/optionTypes": "./src/settings/plugins/optionTypes/index.tsx",
+        "./settings/themes": "./src/settings/themes/index.ts"
+    },
+    "dependencies": {
+        "@extendify/components": "workspace:*",
+        "@extendify/webpack": "workspace:*",
+        "@extendify/shared": "workspace:*",
+        "@extendify/api": "workspace:*"
+    }
+}

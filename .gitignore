@@ -1,7 +1,12 @@
-node_modules/
+# Folders
+node_modules
+target
+dist
+__pycache__
+
+# Relative folders
 test/
-target/
-__pycache__/
 data/
 
+# Files
 spotify_hook.log
