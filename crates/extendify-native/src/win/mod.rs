@@ -1,6 +1,7 @@
 use crate::cef::{
     _cef_app_t, _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t,
-    _cef_client_t, _cef_dictionary_value_t, _cef_main_args_t, _cef_request_context_t, cef_string_t,
+    _cef_client_t, _cef_dictionary_value_t, _cef_main_args_t, _cef_request_context_t,
+    _cef_settings_t, cef_string_t,
 };
 use crate::{log, vtable_hooks};
 use slim_detours_sys::{
@@ -100,8 +101,35 @@ macro_rules! define_inline_hook {
 fn init_hooks() {
     ensure_libcef();
 
+    define_hook!("cef_initialize", cef_initialize_hook, CEF_INITIALIZE_OG);
     define_hook!("cef_execute_process", cef_process_hook, CEF_PROCESS_OG);
     define_hook!("cef_browser_view_create", cef_view_hook, CEF_VIEW_OG);
+}
+
+static mut CEF_INITIALIZE_OG: Option<
+    unsafe extern "C" fn(
+        *const _cef_main_args_t,
+        *mut _cef_settings_t,
+        *mut _cef_app_t,
+        *mut c_void,
+    ) -> c_int,
+> = None;
+unsafe extern "C" fn cef_initialize_hook(
+    args: *const _cef_main_args_t,
+    settings: *mut _cef_settings_t,
+    app: *mut _cef_app_t,
+    _sandbox: *mut c_void,
+) -> c_int {
+    log(format!("CEF init call on PID {}", std::process::id()));
+
+    unsafe {
+        if let Some(func) = CEF_INITIALIZE_OG {
+            return func(args, settings, app, std::ptr::null_mut());
+        }
+    }
+
+    log("Couldn't call original cef_initialize");
+    0
 }
 
 static mut CEF_PROCESS_OG: Option<
