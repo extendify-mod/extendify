@@ -1,9 +1,9 @@
 {
     "devDependencies": {
         "@extendify/api": "workspace:*",
-        "@extendify/webpack": "workspace:*",
+        "@extendify/components": "workspace:*",
         "@extendify/shared": "workspace:*",
-        "@extendify/components": "workspace:*"
+        "@extendify/webpack": "workspace:*"
     },
     "module": "./src/index.ts",
     "name": "@extendify/entrypoint",

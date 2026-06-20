@@ -1,11 +1,9 @@
 {
-    "name": "@extendify/api",
-    "private": true,
     "dependencies": {
-        "diff": "^8.0.2",
+        "@extendify/components": "workspace:*",
         "@extendify/shared": "workspace:*",
         "@extendify/webpack": "workspace:*",
-        "@extendify/components": "workspace:*"
+        "diff": "^8.0.2"
     },
     "devDependencies": {
         "@types/react": "*",
@@ -17,11 +15,13 @@
             "./src/*.ts",
             "./src/*.tsx"
         ],
-        "./router": "./src/router.tsx",
-        "./topbar": "./src/topbar.tsx",
         "./context": "./src/context/index.ts",
         "./context/*": "./src/context/*.ts",
+        "./router": "./src/router.tsx",
         "./themes": "./src/themes/index.ts",
-        "./themes/*": "./src/themes/*.ts"
-    }
+        "./themes/*": "./src/themes/*.ts",
+        "./topbar": "./src/topbar.tsx"
+    },
+    "name": "@extendify/api",
+    "private": true
 }

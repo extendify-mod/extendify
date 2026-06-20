@@ -1,6 +1,4 @@
 {
-    "name": "@extendify/shared",
-    "private": true,
     "devDependencies": {
         "@types/history": "^5.0.0"
     },
@@ -10,5 +8,7 @@
         "./types/*": "./src/types/*.d.ts",
         "./types/spotify": "./src/types/spotify/index.d.ts",
         "./types/spotify/*": "./src/types/spotify/*.d.ts"
-    }
+    },
+    "name": "@extendify/shared",
+    "private": true
 }

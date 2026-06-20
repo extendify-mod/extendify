@@ -1,6 +1,6 @@
 {
     "devDependencies": {
-        "@biomejs/biome": "^2.4.15",
+        "@biomejs/biome": "2.5.0",
         "@types/bun": "^1.3.14",
         "@types/react": "18.3.1",
         "@types/react-dom": "18.3.1",
@@ -12,8 +12,8 @@
     "name": "extendify",
     "private": true,
     "scripts": {
-        "devtools": "bun -F @extendify/entrypoint devtools",
-        "update": "bun -F @extendify/entrypoint update"
+        "devtools": "bun -F @extendify/scripts devtools",
+        "update": "bun -F @extendify/scripts update"
     },
     "workspaces": [
         "packages/*"

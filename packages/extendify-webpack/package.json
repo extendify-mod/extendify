@@ -1,16 +1,16 @@
 {
-    "name": "@extendify/webpack",
-    "private": true,
     "dependencies": {
-        "acorn": "^8.15.0",
-        "acorn-loose": "^8.5.2",
-        "@extendify/webpack": "workspace:*",
+        "@extendify/api": "workspace:*",
         "@extendify/shared": "workspace:*",
-        "@extendify/api": "workspace:*"
+        "@extendify/webpack": "workspace:*",
+        "acorn": "^8.15.0",
+        "acorn-loose": "^8.5.2"
     },
     "exports": {
         ".": "./src/index.ts",
         "./*": "./src/*.ts",
         "./module": "./src/module.tsx"
-    }
+    },
+    "name": "@extendify/webpack",
+    "private": true
 }
