@@ -3,7 +3,7 @@
 Using Extendify on Linux is pretty straightforward.
 
 The way we inject is through the `LD_PRELOAD` environment variable.
-This variable allows you to load a `.so` (shared object) file into the process,
+This variable loads a specified `.so` (shared object) file into the process,
 allowing you to override original exports.
 
 You can download our `.so` file [here](https://github.com/extendify-mod/extendify/releases/download/native/linux_x86_64.so).

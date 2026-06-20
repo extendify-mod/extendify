@@ -23,19 +23,19 @@ $ bun install
 If you want to build Extendify in development mode, run the following command:
 
 ```bash
-$ bun -F mod build-dev
+$ bun -F @extendify/scripts build-dev
 ```
 
 If you want to build Extendify in production mode, run the following command:
 
 ```bash
-$ bun -F mod build
+$ bun -F @extendify/scripts build
 ```
 
 To specify the platform you want to build for, include the `--platform` flag like so:
 
 ```bash
-$ bun -F mod build --platform=browser
+$ bun -F @extendify/scripts build --platform=browser
 ```
 
 ### Step 3
@@ -43,10 +43,10 @@ $ bun -F mod build --platform=browser
 To use the locally built files with the native loader, create an environment variable called `EXTENDIFY_ROOT`,
 and set its value to the root of the Extendify repository.
 
-We used to support patching `xpui.spa` with these locally built files,
+We used to support patching `xpui.spa` with these locally built files just like Spicetify,
 but since introducing Extendify Native our build system no longer supports this.
 This method would also break for every Spotify update.
 
 ---
 
-The resulting files should end up in `packages/mod/dist`. If you're building Extendify for Chrome, continue with the [Chrome installation guide](../../install/chrome.md)
+The resulting files should end up in a `dist` folder. If you're building Extendify for Chrome, continue with the [Chrome installation guide](../../install/chrome.md)
