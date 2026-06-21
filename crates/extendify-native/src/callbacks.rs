@@ -6,8 +6,9 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 
 const URL_BASE: &str = "https://github.com/extendify-mod/extendify/releases/download/artifacts/";
+const VALID_FRAME_URL: &str = "https://xpui.app.spotify.com/index.html";
 
-static INJECTED: Mutex<Vec<String>> = Mutex::new(vec![]);
+static INJECTED_FRAMES: Mutex<Vec<String>> = Mutex::new(vec![]);
 
 fn execute_java_script<T: Display>(frame: *mut _cef_frame_t, script: T, js: T) {
     unsafe {
@@ -20,7 +21,12 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
         return;
     }
 
-    if let Ok(mut guard) = INJECTED.lock() {
+    let frame_url = ctos(unsafe { (*frame).get_url.unwrap()(frame) });
+    if frame_url.as_str() != VALID_FRAME_URL {
+        return;
+    }
+
+    if let Ok(mut guard) = INJECTED_FRAMES.lock() {
         let id = ctos(unsafe { (*frame).get_identifier.unwrap()(frame) });
 
         if guard.contains(&id) {
