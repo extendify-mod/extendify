@@ -50,9 +50,10 @@ Object.defineProperty(Function.prototype, "m", {
                 });
 
                 /**
-                 * Only the main instance has an absolute bundle path.
+                 * On desktop, only the main instance has an absolute bundle path.
+                 * On web, only the main instance contains "spotifycdn".
                  */
-                if (!bundlePath.startsWith("/")) {
+                if (!bundlePath.startsWith("/") || bundlePath.includes("spotifycdn")) {
                     return;
                 }
 
