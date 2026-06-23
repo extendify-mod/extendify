@@ -8,7 +8,12 @@ use crate::vtable_hooks::GET_REQ_HANDLER_OG;
 use crate::{log, vtable_hooks};
 
 #[macro_use]
+#[cfg(target_os = "linux")]
 mod preload;
+
+#[macro_use]
+#[cfg(target_os = "macos")]
+mod dyld;
 
 extern_c_overrides! {
     unsafe fn cef_browser_view_create/real_cef_browser_view_create(
