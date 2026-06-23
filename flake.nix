@@ -5,28 +5,59 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    # Spotify only ships on this so it's fine
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-    };
-  in {
-    devShells.${system} = {
-      default = pkgs.callPackage ./nix/shell.nix {inherit self;};
-    };
+  outputs =
+    {
+      self,
+      nixpkgs,
+    }:
+    let
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
+      forEachSystem = nixpkgs.lib.genAttrs systems;
+    in
+    {
+      devShells = forEachSystem (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        in
+        {
 
-    packages.${system} = {
-      cef = pkgs.callPackage ./nix/cef.nix {};
-      extendify-native = pkgs.callPackage ./nix/native.nix {inherit self;};
-      spotify-extendify = pkgs.callPackage ./nix/spotify-extendify.nix {inherit self;};
-      default = self.packages.${system}.spotify-extendify;
-    };
+          default = pkgs.callPackage ./nix/shell.nix { inherit self; };
+        }
+      );
 
-    formatter.${system} = pkgs.callPackage ./nix/fmt.nix {};
-  };
+      packages = forEachSystem (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        in
+        {
+          cef = pkgs.callPackage ./nix/cef.nix { };
+          extendify-native = pkgs.callPackage ./nix/native.nix { inherit self; };
+          spotify-extendify = pkgs.callPackage ./nix/spotify-extendify.nix { inherit self; };
+          default = self.packages.${system}.spotify-extendify;
+        }
+      );
+
+      formatter = forEachSystem (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        in
+        pkgs.callPackage ./nix/fmt.nix { }
+      );
+    };
 }
