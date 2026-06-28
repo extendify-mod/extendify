@@ -8,6 +8,7 @@ use slim_detours_sys::{
     SlimDetoursAttach, SlimDetoursTransactionBegin, SlimDetoursTransactionCommit,
 };
 use std::ffi::{CString, c_int, c_void};
+use std::sync::Mutex;
 use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, GetProcAddress, LoadLibraryW};
 use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
@@ -60,10 +61,11 @@ macro_rules! define_hook {
 
             let symbol_c = CString::new($symbol).unwrap();
             if let Some(target) = GetProcAddress(module, symbol_c.as_ptr() as _) {
-                $original = Some(std::mem::transmute(target));
+                let mut guard = $original.lock().unwrap();
+                *guard = Some(std::mem::transmute(target));
 
                 SlimDetoursTransactionBegin();
-                SlimDetoursAttach(std::ptr::addr_of_mut!($original) as _, $hook as _);
+                SlimDetoursAttach(guard.as_mut().unwrap() as *mut _ as _, $hook as _);
                 let status = SlimDetoursTransactionCommit();
 
                 if status >= 0 {
@@ -80,10 +82,11 @@ macro_rules! define_hook {
 
 macro_rules! define_inline_hook {
     ($target: expr, $hook: expr, $original: expr) => {
-        $original = Some(std::mem::transmute($target));
+        let mut guard = $original.lock().unwrap();
+        *guard = Some(std::mem::transmute($target));
 
         SlimDetoursTransactionBegin();
-        SlimDetoursAttach(std::ptr::addr_of_mut!($original) as _, $hook as _);
+        SlimDetoursAttach(guard.as_mut().unwrap() as *mut _ as _, $hook as _);
         let status = SlimDetoursTransactionCommit();
 
         if status >= 0 {
@@ -106,14 +109,16 @@ fn init_hooks() {
     define_hook!("cef_browser_view_create", cef_view_hook, CEF_VIEW_OG);
 }
 
-static mut CEF_INITIALIZE_OG: Option<
-    unsafe extern "C" fn(
-        *const _cef_main_args_t,
-        *mut _cef_settings_t,
-        *mut _cef_app_t,
-        *mut c_void,
-    ) -> c_int,
-> = None;
+static CEF_INITIALIZE_OG: Mutex<
+    Option<
+        unsafe extern "C" fn(
+            *const _cef_main_args_t,
+            *mut _cef_settings_t,
+            *mut _cef_app_t,
+            *mut c_void,
+        ) -> c_int,
+    >,
+> = Mutex::new(None);
 unsafe extern "C" fn cef_initialize_hook(
     args: *const _cef_main_args_t,
     settings: *mut _cef_settings_t,
@@ -123,7 +128,7 @@ unsafe extern "C" fn cef_initialize_hook(
     log(format!("CEF init call on PID {}", std::process::id()));
 
     unsafe {
-        if let Some(func) = CEF_INITIALIZE_OG {
+        if let Some(func) = CEF_INITIALIZE_OG.lock().ok().and_then(|g| *g) {
             return func(args, settings, app, std::ptr::null_mut());
         }
     }
@@ -132,9 +137,9 @@ unsafe extern "C" fn cef_initialize_hook(
     0
 }
 
-static mut CEF_PROCESS_OG: Option<
-    unsafe extern "C" fn(*const _cef_main_args_t, *mut _cef_app_t, *mut c_void) -> c_int,
-> = None;
+static CEF_PROCESS_OG: Mutex<
+    Option<unsafe extern "C" fn(*const _cef_main_args_t, *mut _cef_app_t, *mut c_void) -> c_int>,
+> = Mutex::new(None);
 unsafe extern "C" fn cef_process_hook(
     args: *const _cef_main_args_t,
     app: *mut _cef_app_t,
@@ -156,7 +161,7 @@ unsafe extern "C" fn cef_process_hook(
             }
         }
 
-        if let Some(func) = CEF_PROCESS_OG {
+        if let Some(func) = CEF_PROCESS_OG.lock().ok().and_then(|g| *g) {
             return func(args, app, std::ptr::null_mut());
         }
     }
@@ -165,16 +170,18 @@ unsafe extern "C" fn cef_process_hook(
     0
 }
 
-static mut CEF_VIEW_OG: Option<
-    unsafe extern "C" fn(
-        *mut _cef_client_t,
-        *const cef_string_t,
-        *const _cef_browser_settings_t,
-        *mut _cef_dictionary_value_t,
-        *mut _cef_request_context_t,
-        *mut _cef_browser_view_delegate_t,
-    ) -> *mut _cef_browser_view_t,
-> = None;
+static CEF_VIEW_OG: Mutex<
+    Option<
+        unsafe extern "C" fn(
+            *mut _cef_client_t,
+            *const cef_string_t,
+            *const _cef_browser_settings_t,
+            *mut _cef_dictionary_value_t,
+            *mut _cef_request_context_t,
+            *mut _cef_browser_view_delegate_t,
+        ) -> *mut _cef_browser_view_t,
+    >,
+> = Mutex::new(None);
 unsafe extern "C" fn cef_view_hook(
     client: *mut _cef_client_t,
     url: *const cef_string_t,
@@ -193,7 +200,7 @@ unsafe extern "C" fn cef_view_hook(
             vtable_hooks::RES_HANDLER_OG
         );
 
-        if let Some(func) = CEF_VIEW_OG {
+        if let Some(func) = CEF_VIEW_OG.lock().ok().and_then(|g| *g) {
             return func(client, url, settings, extra_info, request_context, delegate);
         }
     }
