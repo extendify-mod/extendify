@@ -4,6 +4,7 @@ use crate::cef::{
     _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t, _cef_client_t,
     _cef_dictionary_value_t, _cef_request_context_t, cef_string_t,
 };
+use crate::vtable_hooks::GET_REQ_HANDLER_OG;
 use crate::{log, vtable_hooks};
 
 #[macro_use]
@@ -22,7 +23,7 @@ extern_c_overrides! {
 
         let view = real_cef_browser_view_create(client, url, settings, extra_info, request_context, delegate);
 
-        vtable_hooks::GET_REQ_HANDLER_OG = (*client).get_request_handler;
+        *GET_REQ_HANDLER_OG.lock().unwrap() = (*client).get_request_handler;
         (*client).get_request_handler = Some(vtable_hooks::get_req_handler_hook);
 
         view
