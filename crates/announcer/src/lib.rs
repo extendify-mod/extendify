@@ -9,6 +9,7 @@ pub mod cache;
 pub mod channel;
 pub mod diff;
 
+pub const CONFIG_FILE_NAME: &str = "config.toml";
 const CHARACTER_LIMIT: usize = 4000 - 50;
 const MESSAGE_FLAGS: u32 = 1 << 15;
 

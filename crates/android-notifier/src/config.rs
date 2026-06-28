@@ -1,6 +1,6 @@
-use crate::constants::{CACHE_VARIANT, CONFIG_FILE_NAME};
-use announcer::WebhookConfig;
+use crate::constants::CACHE_VARIANT;
 use announcer::channel::Channel;
+use announcer::{CONFIG_FILE_NAME, WebhookConfig};
 use serde::Deserialize;
 use std::fs::read_to_string;
 
