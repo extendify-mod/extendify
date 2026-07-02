@@ -15,7 +15,7 @@ symlinkJoin {
     self.packages.${stdenv.hostPlatform.system}.extendify-native
   ];
 
-  buildInputs = [makeWrapper];
+  buildInputs = [ makeWrapper ];
 
   postBuild = ''
     wrapProgram $out/bin/spotify \
@@ -28,7 +28,11 @@ symlinkJoin {
     homepage = "https://github.com/extendify-mod/extendify";
     # wtf is the license
     # license = lib.licenses.gpl3;
-    maintainers = [lib.maintainers.fazzi];
-    platforms = ["x86_64-linux"];
+    maintainers = [ lib.maintainers.fazzi ];
+    platforms = [
+      "x86_64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
   };
 }
