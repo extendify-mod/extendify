@@ -40,7 +40,6 @@ in
       maintainers = [lib.maintainers.fazzi];
       platforms = [
         "x86_64-linux"
-        "x86_64-darwin"
         "aarch64-darwin"
       ];
     };

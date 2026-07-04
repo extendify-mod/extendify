@@ -8,10 +8,8 @@
     attrs.${stdenv.hostPlatform.system} or (throw "Unsupported system ${stdenv.hostPlatform.system}");
 
   platformString = selectSystem {
-    aarch64-linux = "linuxarm64";
     x86_64-linux = "linux64";
     aarch64-darwin = "macosarm64";
-    x86_64-darwin = "macosx64";
   };
 
   version = "144.0.11";
@@ -27,14 +25,14 @@ in
     cef-binary.override {
       inherit version gitRevision chromiumVersion srcHashes;
     }
-  else if stdenv.hostPlatform.isDarwin
+  else if stdenv.hostPlatform.system == "aarch64-darwin"
   then
     stdenvNoCC.mkDerivation {
       name = "darwin-cef";
 
       src = fetchurl {
         url = "https://cef-builds.spotifycdn.com/cef_binary_${version}+g${gitRevision}+chromium-${chromiumVersion}_${platformString}_minimal.tar.bz2";
-        hash = selectSystem srcHashes;
+        hash = srcHashes.${stdenv.hostPlatform.system};
       };
 
       dontBuild = true;
