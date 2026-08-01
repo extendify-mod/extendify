@@ -13,12 +13,10 @@ declare global {
     export const PLATFORM: TargetPlatform;
     /** The urls of the possible entrypoint bundles */
     export const ENTRYPOINTS: string[];
-    /** The name of the webpack chunk in the global window object */
-    export const WEBPACK_CHUNK: string;
+    /** The name of the webpack chunks in the global window object */
+    export const WEBPACK_CHUNKS: string[];
 
-    interface Window {
-        [WEBPACK_CHUNK]?: WebpackChunkGlobal;
-
+    interface Window extends Record<WEBPACK_CHUNKS, WebpackChunkGlobal | undefined> {
         ExtendifyFragment: symbol;
         ExtendifyCreateElement: typeof React.createElement | (() => any);
 
