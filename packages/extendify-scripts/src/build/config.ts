@@ -5,7 +5,7 @@ export const entrypoints: Record<TargetPlatform, string[]> = {
     desktop: ["xpui-snapshot.js", "xpui.js"]
 };
 
-export const webpackChunkName: Record<TargetPlatform, string> = {
-    browser: "webpackChunkclient_web",
-    desktop: "webpackChunkclient_web"
+export const webpackChunkNames: Record<TargetPlatform, string[]> = {
+    browser: ["webpackChunkclient_web", "rspackChunkclient_web"],
+    desktop: ["webpackChunkclient_web", "rspackChunkclient_web"]
 };
