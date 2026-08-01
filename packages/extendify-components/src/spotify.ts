@@ -52,7 +52,7 @@ type ToggleProps = Omit<ComponentProps<"input">, "value"> & {
 };
 export const Toggle = findModuleComponent<ToggleProps>(
     exportFilters.byCode({
-        matches: ['type:"checkbox"', "onChange", "condensed"],
+        matches: ['type:"checkbox"', "onChange"],
         mode: "all"
     })
 );
