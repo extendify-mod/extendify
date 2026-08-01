@@ -266,9 +266,10 @@ if (-not $dllUrls.ContainsKey($arch)) {
     exit 1
 }
 
-$dllUrl  = $dllUrls[$arch]
-$dllDest = Join-Path $env:AppData "Spotify\version.dll"
-$dllDir  = Split-Path $dllDest
+$dllUrl = $dllUrls[$arch]
+$dllName = "profapi.dll"
+$dllDest = Join-Path $env:AppData "Spotify" $dllName
+$dllDir = Split-Path $dllDest
 
 Write-Info "Architecture: $arch"
 Write-Info "Destination: $dllDest"
@@ -280,7 +281,7 @@ if (-not (Test-Path $dllDir)) {
 }
 
 try {
-    Write-DownloadProgress -Url $dllUrl -Dest $dllDest -Label "version.dll ($arch)"
+    Write-DownloadProgress -Url $dllUrl -Dest $dllDest -Label "$dllName ($arch)"
     Write-Ok "Extendify DLL installed."
 }
 catch {

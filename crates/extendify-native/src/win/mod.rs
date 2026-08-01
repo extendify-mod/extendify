@@ -4,17 +4,14 @@ use crate::cef::{
     _cef_settings_t, cef_string_t,
 };
 use crate::{log, vtable_hooks};
-use slim_detours_sys::{
-    SlimDetoursAttach, SlimDetoursTransactionBegin, SlimDetoursTransactionCommit,
-};
-use std::ffi::{CString, c_int, c_void};
+use std::ffi::{c_int, c_void};
 use std::sync::Mutex;
 use windows_sys::Win32::Foundation::HINSTANCE;
-use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, GetProcAddress, LoadLibraryW};
+use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, LoadLibraryW};
 use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows_sys::core::BOOL;
 
-mod version_reimpl;
+mod hook;
 
 #[unsafe(no_mangle)]
 pub extern "system" fn DllMain(
@@ -23,22 +20,18 @@ pub extern "system" fn DllMain(
     _lpv_reserved: *mut c_void,
 ) -> BOOL {
     match fdw_reason {
-        DLL_PROCESS_ATTACH => init_hooks(),
+        DLL_PROCESS_ATTACH => create_hooks(),
         _ => {}
     }
 
     1
 }
 
-fn get_libcef_name() -> Vec<u16> {
-    "libcef.dll"
+fn ensure_libcef() {
+    let name: Vec<_> = "libcef.dll"
         .encode_utf16()
         .chain(std::iter::once(0))
-        .collect()
-}
-
-fn ensure_libcef() {
-    let name = get_libcef_name();
+        .collect();
 
     unsafe {
         let module = GetModuleHandleW(name.as_ptr());
@@ -50,63 +43,27 @@ fn ensure_libcef() {
     }
 }
 
-macro_rules! define_hook {
-    ($symbol:expr, $hook:expr, $original:expr) => {
-        unsafe {
-            let module = GetModuleHandleW(get_libcef_name().as_ptr());
-            if module.is_null() {
-                log("Cef is not loaded");
-                return;
-            }
-
-            let symbol_c = CString::new($symbol).unwrap();
-            if let Some(target) = GetProcAddress(module, symbol_c.as_ptr() as _) {
-                let mut guard = $original.lock().unwrap();
-                *guard = Some(std::mem::transmute(target));
-
-                SlimDetoursTransactionBegin();
-                SlimDetoursAttach(guard.as_mut().unwrap() as *mut _ as _, $hook as _);
-                let status = SlimDetoursTransactionCommit();
-
-                if status >= 0 {
-                    log(format!("Created hook for {}", $symbol));
-                } else {
-                    log(format!("Hook for {} failed {}", $symbol, status));
-                }
-            } else {
-                log(format!("Couldn't find target symbol {}", $symbol));
-            }
-        }
-    };
-}
-
-macro_rules! define_inline_hook {
-    ($target: expr, $hook: expr, $original: expr) => {
-        let mut guard = $original.lock().unwrap();
-        *guard = Some(std::mem::transmute($target));
-
-        SlimDetoursTransactionBegin();
-        SlimDetoursAttach(guard.as_mut().unwrap() as *mut _ as _, $hook as _);
-        let status = SlimDetoursTransactionCommit();
-
-        if status >= 0 {
-            log(format!("Created inline hook {}", stringify!($hook)));
-        } else {
-            log(format!(
-                "Failed to create inlike hook {} {}",
-                stringify!($hook),
-                status
-            ));
-        }
-    };
-}
-
-fn init_hooks() {
+fn create_hooks() {
     ensure_libcef();
 
-    define_hook!("cef_initialize", cef_initialize_hook, CEF_INITIALIZE_OG);
-    define_hook!("cef_execute_process", cef_process_hook, CEF_PROCESS_OG);
-    define_hook!("cef_browser_view_create", cef_view_hook, CEF_VIEW_OG);
+    hook::create_hook(
+        "libcef.dll",
+        "cef_initialize",
+        cef_initialize_hook as _,
+        &CEF_INITIALIZE_OG,
+    );
+    hook::create_hook(
+        "libcef.dll",
+        "cef_execute_process",
+        cef_process_hook as _,
+        &CEF_PROCESS_OG,
+    );
+    hook::create_hook(
+        "libcef.dll",
+        "cef_browser_view_create",
+        cef_view_hook as _,
+        &CEF_VIEW_OG,
+    );
 }
 
 static CEF_INITIALIZE_OG: Mutex<
@@ -123,14 +80,17 @@ unsafe extern "C" fn cef_initialize_hook(
     args: *const _cef_main_args_t,
     settings: *mut _cef_settings_t,
     app: *mut _cef_app_t,
-    _sandbox: *mut c_void,
+    sandbox: *mut c_void,
 ) -> c_int {
     log(format!("CEF init call on PID {}", std::process::id()));
 
     unsafe {
-        if let Some(func) = CEF_INITIALIZE_OG.lock().ok().and_then(|g| *g) {
-            return func(args, settings, app, std::ptr::null_mut());
-        }
+        (*settings).no_sandbox = 1;
+        (*settings).command_line_args_disabled = 0;
+    }
+
+    if let Some(func) = CEF_INITIALIZE_OG.lock().ok().and_then(|g| *g) {
+        return unsafe { func(args, settings, app, sandbox) };
     }
 
     log("Couldn't call original cef_initialize");
@@ -143,31 +103,32 @@ static CEF_PROCESS_OG: Mutex<
 unsafe extern "C" fn cef_process_hook(
     args: *const _cef_main_args_t,
     app: *mut _cef_app_t,
-    _sandbox: *mut c_void,
+    sandbox: *mut c_void,
 ) -> c_int {
     log(format!("Executing process on PID {}", std::process::id()));
 
-    unsafe {
-        if !app.is_null() {
-            let rph = (*app).get_render_process_handler.unwrap()(app);
-            if !rph.is_null() {
-                if let Some(og) = (*rph).on_context_created {
-                    define_inline_hook!(
-                        og,
-                        vtable_hooks::on_context_created_hook,
-                        vtable_hooks::ON_CONTEXT_CREATED_OG
-                    );
-                }
+    if !app.is_null() {
+        log("app not null");
+        let rph = unsafe { (*app).get_render_process_handler.unwrap()(app) };
+        if !rph.is_null() {
+            log("rph not null");
+            if let Some(og) = unsafe { (*rph).on_context_created } {
+                hook::create_inline_hook(
+                    og,
+                    vtable_hooks::on_context_created_hook as _,
+                    &vtable_hooks::ON_CONTEXT_CREATED_OG,
+                    "on_context_created",
+                );
             }
-        }
-
-        if let Some(func) = CEF_PROCESS_OG.lock().ok().and_then(|g| *g) {
-            return func(args, app, std::ptr::null_mut());
         }
     }
 
-    log("Couldn't call original cef process");
-    0
+    if let Some(func) = CEF_PROCESS_OG.lock().ok().and_then(|g| *g) {
+        unsafe { func(args, app, sandbox) }
+    } else {
+        log("Couldn't call original cef process");
+        0
+    }
 }
 
 static CEF_VIEW_OG: Mutex<
@@ -194,10 +155,11 @@ unsafe extern "C" fn cef_view_hook(
         let req_handler = (*client).get_request_handler.unwrap()(client);
         let og = (*req_handler).get_resource_request_handler.unwrap();
 
-        define_inline_hook!(
+        hook::create_inline_hook(
             og,
-            vtable_hooks::res_handler_hook,
-            vtable_hooks::RES_HANDLER_OG
+            vtable_hooks::res_handler_hook as _,
+            &vtable_hooks::RES_HANDLER_OG,
+            "res_handler",
         );
 
         if let Some(func) = CEF_VIEW_OG.lock().ok().and_then(|g| *g) {
