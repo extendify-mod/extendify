@@ -35,7 +35,7 @@ const { plugin, logger } = registerPlugin({
             .then(cbs => callbacks.push(...cbs));
     },
     stop() {
-        // remove existing callbacks to prevent memory leaks
+        // Remove existing callbacks to prevent memory leaks
         callbacks.forEach(cb => void cb.cancel());
         callbacks.length = 0;
     }
@@ -81,11 +81,9 @@ async function configureServices(slotsService: SlotsService, settingsService: Se
 }
 
 async function configureAdManagers(platform: Platform) {
-    const { audio, billboard, inStreamApi, leaderboard, sponsoredPlaylist, vto } =
-        platform.getAdManagers();
+    const { audio, inStreamApi, leaderboard, sponsoredPlaylist, vto } = platform.getAdManagers();
 
     audio.disable();
-    await billboard.disable();
     inStreamApi.disable();
     leaderboard.disableLeaderboard();
     sponsoredPlaylist.disable();
