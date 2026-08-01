@@ -50,6 +50,8 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
                 return;
             }
 
+            module.id ??= id;
+
             let src = mod.toString();
             src = src.substring(src.indexOf("{"));
 
