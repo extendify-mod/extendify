@@ -9,8 +9,8 @@ test/
 data/
 
 # Files
-spotify_hook.log
+extendify.log
 
-# Nix :)
+# Nix
 result
 result-*
