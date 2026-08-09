@@ -1,0 +1,27 @@
+.ext-new-releases {
+    --col-width: 35rem;
+
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.ext-new-releases-scroll {
+    overflow-y: hidden;
+}
+
+.ext-new-releases-inner {
+    --horiz-margin: calc(50% - var(--col-width) / 2);
+
+    width: max-content;
+    min-width: 100%;
+    margin-right: var(--horiz-margin);
+    margin-left: var(--horiz-margin);
+}
+
+.YT5cYwULCoyD6pGh {
+    max-width: unset !important;
+}
+
+.main-view-container__scroll-node-child:has(> main > .YT5cYwULCoyD6pGh) {
+    overflow-y: hidden;
+}

@@ -1,0 +1,74 @@
+.ext-timeline {
+    position: relative;
+    display: flex;
+}
+
+.ext-timeline-line {
+    position: absolute;
+    top: 35px;
+    right: 0;
+    left: calc(var(--col-width) / 2);
+    width: calc(100% - var(--col-width));
+    height: 3px;
+    background: var(--background-highlight);
+}
+
+.ext-timeline-col {
+    /* position: relative; */
+    display: flex;
+    /* position: relative; */
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    width: var(--col-width);
+    height: 100%;
+}
+
+.ext-timeline-dot {
+    --dot-size: 15px;
+    z-index: 1;
+
+    width: var(--dot-size);
+    height: var(--dot-size);
+    margin-bottom: 4px;
+    background: var(--text-bright-accent);
+    border: 5px solid var(--background-base);
+    border-radius: 50%;
+}
+
+.ext-timeline-col-tracks {
+    /* This stuff is copied from Spotify css */
+    --regular-shelf-max-count: 12;
+    --shelf-gap-horizontal: 0px;
+
+    --shelf-fixed-height: calc(
+        ((var(--content-max-width) - 40px) / var(--regular-shelf-max-count) * 1.25) -
+        24px
+    );
+    --shelf-fixed-min-height: var(--shelf-fixed-height);
+    --shelf-fixed-max-height: var(--shelf-fixed-height);
+
+    --shelf-fixed-width: min(
+        calc(
+            (2.5 * var(--content-max-width) / var(--regular-shelf-max-count)) -
+            var(--shelf-gap-horizontal)
+        ),
+        100%
+    );
+    --shelf-fixed-min-width: var(--shelf-fixed-width);
+    --shelf-fixed-max-width: var(--shelf-fixed-width);
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: calc(var(--col-width) * 0.9);
+    height: 100%;
+    margin-top: 50px;
+}
+
+.ext-timeline-col-tracks .PromotionDefaultNativeImage-module_image-container__gQhJp {
+    box-shadow: unset !important;
+}
