@@ -43,7 +43,7 @@ registerPatch(plugin, {
         return options.hideImages;
     },
     replacement: {
-        match: /(children:\[)(\(0,.*?name:\i}\),)/,
+        match: /(children:\[)(\(0,.*?openModal:\i}\),)/,
         replace: "$1"
     }
 });
