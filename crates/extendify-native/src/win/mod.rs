@@ -1,8 +1,4 @@
-use crate::cef::{
-    _cef_app_t, _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t,
-    _cef_client_t, _cef_dictionary_value_t, _cef_main_args_t, _cef_request_context_t,
-    _cef_settings_t, cef_string_t,
-};
+use crate::cef::{_cef_app_t, _cef_main_args_t, _cef_settings_t};
 use crate::{log, vtable_hooks};
 use std::ffi::{c_int, c_void};
 use std::sync::Mutex;
@@ -58,12 +54,6 @@ fn create_hooks() {
         cef_process_hook as _,
         &CEF_PROCESS_OG,
     );
-    hook::create_hook(
-        "libcef.dll",
-        "cef_browser_view_create",
-        cef_view_hook as _,
-        &CEF_VIEW_OG,
-    );
 }
 
 static CEF_INITIALIZE_OG: Mutex<
@@ -108,10 +98,8 @@ unsafe extern "C" fn cef_process_hook(
     log(format!("Executing process on PID {}", std::process::id()));
 
     if !app.is_null() {
-        log("app not null");
         let rph = unsafe { (*app).get_render_process_handler.unwrap()(app) };
         if !rph.is_null() {
-            log("rph not null");
             if let Some(og) = unsafe { (*rph).on_context_created } {
                 hook::create_inline_hook(
                     og,
@@ -129,44 +117,4 @@ unsafe extern "C" fn cef_process_hook(
         log("Couldn't call original cef process");
         0
     }
-}
-
-static CEF_VIEW_OG: Mutex<
-    Option<
-        unsafe extern "C" fn(
-            *mut _cef_client_t,
-            *const cef_string_t,
-            *const _cef_browser_settings_t,
-            *mut _cef_dictionary_value_t,
-            *mut _cef_request_context_t,
-            *mut _cef_browser_view_delegate_t,
-        ) -> *mut _cef_browser_view_t,
-    >,
-> = Mutex::new(None);
-unsafe extern "C" fn cef_view_hook(
-    client: *mut _cef_client_t,
-    url: *const cef_string_t,
-    settings: *const _cef_browser_settings_t,
-    extra_info: *mut _cef_dictionary_value_t,
-    request_context: *mut _cef_request_context_t,
-    delegate: *mut _cef_browser_view_delegate_t,
-) -> *mut _cef_browser_view_t {
-    unsafe {
-        let req_handler = (*client).get_request_handler.unwrap()(client);
-        let og = (*req_handler).get_resource_request_handler.unwrap();
-
-        hook::create_inline_hook(
-            og,
-            vtable_hooks::res_handler_hook as _,
-            &vtable_hooks::RES_HANDLER_OG,
-            "res_handler",
-        );
-
-        if let Some(func) = CEF_VIEW_OG.lock().ok().and_then(|g| *g) {
-            return func(client, url, settings, extra_info, request_context, delegate);
-        }
-    }
-
-    log("Couldn't call original view");
-    std::ptr::null_mut()
 }

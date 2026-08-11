@@ -7,7 +7,6 @@ import "@extendify/api/themes";
 
 import "@extendify/webpack/exporter";
 import "@extendify/webpack/interceptor";
-import "@extendify/webpack/loader";
 
 const logger = createLogger({ name: "Entrypoint" });
 

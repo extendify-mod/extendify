@@ -1,4 +1,3 @@
-use crate::cef::utils::{ctos, stoc};
 use crate::cef::{
     _cef_browser_t, _cef_client_t, _cef_frame_t, _cef_render_process_handler_t,
     _cef_request_handler_t, _cef_request_t, _cef_resource_request_handler_t, _cef_v8_context_t,
@@ -7,8 +6,6 @@ use crate::cef::{
 use crate::{callbacks, log};
 use std::ffi::c_int;
 use std::sync::Mutex;
-
-const ENTRYPOINTS: &[&str] = &["/xpui.js", "/xpui-snapshot.js"];
 
 #[allow(unused)]
 pub static ON_CONTEXT_CREATED_OG: Mutex<
@@ -64,19 +61,6 @@ pub unsafe extern "C" fn res_handler_hook(
     disable_default_handling: *mut c_int,
 ) -> *mut _cef_resource_request_handler_t {
     callbacks::on_frame(frame);
-
-    let url = unsafe { ctos((*request).get_url.unwrap()(request)) };
-    if ENTRYPOINTS
-        .iter()
-        .any(|entrypoint| url.ends_with(entrypoint))
-    {
-        let header = unsafe { (*request).get_header_by_name.unwrap()(request, stoc("extendify")) };
-        if header.is_null() {
-            log("Blocked entrypoint");
-
-            return std::ptr::null_mut();
-        }
-    }
 
     if let Some(func) = RES_HANDLER_OG.lock().ok().and_then(|g| *g) {
         return unsafe {
