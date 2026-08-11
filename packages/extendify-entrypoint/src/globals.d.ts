@@ -15,6 +15,8 @@ declare global {
     export const ENTRYPOINTS: string[];
     /** The name of the webpack chunks in the global window object */
     export const WEBPACK_CHUNKS: string[];
+    /** Replaces the call with globbed imports */
+    export function globPlugins(): void;
 
     interface Window extends Record<WEBPACK_CHUNKS, WebpackChunkGlobal | undefined> {
         ExtendifyFragment: symbol;
@@ -25,7 +27,5 @@ declare global {
                 [name: string]: AnyFn;
             };
         };
-
-        globPlugins(): void;
     }
 }
