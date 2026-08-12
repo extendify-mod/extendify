@@ -1,5 +1,5 @@
 import { getKwarg, hasArg } from "@extendify/scripts/args";
-import { entrypoints, webpackChunkNames } from "@extendify/scripts/build/config";
+import { webpackChunkNames } from "@extendify/scripts/build/config";
 import { globPlugins } from "@extendify/scripts/build/plugins";
 import { getTimeDifference, stringify } from "@extendify/scripts/utils";
 import type { TargetPlatform } from "@extendify/shared/types";
@@ -38,9 +38,8 @@ const bundleStart = performance.now();
 await Bun.build({
     define: stringify({
         DEVELOPMENT: DEVELOPMENT,
-        ENTRYPOINTS: entrypoints[PLATFORM],
         PLATFORM: PLATFORM,
-        WEBPACK_CHUNKS: webpackChunkNames[PLATFORM]
+        WEBPACK_CHUNK_NAME: webpackChunkNames[PLATFORM]
     }),
     entrypoints: [ENTRYPOINT],
     format: "iife",

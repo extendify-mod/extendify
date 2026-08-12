@@ -1,4 +1,4 @@
-import { moduleCache } from "@extendify/api/registry";
+import { exportSubscriptions, moduleCache, moduleSubscriptions } from "@extendify/api/registry";
 import { createLazy } from "@extendify/shared/lazy";
 import { type AnyMatch, srcMatches } from "@extendify/shared/match";
 import type { RawModule } from "@extendify/shared/types/webpack";
@@ -8,18 +8,15 @@ import type { ComponentType } from "react";
 
 export type ExportFilter = (moduleExport: any) => boolean;
 
-interface ExportSubscription<T = unknown> {
+export interface ExportSubscription<T = unknown> {
     filter: ExportFilter;
     callback: (moduleExport: T) => void;
 }
 
-interface ModuleSubscription<T = Record<string, any>> {
+export interface ModuleSubscription<T = Record<string, any>> {
     props: string[];
     callback: (module: T) => void;
 }
-
-const exportSubscriptions: Set<ExportSubscription> = new Set();
-const moduleSubscriptions: Set<ModuleSubscription> = new Set();
 
 export const exportFilters = {
     byCode(match: AnyMatch): ExportFilter {

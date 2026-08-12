@@ -17,13 +17,16 @@ export interface RawModule {
     exports: Record<string, any>;
 }
 
-export type WebpackRawModules = Record<string | number, RawModule>;
+export type ModuleId = string | number;
 
-export type WebpackRequire = ((e: number) => unknown) & {
+export type WebpackRawModules = Record<ModuleId, RawModule>;
+
+export type WebpackRequire = ((e: ModuleId) => unknown) & {
     d: (module: unknown, exports: Record<string, () => unknown>) => void;
     m: WebpackChunk[1];
     p?: string;
-    iife: WebpackModule;
+    u: (id: ModuleId) => string;
+    e: (id: ModuleId) => any;
 };
 
 export type ModuleEval = (name: string) => any;

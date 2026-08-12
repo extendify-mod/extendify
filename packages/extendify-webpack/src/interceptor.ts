@@ -1,29 +1,27 @@
 import { createLogger } from "@extendify/shared/logger";
-import type { RawModule, WebpackRequire } from "@extendify/shared/types/webpack";
+import type { WebpackRequire } from "@extendify/shared/types/webpack";
 import { initializeWebpack, wreq } from "@extendify/webpack";
-import { patchFactories, patchModule, patchPush } from "@extendify/webpack/patcher";
+import { patchFactories, patchPush } from "@extendify/webpack/patcher";
 
 const logger = createLogger({ name: "WebpackInterceptor" });
 
 let webpackChunk: any[] | undefined;
 
-for (const chunkName of WEBPACK_CHUNKS) {
-    Object.defineProperty(window, chunkName, {
-        configurable: true,
-        get: () => webpackChunk,
-        set(chunk) {
-            if (chunk?.push && !chunk.push.$$) {
-                patchPush(chunk);
-                logger.info(`Patched ${chunkName}.push`);
+Object.defineProperty(window, WEBPACK_CHUNK_NAME, {
+    configurable: true,
+    get: () => webpackChunk,
+    set(chunk) {
+        if (chunk?.push && !chunk.push.$$) {
+            patchPush(chunk);
+            logger.info(`Patched ${WEBPACK_CHUNK_NAME}.push`);
 
-                delete window[chunkName];
-                window[chunkName] = chunk;
-            }
-
-            webpackChunk = chunk;
+            delete window[WEBPACK_CHUNK_NAME];
+            window[WEBPACK_CHUNK_NAME] = chunk;
         }
-    });
-}
+
+        webpackChunk = chunk;
+    }
+});
 
 Object.defineProperty(Function.prototype, "m", {
     configurable: true,
@@ -61,10 +59,10 @@ Object.defineProperty(Function.prototype, "m", {
 
                 patchFactories(modules);
 
-                initializePrivateModule(this);
-
                 if (!wreq) {
                     logger.info("Found main Webpack instance");
+
+                    forceLoadFactories(this);
                     initializeWebpack(this);
                 }
             }
@@ -72,33 +70,8 @@ Object.defineProperty(Function.prototype, "m", {
     }
 });
 
-function initializePrivateModule(wreq: WebpackRequire) {
-    Object.defineProperty(wreq, "iife", {
-        configurable: true,
-        set(this: WebpackRequire, iife: WebpackRequire["iife"]) {
-            /**
-             * Now that we've found the private iife module, which is assigned to the
-             * wreq instance as "iife" via a patch (check loader.ts), we can patch it
-             * with our plugin patches and then initialize it ourselves.
-             */
-
-            let src = iife.toString();
-            src = src.substring(src.indexOf("{"));
-            const fakeModule: RawModule = { exports: {}, id: "Private", loaded: true };
-            const original = iife;
-
-            iife = patchModule(iife, String(fakeModule.id));
-            iife.$$ = original;
-            iife(fakeModule, {}, this, src);
-
-            Object.defineProperty(this, "iife", {
-                configurable: true,
-                enumerable: false,
-                value: iife,
-                writable: true
-            });
-
-            logger.info("Found and patched private module");
-        }
+function forceLoadFactories(wreq: WebpackRequire) {
+    [...wreq.u.toString().matchAll(/(\d*?):/g)].forEach(([_, id]) => {
+        wreq.e(Number(id));
     });
 }
