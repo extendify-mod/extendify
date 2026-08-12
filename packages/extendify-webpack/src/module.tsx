@@ -92,7 +92,7 @@ function checkExport(moduleExport: any, filter: ExportFilter): boolean {
 function checkSubscription(
     subscription: ExportSubscription<unknown> | undefined,
     moduleExport: any
-): boolean {
+) {
     if (!subscription || !checkExport(moduleExport, subscription.filter)) {
         return false;
     }
@@ -105,9 +105,7 @@ function checkSubscription(
 
 export function onModuleLoaded(module: RawModule) {
     for (const subscription of exportSubscriptions) {
-        if (checkSubscription(subscription, module.exports)) {
-            continue;
-        }
+        checkSubscription(subscription, module.exports);
 
         if (typeof module.exports !== "object") {
             continue;
@@ -132,16 +130,15 @@ export function onModuleLoaded(module: RawModule) {
 }
 
 export async function findModuleExport<T>(filter: ExportFilter): Promise<T> {
-    function createPromise(): Promise<T> {
-        return new Promise(resolve => {
+    return (
+        getModuleExport<T>(filter) ??
+        new Promise(resolve => {
             exportSubscriptions.add({
                 callback: moduleExport => resolve(moduleExport as T),
                 filter
             });
-        });
-    }
-
-    return getModuleExport<T>(filter) ?? createPromise();
+        })
+    );
 }
 
 export function findModuleExportLazy<T>(filter: ExportFilter): T {

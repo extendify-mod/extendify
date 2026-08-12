@@ -70,11 +70,6 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
                 return void originalMod(module, exports, require, src);
             }
 
-            exports = module.exports;
-            if (!exports) {
-                return;
-            }
-
             onModuleLoaded(module);
         };
 
