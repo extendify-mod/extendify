@@ -1,10 +1,13 @@
 [workspace]
 members = [
     "crates/extendify-native",
-    "crates/android-notifier",
+
     "crates/oauth2aas",
     "crates/announcer",
+
+    "crates/android-notifier",
     "crates/web-notifier",
+    "crates/desktop-notifier"
 ]
 resolver = "3"
 

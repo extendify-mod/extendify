@@ -363,6 +363,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "desktop-notifier"
+version = "0.1.0"
+
+[[package]]
 name = "digest"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
