@@ -1,12 +1,28 @@
-use announcer::diff::VecDiff;
+use announcer::{cache::ChannelCache, channel::Channel};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize, Default)]
-pub struct WebCacheData {
-    pub version: String,
-    pub build_date: String,
+use crate::constants::CACHE_VARIANT;
+
+#[derive(Serialize, Deserialize, Default)]
+pub(crate) struct WebCacheData {}
+
+pub(crate) struct WebChannelCache {
+    #[allow(unused)]
+    channel: Channel,
 }
 
-impl WebCacheData {
-    pub fn new(content: &String) -> Self {}
+impl WebChannelCache {
+    pub fn new(channel: Channel) -> Self {
+        Self { channel: channel }
+    }
+}
+
+impl ChannelCache<WebCacheData> for WebChannelCache {
+    fn channel(&self) -> Channel {
+        Channel::Stable
+    }
+
+    fn variant(&self) -> &'static str {
+        CACHE_VARIANT
+    }
 }

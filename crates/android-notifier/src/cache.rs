@@ -8,13 +8,13 @@ use std::collections::HashMap;
 use std::io::{Read, Seek};
 
 #[derive(Clone, Serialize, Deserialize, Default)]
-pub struct AndroidCacheData {
+pub(crate) struct AndroidCacheData {
     pub strings: HashMap<String, String>,
     pub remote_allow_list: Vec<String>,
     pub licenses: Vec<String>,
 }
 
-pub struct AndroidChannelCache {
+pub(crate) struct AndroidChannelCache {
     channel: Channel,
 }
 
@@ -54,7 +54,7 @@ impl AndroidCacheData {
 }
 
 #[derive(Debug)]
-pub struct AndroidCacheDiff {
+pub(crate) struct AndroidCacheDiff {
     pub strings: MapDiff,
     pub remote_allow_list: VecDiff,
     pub licenses: VecDiff,

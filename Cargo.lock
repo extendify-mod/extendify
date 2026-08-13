@@ -2510,8 +2510,11 @@ name = "web-notifier"
 version = "0.1.0"
 dependencies = [
  "announcer",
+ "base64",
+ "regex",
  "reqwest",
  "serde",
+ "serde_json",
  "tokio",
  "toml",
 ]
