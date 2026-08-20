@@ -23,6 +23,7 @@ const callbacks: { cancel: () => void }[] = [];
 const { plugin, logger } = registerPlugin({
     authors: ["7elia", "Davr1"],
     description: "Block ads on Spotify",
+    enabledByDefault: true,
     name: "AdBlock",
     platforms: ["desktop", "browser"],
     async start() {
@@ -81,12 +82,11 @@ async function configureServices(slotsService: SlotsService, settingsService: Se
 }
 
 async function configureAdManagers(platform: Platform) {
-    const { audio, inStreamApi, leaderboard, sponsoredPlaylist, vto } = platform.getAdManagers();
+    const { audio, inStreamApi, leaderboard, vto } = platform.getAdManagers();
 
     audio.disable();
     inStreamApi.disable();
     leaderboard.disableLeaderboard();
-    sponsoredPlaylist.disable();
     vto.manager.disable();
 
     logger.debug(`Configured ad managers.`);
