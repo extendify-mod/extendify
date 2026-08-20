@@ -268,7 +268,7 @@ if (-not $dllUrls.ContainsKey($arch)) {
 
 $dllUrl = $dllUrls[$arch]
 $dllName = "profapi.dll"
-$dllDest = Join-Path $env:AppData "Spotify" $dllName
+$dllDest = Join-Path (Join-Path $env:AppData "Spotify") $dllName
 $dllDir = Split-Path $dllDest
 
 Write-Info "Architecture: $arch"
