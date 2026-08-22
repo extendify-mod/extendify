@@ -2,12 +2,13 @@ use std::path::PathBuf;
 
 use crate::diff::{MapDiff, VecDiff};
 use reqwest::Client;
-use serde::Deserialize;
 use serde_json::json;
 
 pub mod cache;
 pub mod channel;
+pub mod config;
 pub mod diff;
+pub mod util;
 
 pub const CONFIG_FILE_NAME: &str = "config.toml";
 const CHARACTER_LIMIT: usize = 4000 - 50;
@@ -17,7 +18,7 @@ pub fn get_data_path(variant: &str) -> PathBuf {
     return PathBuf::from(format!("./data/{variant}"));
 }
 
-fn create_diff_messages<'a>(
+fn create_diff_messages(
     title: &str,
     subtitle: &str,
     diff_string: String,
@@ -217,21 +218,5 @@ impl AnnouncementBuilder {
         }
 
         Ok(responses)
-    }
-}
-
-#[derive(Deserialize)]
-pub struct WebhookConfig {
-    url: String,
-    debug_url: String,
-}
-
-impl WebhookConfig {
-    pub fn get_url(&self) -> String {
-        if cfg!(debug_assertions) {
-            self.debug_url.clone()
-        } else {
-            self.url.clone()
-        }
     }
 }

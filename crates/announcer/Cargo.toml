@@ -8,3 +8,4 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 reqwest = { workspace = true }
 enum-iterator = { workspace = true }
+toml = { workspace = true }

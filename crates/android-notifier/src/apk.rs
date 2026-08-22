@@ -2,7 +2,6 @@ use arsc::ResourceValue;
 use regex::Regex;
 use std::collections::HashMap;
 use std::io::{Cursor, Read, Seek, Write};
-use tempfile;
 use tempfile::NamedTempFile;
 use zip::ZipArchive;
 

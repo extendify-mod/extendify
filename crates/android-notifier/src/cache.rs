@@ -14,6 +14,25 @@ pub(crate) struct AndroidCacheData {
     pub licenses: Vec<String>,
 }
 
+impl AndroidCacheData {
+    pub fn new<R>(mut main_apk: R, config_apk: R) -> Self
+    where
+        R: Read + Seek,
+    {
+        Self {
+            strings: apk::read_config_strings(config_apk),
+            remote_allow_list: apk::read_allow_list(&mut main_apk),
+            licenses: apk::read_licenses(&mut main_apk),
+        }
+    }
+
+    pub async fn new_from_urls(apk_url: String, config_url: String) -> Self {
+        let main_apk = apk::temp_download_apk(apk_url).await;
+        let config_apk = apk::temp_download_apk(config_url).await;
+        Self::new(main_apk, config_apk)
+    }
+}
+
 pub(crate) struct AndroidChannelCache {
     channel: Channel,
 }
@@ -31,25 +50,6 @@ impl ChannelCache<AndroidCacheData> for AndroidChannelCache {
 
     fn variant(&self) -> &'static str {
         CACHE_VARIANT
-    }
-}
-
-impl AndroidCacheData {
-    pub fn new<R>(mut main_apk: R, config_apk: R) -> Self
-    where
-        R: Read + Seek,
-    {
-        Self {
-            strings: apk::read_config_strings(config_apk),
-            remote_allow_list: apk::read_allow_list(&mut main_apk),
-            licenses: apk::read_licenses(&mut main_apk),
-        }
-    }
-
-    pub async fn new_from_urls(apk_url: String, config_url: String) -> Self {
-        let main_apk = apk::temp_download_apk(apk_url).await;
-        let config_apk = apk::temp_download_apk(config_url).await;
-        Self::new(main_apk, config_apk)
     }
 }
 

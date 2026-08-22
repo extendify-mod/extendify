@@ -13,7 +13,7 @@ resolver = "3"
 
 [workspace.dependencies]
 openssl = { version = "*", features = ["vendored"] }
-reqwest = { version = "0", features = ["json"] }
+reqwest = { version = "0.12", features = ["json", "gzip", "deflate"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 serde_json = "1"
@@ -21,3 +21,5 @@ gpapi = "6"
 enum-iterator = "2"
 toml = "1"
 regex = "1"
+tempfile = "3"
+zip = "8"

@@ -1,6 +1,7 @@
 use crate::constants::CACHE_VARIANT;
+use announcer::CONFIG_FILE_NAME;
 use announcer::channel::Channel;
-use announcer::{CONFIG_FILE_NAME, WebhookConfig};
+use announcer::config::WebhookConfig;
 use serde::Deserialize;
 use std::fs::read_to_string;
 
@@ -10,6 +11,12 @@ pub struct Config {
     pub beta_channel: ChannelConfig,
     pub alpha_channel: ChannelConfig,
     pub webhook: WebhookConfig,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ChannelConfig {
+    pub email: String,
+    pub aas_token: String,
 }
 
 impl Config {
@@ -33,10 +40,4 @@ impl Config {
             Channel::Alpha => self.alpha_channel.clone(),
         }
     }
-}
-
-#[derive(Deserialize, Clone)]
-pub struct ChannelConfig {
-    pub email: String,
-    pub aas_token: String,
 }

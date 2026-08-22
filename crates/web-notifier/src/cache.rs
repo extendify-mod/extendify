@@ -1,10 +1,14 @@
-use announcer::{cache::ChannelCache, channel::Channel};
+use std::collections::HashMap;
+
+use announcer::{cache::ChannelCache, channel::Channel, diff::MapDiff};
 use serde::{Deserialize, Serialize};
 
 use crate::constants::CACHE_VARIANT;
 
-#[derive(Serialize, Deserialize, Default)]
-pub(crate) struct WebCacheData {}
+#[derive(Clone, Serialize, Deserialize, Default)]
+pub(crate) struct WebCacheData {
+    pub strings: HashMap<String, String>,
+}
 
 pub(crate) struct WebChannelCache {
     #[allow(unused)]
@@ -24,5 +28,20 @@ impl ChannelCache<WebCacheData> for WebChannelCache {
 
     fn variant(&self) -> &'static str {
         CACHE_VARIANT
+    }
+}
+
+pub(crate) struct WebCacheDiff {
+    pub strings: MapDiff,
+}
+
+impl WebCacheDiff {
+    pub fn from(old_ref: &WebCacheData, new_ref: &WebCacheData) -> Self {
+        let old = old_ref.clone();
+        let new = new_ref.clone();
+
+        Self {
+            strings: MapDiff::from(old.strings, new.strings),
+        }
     }
 }

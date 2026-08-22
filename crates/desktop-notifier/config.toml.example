@@ -1,0 +1,5 @@
+# Place at data/desktop/config.toml
+
+[webhook]
+url = ""
+debug_url = ""
