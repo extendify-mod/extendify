@@ -29,9 +29,7 @@ pub async fn read_strings(
 
     if let Some(groups) = re.captures(html) {
         let url = &groups[1];
-        println!("{url}");
         let response = client.get(url).send().await?.text().await?;
-        println!("{response}");
         let strings = util::flatten_json_map(&response)?;
         Ok(strings)
     } else {
