@@ -18,6 +18,19 @@ pub fn get_data_path(variant: &str) -> PathBuf {
     return PathBuf::from(format!("./data/{variant}"));
 }
 
+fn floor_char_boundary(s: &str) -> usize {
+    if CHARACTER_LIMIT >= s.len() {
+        return s.len();
+    }
+
+    let mut idx = CHARACTER_LIMIT;
+    while idx > 0 && !s.is_char_boundary(idx) {
+        idx -= 1;
+    }
+
+    idx
+}
+
 fn create_diff_messages(
     title: &str,
     subtitle: &str,
@@ -38,10 +51,11 @@ fn create_diff_messages(
             let split_at = if remaining.len() <= CHARACTER_LIMIT {
                 remaining.len()
             } else {
-                remaining[..CHARACTER_LIMIT]
+                let boundary = floor_char_boundary(remaining);
+                remaining[..boundary]
                     .rfind("\n\n")
                     .map(|i| i + 1)
-                    .unwrap_or(CHARACTER_LIMIT)
+                    .unwrap_or(boundary)
             };
 
             let (chunk, rest) = remaining.split_at(split_at);
