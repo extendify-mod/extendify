@@ -75,6 +75,7 @@ async fn run(config: &SimpleConfig) -> Result<(), Box<dyn std::error::Error>> {
         .await;
     println!("Message response: {response:?}");
 
+    channel_cache.write(&new_data);
     channel_cache.write_prev_version(&version);
 
     Ok(())
