@@ -15,7 +15,7 @@ mod web;
 async fn main() {
     let config = SimpleConfig::read(CACHE_VARIANT);
 
-    let mut interval = time::interval(time::Duration::from_mins(10));
+    let mut interval = time::interval(time::Duration::from_mins(3));
 
     loop {
         interval.tick().await;
