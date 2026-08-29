@@ -1,6 +1,9 @@
 use regex::Regex;
+use std::collections::HashMap;
 
-pub fn extract_licenses(html: &str) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+pub fn extract_licenses(html: &str) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
+    let mut result = HashMap::<String, String>::new();
+
     let toc_re = Regex::new(r#"(?s)<ul class="toc">(.*?)</ul>"#)?;
     let toc_content = toc_re
         .captures(html)
@@ -9,12 +12,14 @@ pub fn extract_licenses(html: &str) -> Result<Vec<String>, Box<dyn std::error::E
         .unwrap()
         .as_str();
 
-    let li_re = Regex::new(r#"<li><a href="[^"]*">([^<]*)</a></li>"#)?;
+    let license_re = Regex::new(r#"<li><a href="[^"]*">([^<]*)</a></li>"#)?;
+    for groups in license_re.captures_iter(toc_content) {
+        let capture = groups[1].to_string();
+        let split_idx = capture.rfind('@').ok_or("no @")?;
+        let parts = capture.split_at(split_idx);
 
-    let entries: Vec<String> = li_re
-        .captures_iter(toc_content)
-        .map(|cap| cap[1].to_string())
-        .collect();
+        result.insert(parts.0.to_string(), parts.1[1..].to_string());
+    }
 
-    Ok(entries)
+    Ok(result)
 }
