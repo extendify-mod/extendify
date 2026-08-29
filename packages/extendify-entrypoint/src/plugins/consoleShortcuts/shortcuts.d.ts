@@ -1,6 +1,11 @@
 import type { executeQuery, findQuery } from "@extendify/api/gql";
 import type { platform, resolveApi } from "@extendify/api/platform";
-import type { contextOptions, moduleCache, services, settingsValues } from "@extendify/api/registry";
+import type {
+    contextOptions,
+    moduleCache,
+    services,
+    settingsValues
+} from "@extendify/api/registry";
 import type { wreq } from "@extendify/webpack/";
 import type {
     exportFilters,

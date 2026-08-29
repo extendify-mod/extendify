@@ -21,7 +21,7 @@ const MAX_UINT64 = 2n ** 64n - 1n;
 const callbacks: { cancel: () => void }[] = [];
 
 const { plugin, logger } = registerPlugin({
-    authors: ["7elia", "Davr1"],
+    authors: ["wynjamin", "Davr1"],
     description: "Block ads on Spotify",
     enabledByDefault: true,
     name: "AdBlock",

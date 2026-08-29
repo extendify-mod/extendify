@@ -18,16 +18,6 @@ const EpisodeRelease = findModuleComponent(
 );
 
 export default function (props: Props) {
-    console.dir(AlbumRelease);
-    console.dir(
-        findModuleComponent(
-            exportFilters.byCode({
-                matches: [/{title:\i,pretitle:`/, "artistUri"],
-                mode: "all"
-            })
-        )
-    );
-
     return (
         <div className="ext-timeline">
             <div className="ext-timeline-line" />
@@ -69,7 +59,6 @@ export default function (props: Props) {
                                     />
                                 );
                             }
-                            console.log("sum else", entry.__typename);
 
                             return <></>;
                         })}

@@ -1,5 +1,9 @@
 import type { Song } from "@extendify/shared/types/spotify/player";
-import type { PlaylistQueryOptions, SortField, SortOrder } from "@extendify/shared/types/spotify/queue";
+import type {
+    PlaylistQueryOptions,
+    SortField,
+    SortOrder
+} from "@extendify/shared/types/spotify/queue";
 
 export function filterResults(items: Song[], options: PlaylistQueryOptions): Song[] {
     const { filter, sort } = options;

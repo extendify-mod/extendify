@@ -1,4 +1,4 @@
-import { join, resolve } from "node:path";
+import { resolve } from "node:path";
 
 export const globPlugins: Bun.BunPlugin = {
     name: "glob-plugins",
@@ -19,7 +19,7 @@ export const globPlugins: Bun.BunPlugin = {
             const files: string[] = [];
             for (const pattern of patterns) {
                 for await (const file of new Bun.Glob(pattern).scan(dir)) {
-                    files.push("./" + file);
+                    files.push(`./${file}`);
                 }
             }
 

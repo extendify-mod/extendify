@@ -2,6 +2,7 @@
     "compilerOptions": {
         "allowImportingTsExtensions": true,
         "allowJs": true,
+        "jsx": "preserve",
         "lib": ["DOM", "ESNext", "ESNext.Iterator"],
         "module": "preserve",
         "moduleDetection": "force",
@@ -16,8 +17,7 @@
         "skipLibCheck": true,
         "strict": true,
         "target": "es2020",
-        "verbatimModuleSyntax": true,
-        "jsx": "preserve"
+        "verbatimModuleSyntax": true
     },
     "include": ["packages/**/*"]
 }

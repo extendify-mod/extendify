@@ -1,7 +1,10 @@
 import type { NumberContextOption } from "@extendify/api/context/settings";
 import { useState } from "@extendify/api/react";
 import { TextInput } from "@extendify/components/input";
-import { OptionType, type OptionTypeProps } from "@extendify/components/settings/plugins/optionTypes";
+import {
+    OptionType,
+    type OptionTypeProps
+} from "@extendify/components/settings/plugins/optionTypes";
 import { INVALID_INPUT } from "@extendify/shared/constants";
 
 export default function (props: OptionTypeProps<NumberContextOption>) {

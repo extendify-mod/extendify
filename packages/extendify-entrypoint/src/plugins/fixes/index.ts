@@ -2,7 +2,7 @@ import { registerPatch } from "@extendify/api/context/patch";
 import { registerPlugin } from "@extendify/api/context/plugin";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Provides some fixes for Spotify",
     enabledByDefault: true,
     name: "Fixes",

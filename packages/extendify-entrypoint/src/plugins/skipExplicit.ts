@@ -3,7 +3,7 @@ import { registerPlugin } from "@extendify/api/context/plugin";
 import { player } from "@extendify/api/platform";
 
 const { plugin, logger } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Automatically skip explicit songs",
     name: "SkipExplicit",
     platforms: ["desktop", "browser"]

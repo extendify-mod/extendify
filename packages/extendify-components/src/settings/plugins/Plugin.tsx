@@ -1,6 +1,10 @@
 import { contextHasPatches } from "@extendify/api/context/patch";
 import type { Plugin } from "@extendify/api/context/plugin";
-import { contextHasOptions, isPluginEnabled, setPluginEnabled } from "@extendify/api/context/settings";
+import {
+    contextHasOptions,
+    isPluginEnabled,
+    setPluginEnabled
+} from "@extendify/api/context/settings";
 import { useState } from "@extendify/api/react";
 import { GearIcon, InfoIcon } from "@extendify/components/icons";
 import { PluginModal } from "@extendify/components/settings/plugins";

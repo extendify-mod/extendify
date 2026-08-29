@@ -5,7 +5,7 @@ import { registerContextOptions } from "@extendify/api/context/settings";
 import ArtistCards from "./ArtistCards";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Displays every artist in the Now Playing section",
     name: "MoreArtistCards",
     platforms: ["desktop", "browser"]

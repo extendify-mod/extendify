@@ -2,7 +2,11 @@ import { registerPlugin } from "@extendify/api/context/plugin";
 import { executeQuery, findQuery } from "@extendify/api/gql";
 import { registerApiOverride } from "@extendify/api/platform";
 import type { Song } from "@extendify/shared/types/spotify/player";
-import type { PlaylistAPI, PlaylistItems, PlaylistQueryOptions } from "@extendify/shared/types/spotify/queue";
+import type {
+    PlaylistAPI,
+    PlaylistItems,
+    PlaylistQueryOptions
+} from "@extendify/shared/types/spotify/queue";
 import { exportFilters, findModuleExportLazy } from "@extendify/webpack/module";
 
 import { filterResults } from "./filter";
@@ -22,7 +26,7 @@ const itemConverter = findModuleExportLazy<(item: any) => Song>(
 );
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Enables playlist sorting in the browser",
     name: "BrowserSorting",
     platforms: ["browser"]

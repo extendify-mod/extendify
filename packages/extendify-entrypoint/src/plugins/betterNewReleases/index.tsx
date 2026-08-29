@@ -4,7 +4,7 @@ import { registerPlugin } from "@extendify/api/context/plugin";
 import NewReleases from "./NewReleases";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "A replacement for Spotify's New Releases page",
     name: "BetterNewReleases",
     platforms: ["desktop", "browser"]

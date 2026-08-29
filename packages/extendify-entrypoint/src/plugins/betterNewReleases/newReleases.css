@@ -22,6 +22,7 @@
     max-width: unset !important;
 }
 
-.main-view-container__scroll-node-child:has(> main > .YT5cYwULCoyD6pGh) {
-    overflow-y: hidden;
-}
+/* Temp comment because the plugin isn't done yet and it breaks stuff */
+/* .main-view-container__scroll-node-child:has(> main > .YT5cYwULCoyD6pGh) { */
+/*     overflow-y: hidden; */
+/* } */

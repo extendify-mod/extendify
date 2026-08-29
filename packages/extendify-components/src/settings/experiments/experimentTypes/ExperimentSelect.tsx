@@ -2,7 +2,10 @@ import { remoteConfig } from "@extendify/api/platform";
 import { useState } from "@extendify/api/react";
 import { Select, type SelectOption } from "@extendify/components/input";
 import type { ExperimentTypeProps } from "@extendify/components/settings/experiments/experimentTypes";
-import type { BooleanExperiment, EnumExperiment } from "@extendify/shared/types/spotify/experiments";
+import type {
+    BooleanExperiment,
+    EnumExperiment
+} from "@extendify/shared/types/spotify/experiments";
 
 const booleanSelectOpts = [
     { label: "ENABLED", value: true },

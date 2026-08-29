@@ -57,6 +57,7 @@
     "linter": {
         "rules": {
             "complexity": {
+                "noImportantStyles": "off",
                 "noUselessEscapeInRegex": "off",
                 "noUselessFragments": "off"
             },
