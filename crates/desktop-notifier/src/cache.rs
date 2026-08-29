@@ -16,7 +16,7 @@ use crate::xpui;
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(crate) struct DesktopCacheData {
     pub strings: HashMap<String, String>,
-    pub licenses: Vec<String>,
+    pub licenses: HashMap<String, String>,
 }
 
 impl DesktopCacheData {
@@ -64,7 +64,7 @@ impl ChannelCache<DesktopCacheData> for DesktopChannelCache {
 #[derive(Debug)]
 pub(crate) struct DesktopCacheDiff {
     pub strings: MapDiff,
-    pub licenses: VecDiff,
+    pub licenses: MapDiff,
 }
 
 impl DesktopCacheDiff {
@@ -74,7 +74,7 @@ impl DesktopCacheDiff {
 
         Self {
             strings: MapDiff::from(old.strings, new.strings),
-            licenses: VecDiff::from(old.licenses, new.licenses),
+            licenses: MapDiff::from(old.licenses, new.licenses),
         }
     }
 }

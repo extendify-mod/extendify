@@ -45,18 +45,18 @@ async fn run(config: &SimpleConfig) -> Result<(), Box<dyn std::error::Error>> {
 
     let diff = cache::DesktopCacheDiff::from(&old_data, &new_data);
 
-    let response = AnnouncementBuilder::new(config.webhook.get_url())
-        .add_version_component(
-            channel.color(),
-            channel.pretty_name(),
-            version.clone(),
-            "Windows/MacOS",
-        )
-        .add_map_diff_component("Strings", diff.strings)
-        .add_vec_diff_component("Licenses", diff.licenses)
-        .send()
-        .await;
-    println!("Message response: {response:?}");
+    // let response = AnnouncementBuilder::new(config.webhook.get_url())
+    //     .add_version_component(
+    //         channel.color(),
+    //         channel.pretty_name(),
+    //         version.clone(),
+    //         "Windows/MacOS",
+    //     )
+    //     .add_map_diff_component("Strings", diff.strings)
+    //     .add_map_diff_component("Licenses", diff.licenses)
+    //     .send()
+    //     .await;
+    // println!("Message response: {response:?}");
 
     channel_cache.write(&new_data);
     channel_cache.write_prev_version(&version);
