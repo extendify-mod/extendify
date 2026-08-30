@@ -1,11 +1,6 @@
 use std::collections::HashMap;
 
-use announcer::{
-    cache::ChannelCache,
-    channel::Channel,
-    diff::{MapDiff, VecDiff},
-    util,
-};
+use announcer::{cache::ChannelCache, channel::Channel, diff::MapDiff, util};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Seek};
 use zip::ZipArchive;
