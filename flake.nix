@@ -3,30 +3,52 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    crane.url = "github:ipetkov/crane";
   };
 
   outputs = {
     self,
     nixpkgs,
+    crane,
   }: let
-    # Spotify only ships on this so it's fine
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-    };
+    systems = [
+      "x86_64-linux"
+      "aarch64-darwin"
+    ];
+    forEachSystem = nixpkgs.lib.genAttrs systems;
+    pkgsForSystem = system:
+      import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
   in {
-    devShells.${system} = {
-      default = pkgs.callPackage ./nix/shell.nix {inherit self;};
-    };
+    devShells = forEachSystem (system: {
+      default = (pkgsForSystem system).callPackage ./nix/shell.nix {
+        inherit self;
+      };
+    });
 
-    packages.${system} = {
-      cef = pkgs.callPackage ./nix/cef.nix {};
-      extendify-native = pkgs.callPackage ./nix/native.nix {inherit self;};
-      spotify-extendify = pkgs.callPackage ./nix/spotify-extendify.nix {inherit self;};
-      default = self.packages.${system}.spotify-extendify;
-    };
+    packages = forEachSystem (
+      system: let
+        pkgs = pkgsForSystem system;
+        craneLib = crane.mkLib pkgs;
+      in {
+        cef = pkgs.callPackage ./nix/cef.nix {};
+        extendify-native = pkgs.callPackage ./nix/native.nix {
+          inherit self craneLib;
+        };
+        spotify-extendify = pkgs.callPackage ./nix/spotify-extendify.nix {
+          inherit self;
+        };
+        default = self.packages.${system}.spotify-extendify;
+      }
+    );
 
-    formatter.${system} = pkgs.callPackage ./nix/fmt.nix {};
+    formatter = forEachSystem (
+      system: let
+        pkgs = pkgsForSystem system;
+      in
+        pkgs.callPackage ./nix/fmt.nix {}
+    );
   };
 }
