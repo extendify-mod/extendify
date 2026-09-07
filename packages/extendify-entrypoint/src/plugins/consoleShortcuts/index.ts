@@ -15,7 +15,7 @@ import {
 } from "@extendify/webpack/module";
 
 const { logger } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["format"],
     description: "Expose internal APIs to the window object",
     name: "ConsoleShortcuts",
     platforms: ["desktop", "browser"],

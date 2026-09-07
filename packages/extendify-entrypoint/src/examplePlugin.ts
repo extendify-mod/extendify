@@ -7,7 +7,7 @@ import { registerContextOptions } from "@extendify/api/context/settings";
  * The plugin object is used to reference ownership to APIs, like when you register a patch.
  */
 const { plugin, logger } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Showcasing some stuff",
     name: "ExamplePlugin",
     /**

@@ -2,7 +2,7 @@ import { registerPatch } from "@extendify/api/context/patch";
 import { registerPlugin } from "@extendify/api/context/plugin";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Provides some fixes for Spotify",
     enabledByDefault: true,
     name: "Fixes",
@@ -14,7 +14,7 @@ const { plugin } = registerPlugin({
  * so that it doesn't randomly float at the top of the page after scrolling.
  */
 registerPatch(plugin, {
-    find: "tracklist.header.plays",
+    find: "Add has no corresponding column header component",
     replacement: {
         match: /(\i\.\i.trackListHeader,.*?style:{top:)\i/,
         replace: "$1 0"

@@ -21,8 +21,9 @@ const MAX_UINT64 = 2n ** 64n - 1n;
 const callbacks: { cancel: () => void }[] = [];
 
 const { plugin, logger } = registerPlugin({
-    authors: ["7elia", "Davr1"],
+    authors: ["wynjamin", "Davr1"],
     description: "Block ads on Spotify",
+    enabledByDefault: true,
     name: "AdBlock",
     platforms: ["desktop", "browser"],
     async start() {
@@ -35,7 +36,7 @@ const { plugin, logger } = registerPlugin({
             .then(cbs => callbacks.push(...cbs));
     },
     stop() {
-        // remove existing callbacks to prevent memory leaks
+        // Remove existing callbacks to prevent memory leaks
         callbacks.forEach(cb => void cb.cancel());
         callbacks.length = 0;
     }
@@ -81,14 +82,11 @@ async function configureServices(slotsService: SlotsService, settingsService: Se
 }
 
 async function configureAdManagers(platform: Platform) {
-    const { audio, billboard, inStreamApi, leaderboard, sponsoredPlaylist, vto } =
-        platform.getAdManagers();
+    const { audio, inStreamApi, leaderboard, vto } = platform.getAdManagers();
 
     audio.disable();
-    await billboard.disable();
     inStreamApi.disable();
     leaderboard.disableLeaderboard();
-    sponsoredPlaylist.disable();
     vto.manager.disable();
 
     logger.debug(`Configured ad managers.`);

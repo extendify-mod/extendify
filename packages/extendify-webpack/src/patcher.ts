@@ -50,6 +50,8 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
                 return;
             }
 
+            module.id ??= id;
+
             let src = mod.toString();
             src = src.substring(src.indexOf("{"));
 
@@ -68,11 +70,6 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
                 return void originalMod(module, exports, require, src);
             }
 
-            exports = module.exports;
-            if (!exports) {
-                return;
-            }
-
             onModuleLoaded(module);
         };
 
@@ -84,12 +81,17 @@ export function patchFactories(factories: Record<number, WebpackModule> | Webpac
     }
 }
 
+// Spotify only uses modules with deterministic or natural module ids and a modern ES target,
+// removing the need for manually converting each factory function type separately in a patch.
+// This simple text replacement already handles both cases:
+// {  96879(e,t,i){...}     }    ->    function(e,t,i){...}
+// [  function(e,t,i){...}  ]    ->    function(e,t,i){...} (unchanged)
 function sanitizeSrc(src: string) {
     const firstBlock = src.indexOf("{");
     const firstParenth = src.indexOf("(");
 
     if (firstParenth < firstBlock && firstParenth !== 0) {
-        src = src.substring(firstParenth);
+        src = `function${src.substring(firstParenth)}`;
     }
 
     return src.replaceAll("\n", "");

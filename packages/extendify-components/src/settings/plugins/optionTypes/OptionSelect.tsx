@@ -1,8 +1,10 @@
 import type { SelectContextOption } from "@extendify/api/context/settings";
 import { useState } from "@extendify/api/react";
-import { Select } from "@extendify/components/input";
-import type { SelectOption } from "@extendify/components/input/Select";
-import { OptionType, type OptionTypeProps } from "@extendify/components/settings/plugins/optionTypes";
+import { Select, type SelectOption } from "@extendify/components/input";
+import {
+    OptionType,
+    type OptionTypeProps
+} from "@extendify/components/settings/plugins/optionTypes";
 import { INVALID_INPUT } from "@extendify/shared/constants";
 
 export default function (props: OptionTypeProps<SelectContextOption>) {

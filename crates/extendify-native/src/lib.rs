@@ -20,17 +20,32 @@ pub fn log<T: Display>(msg: T) {
         if let Ok(mut file) = OpenOptions::new()
             .create(true)
             .append(true)
-            .open("spotify_hook.log")
+            .open("extendify.log")
         {
             writeln!(file, "{msg}").ok();
+        }
+
+        #[cfg(windows)]
+        {
+            use windows_sys::Win32::System::Diagnostics::Debug::OutputDebugStringW;
+
+            let wide: Vec<_> = msg
+                .to_string()
+                .encode_utf16()
+                .chain(std::iter::once(0))
+                .collect();
+
+            unsafe {
+                OutputDebugStringW(wide.as_ptr());
+            }
         }
     }
 }
 
 pub fn is_renderer() -> bool {
     if cfg!(windows) {
-        return std::env::args().any(|arg| arg.contains("--type=renderer"));
+        std::env::args().any(|arg| arg.contains("--type=renderer"))
+    } else {
+        true
     }
-
-    true
 }

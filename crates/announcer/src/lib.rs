@@ -2,13 +2,15 @@ use std::path::PathBuf;
 
 use crate::diff::{MapDiff, VecDiff};
 use reqwest::Client;
-use serde::Deserialize;
 use serde_json::json;
 
 pub mod cache;
 pub mod channel;
+pub mod config;
 pub mod diff;
+pub mod util;
 
+pub const CONFIG_FILE_NAME: &str = "config.toml";
 const CHARACTER_LIMIT: usize = 4000 - 50;
 const MESSAGE_FLAGS: u32 = 1 << 15;
 
@@ -16,7 +18,20 @@ pub fn get_data_path(variant: &str) -> PathBuf {
     return PathBuf::from(format!("./data/{variant}"));
 }
 
-fn create_diff_messages<'a>(
+fn floor_char_boundary(s: &str) -> usize {
+    if CHARACTER_LIMIT >= s.len() {
+        return s.len();
+    }
+
+    let mut idx = CHARACTER_LIMIT;
+    while idx > 0 && !s.is_char_boundary(idx) {
+        idx -= 1;
+    }
+
+    idx
+}
+
+fn create_diff_messages(
     title: &str,
     subtitle: &str,
     diff_string: String,
@@ -36,10 +51,11 @@ fn create_diff_messages<'a>(
             let split_at = if remaining.len() <= CHARACTER_LIMIT {
                 remaining.len()
             } else {
-                remaining[..CHARACTER_LIMIT]
+                let boundary = floor_char_boundary(remaining);
+                remaining[..boundary]
                     .rfind("\n\n")
                     .map(|i| i + 1)
-                    .unwrap_or(CHARACTER_LIMIT)
+                    .unwrap_or(boundary)
             };
 
             let (chunk, rest) = remaining.split_at(split_at);
@@ -216,21 +232,5 @@ impl AnnouncementBuilder {
         }
 
         Ok(responses)
-    }
-}
-
-#[derive(Deserialize)]
-pub struct WebhookConfig {
-    url: String,
-    debug_url: String,
-}
-
-impl WebhookConfig {
-    pub fn get_url(&self) -> String {
-        if cfg!(debug_assertions) {
-            self.debug_url.clone()
-        } else {
-            self.url.clone()
-        }
     }
 }

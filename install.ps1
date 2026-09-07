@@ -33,7 +33,7 @@ function Write-Banner {
     Write-Host "  $($C.Magenta)$($C.Bold)███████╗██╔╝ ██╗   ██║   ███████╗██║ ╚████║██████╔╝██║██║        ██║   $($C.Reset)"
     Write-Host "  $($C.Magenta)$($C.Bold)╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚═╝╚═╝        ╚═╝   $($C.Reset)"
     Write-Host ""
-    Write-Host "  $($C.Dim)$($C.White)Spotify Mod Installer - github.com/extendify-mod$($C.Reset)"
+    Write-Host "  $($C.Dim)$($C.White)Spotify Mod Installer - github.com/extendify-mod/extendify$($C.Reset)"
     Write-Host "  $($C.Dim)────────────────────────────────────────────────$($C.Reset)"
     Write-Host ""
 }
@@ -266,9 +266,10 @@ if (-not $dllUrls.ContainsKey($arch)) {
     exit 1
 }
 
-$dllUrl  = $dllUrls[$arch]
-$dllDest = Join-Path $env:AppData "Spotify\version.dll"
-$dllDir  = Split-Path $dllDest
+$dllUrl = $dllUrls[$arch]
+$dllName = "profapi.dll"
+$dllDest = Join-Path (Join-Path $env:AppData "Spotify") $dllName
+$dllDir = Split-Path $dllDest
 
 Write-Info "Architecture: $arch"
 Write-Info "Destination: $dllDest"
@@ -279,8 +280,24 @@ if (-not (Test-Path $dllDir)) {
     New-Item -ItemType Directory -Path $dllDir -Force | Out-Null
 }
 
+# Older versions of Extendify used version.dll instead of profapi.dll.
+# Remove any leftover copy so the two don't conflict.
+$legacyDll = Join-Path $dllDir "version.dll"
+if (Test-Path $legacyDll) {
+    Write-Info "Found leftover version.dll from an older install — removing it…"
+    try {
+        Remove-Item -Path $legacyDll -Force -ErrorAction Stop
+        Write-Ok "Removed legacy version.dll."
+    }
+    catch {
+        Write-Err "Failed to remove legacy version.dll: $_"
+        Write-Info "Close Spotify completely (check the system tray) and re-run this script."
+        exit 1
+    }
+}
+
 try {
-    Write-DownloadProgress -Url $dllUrl -Dest $dllDest -Label "version.dll ($arch)"
+    Write-DownloadProgress -Url $dllUrl -Dest $dllDest -Label "$dllName ($arch)"
     Write-Ok "Extendify DLL installed."
 }
 catch {

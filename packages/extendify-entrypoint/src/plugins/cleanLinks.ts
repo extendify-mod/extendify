@@ -2,7 +2,7 @@ import { exportFunction, registerPatch } from "@extendify/api/context/patch";
 import { registerPlugin } from "@extendify/api/context/plugin";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Removes tracking from sharing links",
     enabledByDefault: true,
     name: "CleanLinks",

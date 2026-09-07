@@ -11,14 +11,12 @@ declare global {
     export const DEVELOPMENT: boolean;
     /** The platform for which Extendify is being compiled */
     export const PLATFORM: TargetPlatform;
-    /** The urls of the possible entrypoint bundles */
-    export const ENTRYPOINTS: string[];
     /** The name of the webpack chunk in the global window object */
-    export const WEBPACK_CHUNK: string;
+    export const WEBPACK_CHUNK_NAME: string;
+    /** Replaces the call with globbed imports */
+    export function globPlugins(): void;
 
-    interface Window {
-        [WEBPACK_CHUNK]?: WebpackChunkGlobal;
-
+    interface Window extends Record<WEBPACK_CHUNKS, WebpackChunkGlobal | undefined> {
         ExtendifyFragment: symbol;
         ExtendifyCreateElement: typeof React.createElement | (() => any);
 
@@ -27,7 +25,5 @@ declare global {
                 [name: string]: AnyFn;
             };
         };
-
-        globPlugins(): void;
     }
 }

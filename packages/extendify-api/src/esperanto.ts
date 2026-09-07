@@ -37,8 +37,8 @@ const { context, logger } = registerContext({
 registerPatch(context, {
     find: "EsperantoTransport",
     replacement: {
-        match: /(\i\.executeEsperantoCall),(\i\.cancelEsperantoCall),!1/,
-        replace: "$1,$2,true"
+        match: /(\i\.executeEsperantoCall),(\i\.cancelEsperantoCall),/,
+        replace: "$1,$2,true||"
     }
 });
 
@@ -55,10 +55,12 @@ registerEventListener(context, "platformLoaded", async () => {
     const transport = await findModuleExport<{
         subscribeToTraffic(
             callback: (e: {
-                type: "request" | "response";
+                type: "request" | "response" | "stream_response" | "error" | "cancel";
                 id: string;
-                payload: Uint8Array;
                 timestamp: number;
+                code?: number;
+                message?: string;
+                payload?: Uint8Array;
                 method?: string;
                 service?: string;
                 isStreaming?: boolean;
@@ -67,14 +69,20 @@ registerEventListener(context, "platformLoaded", async () => {
     }>(exportFilters.byProps("subscribeToTraffic"));
 
     transport.subscribeToTraffic(e => {
-        const payload = e.payload.length === 0 ? "Empty payload" : e.payload.join(" ");
+        const payload = !e.payload?.length ? "Empty payload" : e.payload.join(" ");
 
-        if (e.type === "response") {
+        if (e.type === "response" || e.type === "stream_response") {
             logger.debug(`Response to ${e.id}:\n${payload}`);
         } else if (e.type === "request") {
             logger.debug(
                 `Sending request from ${e.service ?? "UnknownService"}#${e.method ?? "UnknownMethod"} (${e.id}):\n${payload}`
             );
+        } else if (e.type === "error") {
+            logger.debug(
+                `${e.message}: ${e.service ?? "UnknownService"}#${e.method ?? "UnknownMethod"} has encountered an error (${e.id}):\n${payload}`
+            );
+        } else if (e.type === "cancel") {
+            logger.debug(`Request with id ${e.id} was cancelled.`);
         } else {
             logger.warn(`Unknown traffic type ${e.type} (${e.id}):\n${payload}`);
         }

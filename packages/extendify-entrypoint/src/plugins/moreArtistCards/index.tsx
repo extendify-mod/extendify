@@ -5,7 +5,7 @@ import { registerContextOptions } from "@extendify/api/context/settings";
 import ArtistCards from "./ArtistCards";
 
 const { plugin } = registerPlugin({
-    authors: ["7elia"],
+    authors: ["wynjamin"],
     description: "Displays every artist in the Now Playing section",
     name: "MoreArtistCards",
     platforms: ["desktop", "browser"]
@@ -43,7 +43,7 @@ registerPatch(plugin, {
         return options.hideImages;
     },
     replacement: {
-        match: /(children:\[)(\(0,.*?name:\i}\),)/,
+        match: /(children:\[)(\(0,.*?(?:freshFindsForward|openModal|name):\i}\),)/,
         replace: "$1"
     }
 });

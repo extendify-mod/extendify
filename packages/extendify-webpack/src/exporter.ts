@@ -16,23 +16,6 @@ registerPatch(context, {
     all: true,
     replacement: [
         {
-            /**
-             * Turn every module into a function instead of an arrow function:
-             * 1111: (a, b, c) => {} -> 1111: function(a, b, c) {}
-             * 2222: (a, b) => {}    -> 2222: function(a, b) {}
-             * 3333: a => {}         -> 3333: function(a) {}
-             * 4444: module => {}    -> 4444: function(module) {}
-             * 5555(a, b, c) {}      -> 5555: function(a, b, c) {}
-             * ^ there's one of these that exists where there is only one argument which has a full name (module)
-             * If the module is already a function, which there is at least one example of, this patch will not apply
-             */
-            match: /(function)?(?:\((.*?)\)(?:=>)?|(.|module)=>){/,
-            noWarn: true,
-            replace(match, func, args1, args2) {
-                return func ? match : `function(${args1 ?? args2}){`;
-            }
-        },
-        {
             // Inject the exporter at the very end of the function
             match: /}$/,
             // Pretty clever: we just pass a function that runs `eval` from the module's scope so that we can reference local variables from our exporter

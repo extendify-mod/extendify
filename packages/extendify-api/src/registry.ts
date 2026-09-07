@@ -6,6 +6,7 @@ import type { ServiceOptions } from "@extendify/api/esperanto";
 import type { ApiOverride } from "@extendify/api/platform";
 import type { EsperantoService } from "@extendify/shared/types/spotify/esperanto";
 import type { WebpackRawModules } from "@extendify/shared/types/webpack";
+import type { ExportSubscription, ModuleSubscription } from "@extendify/webpack/module";
 
 export const contexts: Set<Context> = new Set();
 export const plugins: Set<Plugin> = new Set();
@@ -18,3 +19,5 @@ export const overriddenFunctions: ApiOverride[] = [];
 export const services = new Map<string, EsperantoService>();
 export const serviceIds = new WeakMap<EsperantoService | Promise<EsperantoService>, string>();
 export const serviceOptions = new Map<string, ServiceOptions>();
+export const exportSubscriptions: Set<ExportSubscription> = new Set();
+export const moduleSubscriptions: Set<ModuleSubscription> = new Set();
