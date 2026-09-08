@@ -13,10 +13,10 @@ An easy to install and use mod for the desktop and browser versions of Spotify!
 
 ## Supported Platforms:
 
-- [Linux (x64_86)](/docs/install/linux.md)
-- [Windows (x64, arm64)](/docs/install/windows.md)
+- [Linux (x64_86)](#installing-on-linux-based-systems)
+- [Windows (x64, arm64)](#installing-on-windows)
 - ~~MacOS (Intel, ARM)~~ Coming soon!
-- [Chrome](/docs/install/chrome.md)
+- [Chrome](#installing-as-chrome-extension)
 
 ## Installation:
 
@@ -29,10 +29,10 @@ Using Extendify on Linux is pretty straightforward.
 The way we inject is through the `LD_PRELOAD` environment variable.
 This variable loads a specified `.so` (shared object) file into the process, allowing you to override original exports.
 
-You can download prebuilt shared object [here](https://github.com/extendify-mod/extendify/releases/download/native/linux_x86_64.so) (may be outdated).
+You can download prebuilt SO files [here](https://github.com/extendify-mod/extendify/releases/download/native/linux_x86_64.so).
 Note that builds are only available for the `x64_86` architecture and for glibc!
 
-Then, whenever you run the Spotify app, prefix your command with `LD_PRELOAD=</full/path/to/linux_x86_64.so>` to inject Extendify.
+Then, whenever you run the Spotify app, prefix your command with `LD_PRELOAD=/full/path/to/linux_x86_64.so` to inject Extendify.
 Of course you can simplify this by making an alias for whatever command you use to launch Spotify.
 
 For example:
@@ -41,15 +41,13 @@ For example:
 LD_PRELOAD=path/to/linux_x86_64.so spotify
 ```
 
-Alternatievely, [spotify-launcher](https://github.com/kpcyrd/spotify-launcher) can be used to automate this process.
+Alternatively, [spotify-launcher](https://github.com/kpcyrd/spotify-launcher) can be used to automate this process.
 In the `$HOME/.config/spotify-launcher.conf` file, add the following block:
 
 ```ini
 [spotify]
-extra_env_vars = ["LD_PRELOAD=</full/path/to/linux_x86_64.so>"]
+extra_env_vars = ["LD_PRELOAD=/full/path/to/linux_x86_64.so"]
 ```
-
-After that, restart Spotify, and Extendify will be loaded.
 
 ### Installing on Windows
 
@@ -62,6 +60,13 @@ irm "https://raw.githubusercontent.com/extendify-mod/extendify/refs/heads/master
 ```
 
 This fetches our install script from GitHub and automatically executes it.
+
+The install script does the following:
+
+1. Uninstalls existing MS Store version of Spotify (If it's installed)
+1. Installs official Spotify version
+1. Downloads and installs Extendify dll
+1. Removes any outdated Extendify dlls
 
 #### Manual installation
 
@@ -80,7 +85,7 @@ We don't yet have an official Extension on the Chrome Webstore, so to use Extend
 
 1. Build Extendify with the `--platform=browser` flag enabled. Read the build [here](#building-web-mod).
 1. In the browser, navigate to `chrome://extensions`. Enable "developer mode" if it is not enabled.
-1. Press `Load Unpacked` and navigating to the `packages/mod/dist` folder.
+1. Press `Load Unpacked` and navigate to the `dist` folder.
 1. Refresh Spotify or open a new Spotify tab and Extendify will be loaded.
 
 ## Building Extendify
@@ -91,17 +96,17 @@ which both use different a different build system, we've separated the guides.
 - [Native](#natieve-version), i.e. native to the system, library loading.
 - [Mod (The core of Extendify)](#building-web-mod)
 
-Build instructions assumes the use of Arch Linux.
+Nix users can use the flake in the repo instead, which automates this build process for us.
 
-### Native version
+### Native
 
 #### Step 1: prepare the environment
 
 Install building dependencies:
 
-```bash
-sudo pacman -S git python rust
-```
+- git
+- python
+- rust + cargo
 
 Clone the repository:
 
@@ -131,11 +136,10 @@ Run the script to download CEF:
 python ./crates/extendify-native/scripts/dl_cef.py
 ```
 
-This script is:
+This script does the following:
 1. Download the latest version of Spotify
-1. Extract CEF version and find download link to it's headers
-1. Download the headers
-1. Remove intermediate files
+1. Extract CEF version and find download link to its headers
+1. Download and extract the headers to correct location
 
 #### Step 2: build
 
@@ -147,11 +151,11 @@ cargo build --package extendify-native --release
 
 Notes:
 1. Remove `--release` flag to make cargo build an optimized build for debugging.
-1. If you are building on Windows, there is a convenience script (./crates/extendify-native/scripts/move.ps1) you can use to move built `.dll` to your Spotify directory.
+1. If you are building on Windows, there is a convenience script (`./crates/extendify-native/scripts/move.ps1`) you can use to move built `.dll` to your Spotify directory.
 
-### Building web mod
+### Building the mod
 
-This guide will cover how to build the Extendify web mod.
+This guide will cover how to build the Extendify mod.
 
 #### Step 1: prepare the environment
 
@@ -176,9 +180,11 @@ bun install
 
 #### Step 2: build
 
-Build script accepts 2 build types: `build` and `build-dev`.
-There is 2 platforms available: `browser` and `desktop`.
+The build script accepts 2 build types: `build` and `build-dev`.
+
+There are 2 platforms available: `browser` and `desktop`.
 To specify the platform to build for, use the `--platform` flag.
+This flag defaults to `desktop`.
 
 ```bash
 bun -F @extendify/scripts <TYPE> --platform=<PLATFORM>
@@ -194,4 +200,15 @@ The resulting files should end up in a `dist` folder.
 
 #### Step 3: installation
 
-To use the locally built files with the native loader, create an environment variable called `EXTENDIFY_ROOT`, and set its value to the root of the Extendify repository.
+To use the locally built files with the native loader, create an environment variable called `EXTENDIFY_ROOT`,
+and set its value to the root of the Extendify repository.
+Once you've done that, whenever you refresh Spotify (accessible by [enabling devtools](#extra-enable-devtoools))
+it will re-read the locally built files, meaning you can iterate without having to restart Spotify.
+
+### Extra: Enable devtoools
+
+To enable devtools, run the following bun script:
+
+```bash
+bun run devtools
+```
