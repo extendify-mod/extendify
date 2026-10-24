@@ -10,6 +10,7 @@ data/
 
 # Files
 extendify.log
+.DS_Store
 
 # Nix
 result
