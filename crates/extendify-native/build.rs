@@ -7,11 +7,17 @@ fn main() {
         format!("{}/cef", manifest_dir)
     });
 
+    #[cfg(target_os = "macos")]
+    println!("cargo:rustc-link-search=framework={}/Release", cef_path);
+    #[cfg(not(target_os = "macos"))]
     println!("cargo:rustc-link-search=native={}/Release", cef_path);
+
     #[cfg(target_os = "windows")]
     println!("cargo:rustc-link-lib=libcef");
     #[cfg(target_os = "linux")]
     println!("cargo:rustc-link-lib=dylib=cef");
+    #[cfg(target_os = "macos")]
+    println!("cargo:rustc-link-lib=framework=Chromium Embedded Framework");
 
     let builder = bindgen::Builder::default()
         .header("wrapper.h")

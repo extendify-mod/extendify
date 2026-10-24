@@ -15,7 +15,7 @@ An easy to install and use mod for the desktop and browser versions of Spotify!
 
 - [Windows (x64, arm64)](/docs/install/windows.md)
 - [Linux (x64)](/docs/install/linux.md)
-- ~~MacOS (Intel, ARM)~~ Coming soon!
+- [MacOS (ARM, Intel)](/docs/install/macos.md)
 - [Chrome](/docs/install/chrome.md)
 
 ### Installation Guide:
@@ -25,3 +25,7 @@ You can find our guide on how to install Extendify [here](/docs/install)!
 ### Developing:
 
 A guide on how to contribute and develop for Extendify is located [here](/docs/develop)!
+
+### Licenses:
+
+- `crates/extendify-native/src/unix/preload.rs` is licensed under the [BSD 2-Clause "Simplified" License](/LICENSE-redhook).
