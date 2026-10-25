@@ -3,8 +3,10 @@
   fetchurl,
   stdenv,
   stdenvNoCC,
-}: let
-  selectSystem = attrs:
+}:
+let
+  selectSystem =
+    attrs:
     attrs.${stdenv.hostPlatform.system} or (throw "Unsupported system ${stdenv.hostPlatform.system}");
 
   platformString = selectSystem {
@@ -20,31 +22,40 @@
     aarch64-darwin = "sha256-Q94fht0yAkwAIqv29I1ZkpaS7WiYvJIcHWFcmBSvqHw=";
   };
 in
-  if stdenv.hostPlatform.isLinux
-  then
-    cef-binary.override {
-      inherit version gitRevision chromiumVersion srcHashes;
-    }
-  else if stdenv.hostPlatform.system == "aarch64-darwin"
-  then
-    stdenvNoCC.mkDerivation {
-      name = "darwin-cef";
+if stdenv.hostPlatform.isLinux then
+  cef-binary.override {
+    inherit
+      version
+      gitRevision
+      chromiumVersion
+      srcHashes
+      ;
+  }
+else if stdenv.hostPlatform.system == "aarch64-darwin" then
+  stdenvNoCC.mkDerivation {
+    nativeBuildInputs = [ stdenv.cc ];
+    name = "darwin-cef";
 
-      src = fetchurl {
-        url = "https://cef-builds.spotifycdn.com/cef_binary_${version}+g${gitRevision}+chromium-${chromiumVersion}_${platformString}_minimal.tar.bz2";
-        hash = srcHashes.${stdenv.hostPlatform.system};
-      };
+    src = fetchurl {
+      url = "https://cef-builds.spotifycdn.com/cef_binary_${version}+g${gitRevision}+chromium-${chromiumVersion}_${platformString}_minimal.tar.bz2";
+      hash = srcHashes.${stdenv.hostPlatform.system};
+    };
 
-      dontBuild = true;
-      dontConfigure = true;
+    dontBuild = true;
+    dontConfigure = true;
 
-      unpackPhase = ''
-        tar --strip-components=1 -xjf $src
-      '';
+    unpackPhase = ''
+      tar --strip-components=1 -xjf $src
+    '';
 
-      installPhase = ''
-        mkdir -p $out
-        cp -r ./* $out/
-      '';
-    }
-  else throw "Unsupported system: ${stdenv.hostPlatform.system}"
+    installPhase = ''
+      mkdir -p $out
+      cp -r ./* $out/
+
+      ${stdenv.cc.targetPrefix}install_name_tool \
+        -id '@rpath/Chromium Embedded Framework.framework/Chromium Embedded Framework' \
+        "$out/Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+    '';
+  }
+else
+  throw "Unsupported system: ${stdenv.hostPlatform.system}"
