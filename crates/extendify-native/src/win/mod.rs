@@ -8,6 +8,7 @@ use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows_sys::core::BOOL;
 
 mod hook;
+mod reimpl;
 
 #[unsafe(no_mangle)]
 pub extern "system" fn DllMain(

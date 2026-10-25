@@ -267,7 +267,7 @@ if (-not $dllUrls.ContainsKey($arch)) {
 }
 
 $dllUrl = $dllUrls[$arch]
-$dllName = "profapi.dll"
+$dllName = "DWrite.dll"
 $dllDest = Join-Path (Join-Path $env:AppData "Spotify") $dllName
 $dllDir = Split-Path $dllDest
 
@@ -280,19 +280,25 @@ if (-not (Test-Path $dllDir)) {
     New-Item -ItemType Directory -Path $dllDir -Force | Out-Null
 }
 
-# Older versions of Extendify used version.dll instead of profapi.dll.
-# Remove any leftover copy so the two don't conflict.
-$legacyDll = Join-Path $dllDir "version.dll"
-if (Test-Path $legacyDll) {
-    Write-Info "Found leftover version.dll from an older install — removing it…"
-    try {
-        Remove-Item -Path $legacyDll -Force -ErrorAction Stop
-        Write-Ok "Removed legacy version.dll."
-    }
-    catch {
-        Write-Err "Failed to remove legacy version.dll: $_"
-        Write-Info "Close Spotify completely (check the system tray) and re-run this script."
-        exit 1
+# Remove DLLs we previously used
+$legacyDlls = @(
+    "version.dll"
+    "profapi.dll"
+)
+foreach ($dllName in $legacyDlls) {
+    $legacyDll = Join-Path $dllDir $dllName
+
+    if (Test-Path $legacyDll) {
+        Write-Info "Found leftover $dllName from an older install — removing it…"
+        try {
+            Remove-Item -Path $legacyDll -Force -ErrorAction Stop
+            Write-Ok "Removed legacy $dllName."
+        }
+        catch {
+            Write-Err "Failed to remove legacy $dllName`: $_"
+            Write-Info "Close Spotify completely (check the system tray) and re-run this script."
+            exit 1
+        }
     }
 }
 

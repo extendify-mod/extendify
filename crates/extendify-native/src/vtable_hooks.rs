@@ -30,10 +30,10 @@ pub unsafe extern "C" fn on_context_created_hook(
     callbacks::on_frame(frame);
 
     if let Some(func) = ON_CONTEXT_CREATED_OG.lock().ok().and_then(|g| *g) {
-        unsafe { func(self_, browser, frame, context) };
+        return unsafe { func(self_, browser, frame, context) };
     }
 
-    log(format!("Couldn't call original {}", stringify!($mutex)));
+    log(format!("Couldn't call original context callback"));
 }
 
 pub static RES_HANDLER_OG: Mutex<
