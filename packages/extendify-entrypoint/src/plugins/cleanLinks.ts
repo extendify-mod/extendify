@@ -1,4 +1,4 @@
-import { exportFunction, registerPatch } from "@extendify/api/context/patch";
+import { registerPatch } from "@extendify/api/context/patch";
 import { registerPlugin } from "@extendify/api/context/plugin";
 
 const { plugin } = registerPlugin({
@@ -12,13 +12,7 @@ const { plugin } = registerPlugin({
 registerPatch(plugin, {
     find: "feedback.link-copied",
     replacement: {
-        match: /((?:const|let){shareUrl:\i,shareId:\i})=(\i)/,
-        replace: "$1={...$2,shareUrl:$exp.removeShareId($2.shareUrl)}"
+        match: /\?si=\${\i}/g,
+        replace: ""
     }
-});
-
-exportFunction(plugin, function removeShareId(shareUrl: string) {
-    const url = new URL(shareUrl);
-    url.searchParams.delete("si");
-    return url.toString();
 });
