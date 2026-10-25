@@ -2,7 +2,7 @@
 
 #[macro_export]
 macro_rules! extern_c_overrides {
-    (unsafe fn $c_api:ident/$real_api:ident($($param_name:ident : $param_type:ty),* ) -> $return_type:ty $override_body:block) => {
+    (unsafe fn $c_api:ident/$real_api:ident ($($param_name:ident : $param_type:ty),* ) -> $return_type:ty $override_body:block) => {
         pub mod $c_api {
             #[allow(non_camel_case_types)]
             pub struct $c_api {
@@ -32,6 +32,6 @@ macro_rules! extern_c_overrides {
     };
 
     (unsafe fn $c_api:ident/$real_api:ident ( $($param_name:ident : $param_type:ty),* ) $override_body:block) => {
-        hook! { unsafe fn $c_api ( $($param_name : $param_type),* ) -> () => $real_api $override_body }
+        extern_c_overrides! { unsafe fn $c_api/$real_api ( $($param_name : $param_type),* ) -> () $override_body }
     };
 }
