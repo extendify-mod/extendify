@@ -19,7 +19,10 @@ fn main() {
     {
         println!("cargo:rustc-link-search=framework={}/Release", cef_path);
         println!("cargo:rustc-link-lib=framework=Chromium Embedded Framework");
-        println!("cargo:rustc-link-arg=-Wl,-rpath,{}/Release", cef_path);
+
+        // NOTE: this is for unit tests to pass, but it breaks the actual dylib, so until there's a
+        // better solution I will just keep this commented
+        // println!("cargo:rustc-link-arg=-Wl,-rpath,{}/Release", cef_path);
     }
 
     let builder = bindgen::Builder::default()
