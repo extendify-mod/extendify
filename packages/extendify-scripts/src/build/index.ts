@@ -5,18 +5,16 @@ import { getTimeDifference, stringify } from "@extendify/scripts/utils";
 import type { TargetPlatform } from "@extendify/shared/types";
 
 import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 const DEVELOPMENT = hasArg("dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
-const OUT = getKwarg("out") ?? "../../dist";
+const OUT = getKwarg("out") ?? resolve(import.meta.dir, "../../dist");
 const ENTRYPOINT = await Bun.resolve("@extendify/entrypoint/src/index.ts", import.meta.dir);
 
 const start = performance.now();
 
-try {
-    await rm(OUT, { force: true, recursive: true });
-} catch {}
+await rm(OUT, { force: true, recursive: true });
 await mkdir(OUT, { recursive: true });
 console.log(`Created output folder (${getTimeDifference(start)} ms)`);
 
