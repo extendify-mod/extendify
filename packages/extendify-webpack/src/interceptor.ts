@@ -7,21 +7,23 @@ const logger = createLogger({ name: "WebpackInterceptor" });
 
 let webpackChunk: any[] | undefined;
 
-Object.defineProperty(window, WEBPACK_CHUNK_NAME, {
-    configurable: true,
-    get: () => webpackChunk,
-    set(chunk) {
-        if (chunk?.push && !chunk.push.$$) {
-            patchPush(chunk);
-            logger.info(`Patched ${WEBPACK_CHUNK_NAME}.push`);
+for (const chunkName of WEBPACK_CHUNK_NAMES) {
+    Object.defineProperty(window, chunkName, {
+        configurable: true,
+        get: () => webpackChunk,
+        set(chunk) {
+            if (chunk?.push && !chunk.push.$$) {
+                patchPush(chunk);
+                logger.info(`Patched ${chunkName}.push`);
 
-            delete window[WEBPACK_CHUNK_NAME];
-            window[WEBPACK_CHUNK_NAME] = chunk;
+                delete window[chunkName];
+                window[chunkName] = chunk;
+            }
+
+            webpackChunk = chunk;
         }
-
-        webpackChunk = chunk;
-    }
-});
+    });
+}
 
 Object.defineProperty(Function.prototype, "m", {
     configurable: true,

@@ -12,7 +12,7 @@ declare global {
     /** The platform for which Extendify is being compiled */
     export const PLATFORM: TargetPlatform;
     /** The name of the webpack chunk in the global window object */
-    export const WEBPACK_CHUNK_NAME: string;
+    export const WEBPACK_CHUNK_NAMES: string[];
     /** Replaces the call with globbed imports */
     export function globPlugins(): void;
 

@@ -37,7 +37,7 @@ await Bun.build({
     define: stringify({
         DEVELOPMENT: DEVELOPMENT,
         PLATFORM: PLATFORM,
-        WEBPACK_CHUNK_NAME: webpackChunkNames[PLATFORM]
+        WEBPACK_CHUNK_NAMES: webpackChunkNames[PLATFORM]
     }),
     entrypoints: [ENTRYPOINT],
     format: "iife",
