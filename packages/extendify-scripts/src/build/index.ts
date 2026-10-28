@@ -9,7 +9,7 @@ import { join, resolve } from "node:path";
 
 const DEVELOPMENT = hasArg("dev");
 const PLATFORM = (getKwarg("platform") as TargetPlatform) ?? "desktop";
-const OUT = getKwarg("out") ?? resolve(import.meta.dir, "../../../../dist");
+const OUT = resolve(import.meta.dir, "../../../../dist");
 const ENTRYPOINT = await Bun.resolve("@extendify/entrypoint/src/index.ts", import.meta.dir);
 
 const start = performance.now();
