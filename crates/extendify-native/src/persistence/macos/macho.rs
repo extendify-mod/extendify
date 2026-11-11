@@ -3,7 +3,7 @@
 
 use std::{error::Error, io::Write};
 
-use apple_codesign::{AppleCodesignError, CodeSignatureFlags, MachOSigner, SettingsScope, SigningSettings};
+use apple_codesign::{AppleCodesignError, MachOSigner, SigningSettings};
 use goblin::mach::{MachO as GoblinMachO, cputype::CPU_TYPE_ARM64, load_command::{CommandVariant, LC_LOAD_WEAK_DYLIB}};
 
 pub struct MachO<'a> {
@@ -143,7 +143,6 @@ impl MachO<'_> {
 		let signer = MachOSigner::new(data).unwrap();
 		let mut settings = SigningSettings::default();
 		settings.import_settings_from_macho(data).unwrap();
-		settings.remove_code_signature_flags(SettingsScope::Main, CodeSignatureFlags::RUNTIME);
 
 		signer.write_signed_binary(&settings, writer)
 	}

@@ -80,6 +80,10 @@ fn patch_macho() {
 	let app_support = home_dir().unwrap().join("Library/Application Support");
 	let macho_path = app_support.join("Spotify/PersistentCache/Update/temp/Spotify.app/Contents/MacOS/Spotify");
 
+	if !macho_path.exists() { return; }
+
+	log("Patching Spotify update");
+
 	inject(&macho_path);
 
 	log("Patched Spotify update");
