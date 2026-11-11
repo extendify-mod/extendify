@@ -21,7 +21,13 @@ features = [
     "Win32_System_Diagnostics_Debug",
 ]
 
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-codesign = { version = "0.29.0", default-features = false }
+goblin = "0.10.7"
+objc2 = "0.6.5"
+
 [dependencies]
+ctor = "1.0.13"
 reqwest = { workspace = true, features = ["blocking"] }
 
 [build-dependencies]
