@@ -8,7 +8,7 @@ pub mod paths {
 			unix => {
 				let config = env::var("XDG_CONFIG_HOME")
 					.map(|str| PathBuf::from(str))
-					.unwrap_or(home_dir().unwrap().join(".config"));
+					.unwrap_or(env::home_dir().unwrap().join(".config"));
 
 				config.join("extendify")
 			},
