@@ -4,7 +4,7 @@ pub mod paths {
 	pub fn extendify_root() -> PathBuf {
 		cfg_select! {
 			target_os = "macos" => env::home_dir().unwrap().join("Library/Application Support/Extendify"),
-			windows => PathBuf::from(env::var("LOCALAPPDATA")).join("Extendify"),
+			windows => PathBuf::from(env::var("LOCALAPPDATA").unwrap()).join("Extendify"),
 			unix => {
 				let config = env::var("XDG_CONFIG_HOME")
 					.map(|str| PathBuf::from(str))
