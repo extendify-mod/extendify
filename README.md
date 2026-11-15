@@ -29,3 +29,4 @@ A guide on how to contribute and develop for Extendify is located [here](/docs/d
 ### Licenses:
 
 - `crates/extendify-native/src/unix/preload.rs` is licensed under the [BSD 2-Clause "Simplified" License](/LICENSE-redhook).
+- All other code is licensed under the [GNU GPLv3](/LICENSE).
