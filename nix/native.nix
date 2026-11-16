@@ -53,8 +53,7 @@ craneLib.buildPackage (
 
     meta = {
       homepage = "https://github.com/extendify-mod/extendify";
-      # wtf is the license
-      # license = lib.licenses.gpl3;
+      license = lib.licenses.gpl3;
       maintainers = [ lib.maintainers.fazzi ];
       platforms = [
         "x86_64-linux"
