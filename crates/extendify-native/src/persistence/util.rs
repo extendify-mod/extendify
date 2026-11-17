@@ -1,5 +1,6 @@
 use anyhow::{Result, ensure};
 
+#[cfg_attr(not(target_os = "macos"), allow(unused))]
 pub trait NotNull: Sized {
     fn not_null(self, msg: &'static str) -> Result<Self>;
 }

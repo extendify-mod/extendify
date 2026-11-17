@@ -1,8 +1,8 @@
 mod macho;
 
-use std::{env::home_dir, error::Error, ffi::c_void, fs::{self, File}, mem::transmute, path::PathBuf};
-use anyhow::{Context, Result, anyhow, bail};
-use objc2::{ffi::{class_addMethod, class_getClassMethod, method_exchangeImplementations, method_getTypeEncoding, objc_getClass, objc_getMetaClass}, msg_send, runtime::{AnyClass, AnyObject, Bool, Imp, Sel}, sel};
+use std::{env::home_dir, ffi::{CStr, c_void}, fs::{self, File}, mem::transmute, path::PathBuf};
+use anyhow::{Context, Result, bail, ensure};
+use objc2::{ffi::{class_addMethod, class_getClassMethod, method_exchangeImplementations, method_getTypeEncoding, objc_getClass, objc_getMetaClass}, msg_send, runtime::{AnyObject, Bool, Imp, Sel}, sel};
 
 use crate::{consts, log, persistence::{macos::macho::MachO, util::NotNull}};
 
@@ -117,7 +117,7 @@ fn patch_macho() {
 		Ok(false) => {
 			log("Spotify update already patched, skipping");
 		},
-		Err(_) => {
+		Err(err) => {
 			log(err.context("Failed to patch Spotify update"));
 		},
 	}

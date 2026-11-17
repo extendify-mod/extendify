@@ -1,8 +1,9 @@
 // Certain logic adapted from
 // https://github.com/claration/impactor/blob/b13d99559febd63e3710dfdd0ef8cdd78d10ae13/crates/plume_core/src/utils/macho.rs
 
-use std::{error::Error, io::Write};
+use std::io::Write;
 
+use anyhow::{Result, ensure};
 use apple_codesign::{AppleCodesignError, MachOSigner, SigningSettings};
 use goblin::mach::{MachO as GoblinMachO, cputype::CPU_TYPE_ARM64, load_command::{CommandVariant, LC_LOAD_WEAK_DYLIB}};
 
@@ -36,7 +37,7 @@ impl MachO<'_> {
 		})
 	}
 
-	pub fn add_dylib_load_path<'a>(&self, path: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+	pub fn add_dylib_load_path<'a>(&self, path: &str) -> Result<Vec<u8>> {
 		let read_u32_le = |data: &[u8], offset: usize| -> u32 {
 			u32::from_le_bytes([
 				data[offset],
@@ -57,9 +58,7 @@ impl MachO<'_> {
 		// with macho.data we can clone, modify, then set the data
 		// for our modified binary, then using MachO struct we can make our universal bin
 
-		if dylib_exists {
-			return Err("Dylib already exists in binary")?;
-		}
+		ensure!(!dylib_exists, "Dylib already exists in binary");
 
 		let header_size = if is_64 { 32 } else { 28 };
 
@@ -100,9 +99,7 @@ impl MachO<'_> {
 
 		let available_space = data_start.saturating_sub(load_commands_end);
 
-		if dylib_command_size > available_space {
-			return Err("Not enough space in binary to add dylib load command")?;
-		}
+		ensure!(dylib_command_size <= available_space, "Not enough space in binary to add dylib load command");
 
 		// Write the new load command into the available space (no splice needed!)
 		let insert_offset = load_commands_end;
