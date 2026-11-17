@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 mod callbacks;
 mod cef;
+mod consts;
+mod persistence;
 mod vtable_hooks;
 
 #[cfg(unix)]
