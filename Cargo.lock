@@ -1289,6 +1289,7 @@ dependencies = [
 name = "extendify-native"
 version = "0.0.1"
 dependencies = [
+ "anyhow",
  "apple-codesign",
  "bindgen",
  "ctor",

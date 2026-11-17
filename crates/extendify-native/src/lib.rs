@@ -3,15 +3,13 @@ use std::fmt::Display;
 mod callbacks;
 mod cef;
 mod consts;
+mod persistence;
 mod vtable_hooks;
 
 #[cfg(unix)]
 mod unix;
 #[cfg(windows)]
 mod win;
-
-#[cfg(target_os = "macos")]
-mod persistence;
 
 pub fn log<T: Display>(msg: T) {
     println!("{msg}");

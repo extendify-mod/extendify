@@ -27,6 +27,7 @@ goblin = "0.10.7"
 objc2 = "0.6.5"
 
 [dependencies]
+anyhow.workspace = true
 ctor = "1.0.13"
 reqwest = { workspace = true, features = ["blocking"] }
 
