@@ -1,3 +1,5 @@
+use anyhow::{Result, ensure};
+
 pub trait NotNull: Sized {
     fn not_null(self, msg: &'static str) -> Result<Self>;
 }
