@@ -7,7 +7,10 @@ use objc2::{ffi::{class_addMethod, class_getClassMethod, method_exchangeImplemen
 use crate::{consts, log, persistence::{macos::macho::MachO, util::NotNull}};
 
 // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
-const TYPE_ENCODING: &str = "B28@0:8r^v16B24";
+const TYPE_ENCODING: &str = cfg_select! {
+	target_arch = "aarch64" => "B28@0:8r^v16B24",
+	target_arch = "x86_64" => "c28@0:8r^v16c24",
+};
 
 unsafe extern "C-unwind" fn swizzled_relaunch(
 	class: *mut AnyObject,
