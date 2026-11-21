@@ -1,9 +1,10 @@
 use std::{env::home_dir, ffi::{CStr, c_void}, mem::transmute};
 use anyhow::{Result, ensure};
 use common::inject::{Injector, InjectorBackend};
+use log::{debug, error, info};
 use objc2::{ffi::{class_addMethod, class_getClassMethod, method_exchangeImplementations, method_getTypeEncoding, objc_getClass, objc_getMetaClass}, msg_send, runtime::{AnyObject, Bool, Imp, Sel}, sel};
 
-use crate::{log, persistence::util::NotNull};
+use crate::persistence::util::NotNull;
 
 unsafe extern "C-unwind" fn swizzled_relaunch(
 	class: *mut AnyObject,
@@ -72,11 +73,11 @@ fn patch_macho() {
 
 	if !path.exists() { return; }
 
-	log("Patching Spotify update");
+	debug!("Patching Spotify update");
 
 	if let Err(err) = Injector::new(path).inject() {
-		log(err.context("Failed to patch update"));
+		error!("{}", err.context("Failed to patch update"));
 	} else {
-		log("Patched Spotify update");
+		info!("Patched Spotify update");
 	}
 }

@@ -1,7 +1,8 @@
 use crate::cef::_cef_frame_t;
 use crate::cef::utils::{ctos, stoc};
-use crate::{is_renderer, log};
+use crate::is_renderer;
 use common::consts;
+use log::{debug, error, info, warn};
 use std::fmt::Display;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -33,27 +34,27 @@ pub fn on_frame(frame: *mut _cef_frame_t) {
             return;
         }
 
-        log(format!("Found new frame id {id} ({})", std::process::id()));
+        debug!("Found new frame id {id} ({})", std::process::id());
 
         guard.push(id);
     } else {
-        log("Lock failed");
+        error!("Lock failed");
         return;
     }
 
-    log("Injecting Extendify");
+    info!("Injecting Extendify");
 
     if let Some(script) = get("extendify.js") {
         execute_java_script(frame, "extendify_script", &script);
 
-        log("Injected script");
+        debug!("Injected script");
     }
 
     if let Some(style) = get("extendify.css") {
         let script = include_str!("./inject/styles.js").replace("{{style}}", &style);
         execute_java_script(frame, "extendify_styles", &script);
 
-        log("Injected styles");
+        debug!("Injected styles");
     }
 }
 
@@ -63,11 +64,11 @@ fn get(filename: &str) -> Option<String> {
         path.push(filename);
 
         if let Ok(content) = std::fs::read_to_string(path) {
-            log(format!("Loading locally built file {filename}"));
+            debug!("Loading locally built file {filename}");
             return Some(content);
         }
 
-        log("Couldn't open local file, falling back to release");
+        warn!("Couldn't open local file {filename}, falling back to release");
     }
 
 	let mut path = consts::paths::extendify_dist();

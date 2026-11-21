@@ -1,4 +1,4 @@
-use crate::log;
+use log::{debug, error};
 use std::ffi::{CString, c_void};
 use std::sync::Mutex;
 
@@ -17,14 +17,14 @@ pub fn create_hook<T: Copy>(
 
     let module = unsafe { GetModuleHandleW(wide_name.as_ptr()) };
     if module.is_null() {
-        log(format!("{} not loaded", dll_name));
+        error!("{} not loaded", dll_name);
         return;
     }
 
     let symbol_c = match CString::new(symbol) {
         Ok(s) => s,
         Err(_) => {
-            log(format!("Invalid symbol name {}", symbol));
+            error!("Invalid symbol name {}", symbol);
             return;
         }
     };
@@ -32,7 +32,7 @@ pub fn create_hook<T: Copy>(
     let target = match unsafe { GetProcAddress(module, symbol_c.as_ptr() as _) } {
         Some(addr) => addr,
         None => {
-            log(format!("Couldn't find target symbol {symbol}"));
+            error!("Couldn't find target symbol {symbol}");
             return;
         }
     };
@@ -47,9 +47,9 @@ pub fn create_hook<T: Copy>(
     };
 
     if status >= 0 {
-        log(format!("Created hook for {symbol}"));
+        debug!("Created hook for {symbol}");
     } else {
-        log(format!("Hook for {symbol} failed {status}"));
+        error!("Hook for {symbol} failed {status}");
     }
 }
 
@@ -69,8 +69,8 @@ pub fn create_inline_hook<T: Copy>(
     };
 
     if status >= 0 {
-        log(format!("Created inline hook {name}"));
+        debug!("Created inline hook {name}");
     } else {
-        log(format!("Hook for {name} failed {status}"));
+        error!("Hook for {name} failed {status}");
     }
 }

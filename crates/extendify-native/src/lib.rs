@@ -1,5 +1,7 @@
+use std::env;
+
 use ctor::ctor;
-use std::fmt::Display;
+use log::LevelFilter;
 
 mod callbacks;
 mod cef;
@@ -13,40 +15,17 @@ mod win;
 
 #[ctor(unsafe)]
 fn main() {
+	let level = if env::var("EXTENDIFY_DEBUG").is_ok() { LevelFilter::Debug }
+	else { LevelFilter::Info };
+
+	common::log::Logger::build()
+		.level(level)
+		.target_level("goblin", LevelFilter::Warn)
+		.target_level("apple_codesign", LevelFilter::Warn)
+		.target_level("reqwest", LevelFilter::Warn)
+		.init();
+
 	persistence::init();
-}
-
-pub fn log<T: Display>(msg: T) {
-    println!("{msg}");
-
-    #[cfg(debug_assertions)]
-    {
-        use std::fs::OpenOptions;
-        use std::io::Write;
-
-        if let Ok(mut file) = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open("extendify.log")
-        {
-            writeln!(file, "{msg}").ok();
-        }
-
-        #[cfg(windows)]
-        {
-            use windows_sys::Win32::System::Diagnostics::Debug::OutputDebugStringW;
-
-            let wide: Vec<_> = msg
-                .to_string()
-                .encode_utf16()
-                .chain(std::iter::once(0))
-                .collect();
-
-            unsafe {
-                OutputDebugStringW(wide.as_ptr());
-            }
-        }
-    }
 }
 
 pub fn is_renderer() -> bool {

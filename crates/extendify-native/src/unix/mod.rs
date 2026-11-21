@@ -1,11 +1,10 @@
-#![allow(unused_variables)]
-
 use crate::cef::{
     _cef_browser_settings_t, _cef_browser_view_delegate_t, _cef_browser_view_t, _cef_client_t,
     _cef_dictionary_value_t, _cef_request_context_t, cef_string_t,
 };
 use crate::vtable_hooks::GET_REQ_HANDLER_OG;
-use crate::{log, vtable_hooks};
+use crate::vtable_hooks;
+use log::debug;
 
 #[cfg(target_os = "linux")]
 #[macro_use]
@@ -24,7 +23,7 @@ extern_c_overrides! {
         request_context: *mut _cef_request_context_t,
         delegate: *mut _cef_browser_view_delegate_t
     ) -> *mut _cef_browser_view_t {
-        log("CEF browser view created");
+        debug!("CEF browser view created");
 
         let view = real_cef_browser_view_create(client, url, settings, extra_info, request_context, delegate);
 

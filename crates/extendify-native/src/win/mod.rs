@@ -1,5 +1,6 @@
 use crate::cef::{_cef_app_t, _cef_main_args_t, _cef_settings_t};
-use crate::{log, vtable_hooks};
+use crate::vtable_hooks;
+use log::{debug, error};
 use std::ffi::{c_int, c_void};
 use std::sync::Mutex;
 use windows_sys::Win32::Foundation::HINSTANCE;
@@ -33,7 +34,7 @@ fn ensure_libcef() {
     unsafe {
         let module = GetModuleHandleW(name.as_ptr());
         if module.is_null() {
-            log("Force loading CEF");
+            debug!("Force loading CEF");
 
             LoadLibraryW(name.as_ptr());
         }
@@ -73,7 +74,7 @@ unsafe extern "C" fn cef_initialize_hook(
     app: *mut _cef_app_t,
     sandbox: *mut c_void,
 ) -> c_int {
-    log(format!("CEF init call on PID {}", std::process::id()));
+    debug!("CEF init call on PID {}", std::process::id());
 
     unsafe {
         (*settings).no_sandbox = 1;
@@ -84,7 +85,7 @@ unsafe extern "C" fn cef_initialize_hook(
         return unsafe { func(args, settings, app, sandbox) };
     }
 
-    log("Couldn't call original cef_initialize");
+    error!("Couldn't call original cef_initialize");
     0
 }
 
@@ -96,7 +97,7 @@ unsafe extern "C" fn cef_process_hook(
     app: *mut _cef_app_t,
     sandbox: *mut c_void,
 ) -> c_int {
-    log(format!("Executing process on PID {}", std::process::id()));
+    debug!("Executing process on PID {}", std::process::id());
 
     if !app.is_null() {
         let rph = unsafe { (*app).get_render_process_handler.unwrap()(app) };
@@ -115,7 +116,7 @@ unsafe extern "C" fn cef_process_hook(
     if let Some(func) = CEF_PROCESS_OG.lock().ok().and_then(|g| *g) {
         unsafe { func(args, app, sandbox) }
     } else {
-        log("Couldn't call original cef process");
+        error!("Couldn't call original CEF process");
         0
     }
 }
