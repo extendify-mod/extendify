@@ -1,25 +1,33 @@
 // Certain logic adapted from
 // https://github.com/claration/impactor/blob/b13d99559febd63e3710dfdd0ef8cdd78d10ae13/crates/plume_core/src/utils/macho.rs
 
-use std::{error::Error, io::Write};
-
-use apple_codesign::{AppleCodesignError, MachOSigner, SigningSettings};
+use anyhow::{Result, ensure};
+use apple_codesign::{AppleCodesignError, MachOSigner, SettingsScope, SigningSettings};
 use goblin::mach::{MachO as GoblinMachO, cputype::CPU_TYPE_ARM64, load_command::{CommandVariant, LC_LOAD_WEAK_DYLIB}};
+use log::debug;
 
-pub struct MachO<'a> {
-	macho: GoblinMachO<'a>,
-	data: &'a [u8]
+pub struct MachO {
+	data: Vec<u8>
 }
 
-impl MachO<'_> {
-	pub fn parse<'a>(data: &'a Vec<u8>) -> MachO<'a> {
-		let macho = GoblinMachO::parse(data, 0).unwrap();
-		return MachO { macho, data }
+impl MachO {
+	pub fn parse(data: Vec<u8>) -> MachO {
+		return MachO { data }
+	}
+
+	fn macho(&self) -> GoblinMachO<'_> {
+		GoblinMachO::parse(&self.data, 0).unwrap()
+	}
+
+	pub fn data(&self) -> &[u8] {
+		&self.data
 	}
 
 	pub fn has_dylib(&self, path: &str) -> bool {
-		self.macho.load_commands.iter().any(|load_cmd| {
-			if let CommandVariant::LoadDylib(dylib) = &load_cmd.command {
+		self.macho().load_commands.iter().any(|load_cmd| {
+			if let CommandVariant::LoadDylib(dylib) | CommandVariant::LoadWeakDylib(dylib) =
+				&load_cmd.command
+			{
 				let name_offset = load_cmd.offset + dylib.dylib.name as usize;
 				let mut name_end = name_offset;
 
@@ -36,7 +44,11 @@ impl MachO<'_> {
 		})
 	}
 
-	pub fn add_dylib_load_path<'a>(&self, path: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+	/// Adds a dylib load command to the Macho.
+	/// Returns a Result that contains a boolean that indicates whether any changes were made.
+	pub fn add_dylib_load_path<'a>(&mut self, path: &str) -> Result<bool> {
+		let macho: GoblinMachO<'_> = self.macho();
+
 		let read_u32_le = |data: &[u8], offset: usize| -> u32 {
 			u32::from_le_bytes([
 				data[offset],
@@ -46,7 +58,7 @@ impl MachO<'_> {
 			])
 		};
 
-		let is_64 = self.macho.header.cputype == CPU_TYPE_ARM64;
+		let is_64 = macho.header.cputype == CPU_TYPE_ARM64;
 		let dylib_exists = self.has_dylib(path);
 		let current_sizeofcmds = read_u32_le(&self.data, 20);
 		let current_ncmds = read_u32_le(&self.data, 16);
@@ -58,7 +70,8 @@ impl MachO<'_> {
 		// for our modified binary, then using MachO struct we can make our universal bin
 
 		if dylib_exists {
-			return Err("Dylib already exists in binary")?;
+			debug!("Dylib already exists in binary");
+			return Ok(false);
 		}
 
 		let header_size = if is_64 { 32 } else { 28 };
@@ -75,7 +88,7 @@ impl MachO<'_> {
 		let ncmds_offset = header_offset + 16;
 
 		// Find the minimum non-zero file offset from segments
-		let min_fileoff = self.macho
+		let min_fileoff = macho
 			.load_commands
 			.iter()
 			.filter_map(|load_cmd| match &load_cmd.command {
@@ -100,9 +113,7 @@ impl MachO<'_> {
 
 		let available_space = data_start.saturating_sub(load_commands_end);
 
-		if dylib_command_size > available_space {
-			return Err("Not enough space in binary to add dylib load command")?;
-		}
+		ensure!(dylib_command_size <= available_space, "Not enough space in binary to add dylib load command");
 
 		// Write the new load command into the available space (no splice needed!)
 		let insert_offset = load_commands_end;
@@ -136,14 +147,51 @@ impl MachO<'_> {
 			.copy_from_slice(&new_sizeofcmds.to_le_bytes());
 		data[ncmds_offset..ncmds_offset + 4].copy_from_slice(&new_ncmds.to_le_bytes());
 
-		Ok(data)
+		self.data = data;
+
+		Ok(true)
 	}
 
-	pub fn adhoc_sign(data: &[u8], writer: &mut impl Write) -> Result<(), AppleCodesignError> {
-		let signer = MachOSigner::new(data).unwrap();
+	/// Adhoc signs the binary and sets the needed entitlements
+	pub fn sign(&mut self) -> Result<(), AppleCodesignError> {
+		let signer = MachOSigner::new(&self.data)?;
 		let mut settings = SigningSettings::default();
-		settings.import_settings_from_macho(data).unwrap();
+		settings.import_settings_from_macho(&self.data)?;
 
-		signer.write_signed_binary(&settings, writer)
+		let scope = SettingsScope::MultiArchIndex(0);
+
+		// Disable library validation
+		let entitlements = settings.entitlements_plist(&scope);
+		let entitlements: String = match entitlements {
+			Some(entitlements) => {
+				let mut entitlements = entitlements.clone();
+				let dict = entitlements.as_dictionary_mut().unwrap();
+				dict.insert("com.apple.security.cs.disable-library-validation".into(), true.into());
+
+				let mut vec = Vec::new();
+				entitlements.to_writer_xml(&mut vec).unwrap();
+				String::from_utf8(vec).unwrap()
+			},
+			None => {
+				r#"
+					<?xml version="1.0" encoding="UTF-8"?>
+					<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+					<plist version="1.0">
+						<dict>
+							<key>com.apple.security.cs.disable-library-validation</key>
+							<true />
+						</dict>
+					</plist>
+				"#.into()
+			},
+		};
+
+		settings.set_entitlements_xml(scope, entitlements).expect("Failed to set entitlements");
+
+		let mut vec = Vec::new();
+		signer.write_signed_binary(&settings, &mut vec)?;
+		self.data = vec;
+
+		Ok(())
 	}
 }

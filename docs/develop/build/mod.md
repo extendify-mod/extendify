@@ -40,8 +40,8 @@ $ bun -F @extendify/scripts build --platform=browser
 
 ### Step 3
 
-To use the locally built files with the native loader, create an environment variable called `EXTENDIFY_ROOT`,
-and set its value to the root of the Extendify repository.
+To use the locally built files with the native loader, create an environment variable called `EXTENDIFY_DIST`,
+and set its value to the `dist/` folder at the root of the Extendify repository.
 
 We used to support patching `xpui.spa` with these locally built files just like Spicetify,
 but since introducing Extendify Native our build system no longer supports this.
