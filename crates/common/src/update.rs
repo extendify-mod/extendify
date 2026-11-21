@@ -1,27 +1,24 @@
 use std::fs;
 
 use anyhow::{Context, Result};
-use chrono::{DateTime, Utc};
+use jiff::Timestamp;
 use log::debug;
 use nestify::nest;
 use serde::{Deserialize, Serialize};
 
 use crate::consts;
 
-/// A timestamp, representing the time a given file was published
-type Time = DateTime<Utc>;
-
 struct RemoteVersions {
 	/// Tuple with the timestamp of the assets and a Vec of all file names
-	web: (Time, Vec<String>),
-	native: Time,
+	web: (Timestamp, Vec<String>),
+	native: Timestamp,
 }
 
 /// The timestamps of the locally downloaded Extendify components
 #[derive(Serialize, Deserialize)]
 struct LocalVersions {
-	web: Time,
-	native: Time,
+	web: Timestamp,
+	native: Timestamp,
 }
 
 nest! {
@@ -31,7 +28,7 @@ nest! {
 			tag: String,
 			assets: Vec<struct Asset {
 				#[serde(rename = "updatedAt")]
-				updated_at: Time,
+				updated_at: Timestamp,
 				#[serde(rename = "downloadUrl")]
 				download_url: String,
 			}>,
@@ -74,8 +71,8 @@ fn get_local_versions() -> Result<Option<LocalVersions>> {
 }
 
 struct Updates {
-	web: Option<(Time, Vec<String>)>,
-	native: Option<Time>,
+	web: Option<(Timestamp, Vec<String>)>,
+	native: Option<Timestamp>,
 	versions: LocalVersions,
 }
 

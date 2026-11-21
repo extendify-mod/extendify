@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::Local;
+use jiff::ZonedDateTime;
 use log::{Level, LevelFilter, Metadata, Record};
 use owo_colors::OwoColorize;
 
@@ -75,7 +75,7 @@ impl log::Log for Logger {
 			};
 			let level = level.bold();
 
-			let time = Local::now().format("%H:%M:%S");
+			let time = ZonedDateTime::now().strftime("%H:%M:%S");
 			let time = time.dimmed();
 
             println!("{time} {level} {} {}", record.target().bold().dimmed(), record.args());

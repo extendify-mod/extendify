@@ -14,11 +14,11 @@ members = [
 resolver = "3"
 
 [workspace.dependencies]
+jiff = { version = "1", features = ["serde"] }
 reqwest = { version = "0.12", features = ["json", "gzip", "deflate", "blocking"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 anyhow = "1"
-chrono = "0.4"
 enum-iterator = "2"
 gpapi = "6"
 log = "0.4"
