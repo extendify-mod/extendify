@@ -21,7 +21,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 anyhow = "1"
 enum-iterator = "2"
 gpapi = "6"
-log = "0.4"
+log = { version = "0.4", features = ["alloc"] }
 owo-colors = "4"
 regex = "1"
 serde_json = "1"

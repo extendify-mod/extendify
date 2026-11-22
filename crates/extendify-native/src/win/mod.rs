@@ -3,27 +3,10 @@ use crate::vtable_hooks;
 use log::{debug, error};
 use std::ffi::{c_int, c_void};
 use std::sync::Mutex;
-use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleW, LoadLibraryW};
-use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
-use windows_sys::core::BOOL;
 
 mod hook;
 mod reimpl;
-
-#[unsafe(no_mangle)]
-pub extern "system" fn DllMain(
-    _hinst: HINSTANCE,
-    fdw_reason: u32,
-    _lpv_reserved: *mut c_void,
-) -> BOOL {
-    match fdw_reason {
-        DLL_PROCESS_ATTACH => create_hooks(),
-        _ => {}
-    }
-
-    1
-}
 
 fn ensure_libcef() {
     let name: Vec<_> = "libcef.dll"
@@ -41,7 +24,7 @@ fn ensure_libcef() {
     }
 }
 
-fn create_hooks() {
+pub fn create_hooks() {
     ensure_libcef();
 
     hook::create_hook(

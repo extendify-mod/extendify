@@ -4,7 +4,6 @@ use log::debug;
 use std::{fs, path::PathBuf};
 
 pub struct Backend {
-	path: PathBuf,
 	spotify_extendify_native: PathBuf,
 }
 
@@ -13,7 +12,6 @@ impl super::InjectorBackend for Backend {
 	fn new(path: PathBuf) -> Self {
 		Backend {
 			spotify_extendify_native: consts::paths::spotify_extendify_native(&path),
-			path,
 		}
 	}
 

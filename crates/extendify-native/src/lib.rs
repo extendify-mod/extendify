@@ -25,6 +25,9 @@ fn main() {
 		.target_level("reqwest", LevelFilter::Warn)
 		.init();
 
+	#[cfg(target_os = "windows")]
+	win::create_hooks();
+
 	persistence::init();
 }
 

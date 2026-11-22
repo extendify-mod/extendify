@@ -1,5 +1,6 @@
 use anyhow::{Result, ensure};
 
+#[cfg_attr(not(target_os = "macos"), expect(unused))]
 pub trait NotNull: Sized {
 	/// Convert a pointer to a Result that resolves to the pointer if it isn't null
     fn not_null(self, msg: &'static str) -> Result<Self>;

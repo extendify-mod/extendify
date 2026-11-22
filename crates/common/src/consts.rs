@@ -39,9 +39,7 @@ pub mod paths {
 	pub fn spotify_path() -> Option<PathBuf> {
 		cfg_select! {
 			target_os = "macos" => Some(PathBuf::from("/Applications/Spotify.app")),
-			target_os = "windows" => Some(
-				push(PathBuf::from(std::env::var("LOCALAPPDATA").unwrap()), "Spotify")
-			),
+			target_os = "windows" => Some(push(dirs::data_dir().unwrap(), "Spotify")),
 			_ => None,
 		}
 	}

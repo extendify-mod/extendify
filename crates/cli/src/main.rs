@@ -105,6 +105,7 @@ fn main() -> Result<()> {
 			}
 
 			info!("Extendify successfully installed!");
+			info!("Restart Spotify to apply changes");
         },
         Command::Update {} => {
 			if update::update()? {
