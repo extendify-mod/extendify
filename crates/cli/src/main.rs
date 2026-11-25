@@ -68,6 +68,14 @@ struct Options {
     command: Command,
 }
 
+fn kill() -> Result<()> {
+	if Injector::kill()? {
+		info!("Killed Spotify");
+		info!("Reopen Spotify to apply changes");
+	}
+	Ok(())
+}
+
 fn main() -> Result<()> {
 	let options = options().run();
 	let logger = Logger::build()
@@ -88,28 +96,33 @@ fn main() -> Result<()> {
 
 	match options.command {
         Command::Install { common } => {
+			let mut updated = false;
 			if update::downloaded()? {
 				info!("Updating Extendify");
 			} else {
 				info!("Downloading Extendify");
 			}
-			if !update::update()? {
+			if update::update()? {
+				updated = true;
+			} else {
 				info!("Extendify already on latest version");
 			}
 
 			info!("Injecting Extendify");
 			if Injector::new(common.app).inject()? {
+				updated = true;
 				info!("Injected Extendify");
 			} else {
 				info!("Extendify already injected");
 			}
 
 			info!("Extendify successfully installed!");
-			info!("Restart Spotify to apply changes");
+			if updated { kill()?; }
         },
         Command::Update {} => {
 			if update::update()? {
 				info!("Updated Extendify");
+				kill()?;
 			} else {
 				info!("Extendify already on latest version");
 			}
@@ -117,7 +130,7 @@ fn main() -> Result<()> {
         Command::Inject { common } => {
 			if Injector::new(common.app.clone()).inject()? {
 				info!("Injected Extendify");
-				info!("Restart Spotify to apply changes");
+				kill()?;
 			} else {
 				info!("Extendify already injected");
 			}
@@ -125,8 +138,8 @@ fn main() -> Result<()> {
         Command::Uninject { common } => {
 			if Injector::new(common.app.clone()).uninject()? {
 				info!("Uninjected Extendify");
-				info!("Restart Spotify to apply changes");
 				warn!("Note: This does not remove the Extendify directories");
+				kill()?;
 			} else {
 				info!("Extendify already uninjected");
 			}
