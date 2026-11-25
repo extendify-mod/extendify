@@ -148,13 +148,22 @@ fn main() -> Result<()> {
 			let injector = Injector::new(common.app.clone());
 			let injected = injector.is_injected()?;
 
+			let spotify = common.app;
+			let extendify = consts::paths::extendify_data();
+
+			fn fmt<'a>((t, f): (&str, &str), bool: bool) -> String {
+				if bool { t.green().bold().to_string() }
+				else { f.red().bold().to_string() }
+			}
 			fn fmt_bool<'a>(bool: bool) -> String {
-				if bool { "true".green().bold().to_string() }
-				else { "false".red().bold().to_string() }
+				fmt(("true", "false"), bool)
+			}
+			fn fmt_path<'a>(path: &PathBuf) -> Result<String> {
+				Ok(fmt(("exists", "doesn't exist"), path.try_exists()?))
 			}
 
-			info!("Spotify Path: {}", common.app.display());
-			info!("Extendify Path: {}", consts::paths::extendify_data().display());
+			info!("Spotify Path: {} ({})", spotify.display(), fmt_path(&spotify)?);
+			info!("Extendify Path: {} ({})", extendify.display(), fmt_path(&extendify)?);
 			info!("Extendify Injected: {}", fmt_bool(injected));
 			info!("Extendify Downloaded: {}", fmt_bool(update::downloaded()?));
 			if !offline {
