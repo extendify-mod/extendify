@@ -7,8 +7,8 @@
   self,
   stdenv,
   craneLib,
-}:
-let
+  extendifyLib,
+}: let
   commonArgs = {
     pname = "extendify-native";
     version = (lib.importTOML ../crates/extendify-native/Cargo.toml).package.version;
@@ -41,24 +41,16 @@ let
     }
   );
 in
-craneLib.buildPackage (
-  commonArgs
-  // {
-    inherit cargoArtifacts;
+  craneLib.buildPackage (
+    commonArgs
+    // {
+      inherit cargoArtifacts;
 
-    env = {
-      LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
-      CEF_PATH = self.packages.${stdenv.hostPlatform.system}.cef;
-    };
+      env = {
+        LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
+        CEF_PATH = self.packages.${stdenv.hostPlatform.system}.cef;
+      };
 
-    meta = {
-      homepage = "https://github.com/extendify-mod/extendify";
-      license = lib.licenses.gpl3;
-      maintainers = [ lib.maintainers.fazzi ];
-      platforms = [
-        "x86_64-linux"
-        "aarch64-darwin"
-      ];
-    };
-  }
-)
+      inherit (extendifyLib) meta;
+    }
+  )

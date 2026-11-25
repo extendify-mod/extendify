@@ -11,15 +11,14 @@
     nixpkgs,
     crane,
   }: let
-    systems = [
-      "x86_64-linux"
-      "aarch64-darwin"
-    ];
-    forEachSystem = nixpkgs.lib.genAttrs systems;
+    extendifyLib = import ./nix/lib.nix {inherit (nixpkgs) lib;};
+    forEachSystem = nixpkgs.lib.genAttrs extendifyLib.systems;
     pkgsForSystem = system:
       import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        # expose nix/lib.nix as `extendifyLib` to every callPackage'd file
+        overlays = [(_: _: {inherit extendifyLib;})];
       };
   in {
     devShells = forEachSystem (system: {
