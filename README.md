@@ -30,3 +30,4 @@ A guide on how to contribute and develop for Extendify is located [here](/docs/d
 
 - `crates/extendify-native/src/unix/preload.rs` is licensed under the [BSD 2-Clause "Simplified" License](/LICENSE-redhook).
 - `crates/common/src/inject/macos/macho.rs` is licensed under the [MPL 2.0 License](/LICENSE-impactor).
+- All other code is licensed under the [GNU GPLv3](/LICENSE).
