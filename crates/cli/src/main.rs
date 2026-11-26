@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use anyhow::{Context, Result, ensure};
 use bpaf::Bpaf;
 use common::{consts, inject::{Injector, InjectorBackend}, log::Logger, update};
-use log::{LevelFilter, info, warn};
+use log::{LevelFilter, error, info, warn};
 use owo_colors::OwoColorize;
 
 fn spotify_path(path: Option<PathBuf>) -> Result<PathBuf> {
@@ -76,7 +76,7 @@ fn kill() -> Result<()> {
 	Ok(())
 }
 
-fn main() -> Result<()> {
+fn cli() -> Result<()> {
 	let options = options().run();
 	let logger = Logger::build()
 		.level(LevelFilter::Info)
@@ -174,4 +174,10 @@ fn main() -> Result<()> {
     }
 
 	Ok(())
+}
+
+fn main() {
+	if let Err(e) = cli() {
+		error!("{e:?}");
+	}
 }
