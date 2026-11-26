@@ -40,7 +40,8 @@ pub mod paths {
 		cfg_select! {
 			target_os = "macos" => Some(PathBuf::from("/Applications/Spotify.app")),
 			target_os = "windows" => Some(push(dirs::data_dir().unwrap(), "Spotify")),
-			_ => None,
+			target_os = "linux" => ["/usr/share/spotify", "/opt/spotify"]
+				.into_iter().map(PathBuf::from).find(|path| path.is_dir()),
 		}
 	}
 
