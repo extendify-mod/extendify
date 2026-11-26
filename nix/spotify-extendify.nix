@@ -14,6 +14,10 @@
     if stdenv.isDarwin
     then "DYLD_INSERT_LIBRARIES"
     else "LD_PRELOAD";
+  libName =
+    if stdenv.isDarwin
+    then "libextendify_native.dylib"
+    else "libextendify_native.so";
 in
   symlinkJoin {
     name = "spotify-extendify";
@@ -28,13 +32,13 @@ in
 
     postBuild = ''
       wrapProgram $out/${exe} \
-        --set ${preloadVar} $out/lib/libextendify_native.so
+        --set ${preloadVar} $out/lib/${libName}
     '';
 
     meta =
       extendifyLib.meta
       // {
-        mainProgram = "spotify";
+        mainProgram = "../" + exe;
         description = spotify.meta.description + "(patched with Extendify)";
       };
   }
