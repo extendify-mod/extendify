@@ -1,7 +1,11 @@
-use std::fmt::Display;
+use std::env;
+
+use ctor::ctor;
+use log::LevelFilter;
 
 mod callbacks;
 mod cef;
+mod persistence;
 mod vtable_hooks;
 
 #[cfg(unix)]
@@ -9,37 +13,22 @@ mod unix;
 #[cfg(windows)]
 mod win;
 
-pub fn log<T: Display>(msg: T) {
-    println!("{msg}");
+#[ctor(unsafe)]
+fn main() {
+	let level = if env::var("EXTENDIFY_DEBUG").is_ok() { LevelFilter::Debug }
+	else { LevelFilter::Info };
 
-    #[cfg(debug_assertions)]
-    {
-        use std::fs::OpenOptions;
-        use std::io::Write;
+	common::log::Logger::build()
+		.level(level)
+		.target_level("goblin", LevelFilter::Warn)
+		.target_level("apple_codesign", LevelFilter::Warn)
+		.target_level("reqwest", LevelFilter::Warn)
+		.init();
 
-        if let Ok(mut file) = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open("extendify.log")
-        {
-            writeln!(file, "{msg}").ok();
-        }
+	#[cfg(target_os = "windows")]
+	win::create_hooks();
 
-        #[cfg(windows)]
-        {
-            use windows_sys::Win32::System::Diagnostics::Debug::OutputDebugStringW;
-
-            let wide: Vec<_> = msg
-                .to_string()
-                .encode_utf16()
-                .chain(std::iter::once(0))
-                .collect();
-
-            unsafe {
-                OutputDebugStringW(wide.as_ptr());
-            }
-        }
-    }
+	persistence::init();
 }
 
 pub fn is_renderer() -> bool {

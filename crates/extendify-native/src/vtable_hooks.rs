@@ -1,9 +1,11 @@
+use log::{debug, error};
+
 use crate::cef::{
     _cef_browser_t, _cef_client_t, _cef_frame_t, _cef_render_process_handler_t,
     _cef_request_handler_t, _cef_request_t, _cef_resource_request_handler_t, _cef_v8_context_t,
     cef_string_t,
 };
-use crate::{callbacks, log};
+use crate::callbacks;
 use std::ffi::c_int;
 use std::sync::Mutex;
 
@@ -25,7 +27,7 @@ pub unsafe extern "C" fn on_context_created_hook(
     frame: *mut _cef_frame_t,
     context: *mut _cef_v8_context_t,
 ) {
-    log(format!("Context created on PID {}", std::process::id()));
+    debug!("Context created on PID {}", std::process::id());
 
     callbacks::on_frame(frame);
 
@@ -33,7 +35,7 @@ pub unsafe extern "C" fn on_context_created_hook(
         return unsafe { func(self_, browser, frame, context) };
     }
 
-    log(format!("Couldn't call original context callback"));
+    error!("Couldn't call original context callback");
 }
 
 pub static RES_HANDLER_OG: Mutex<
@@ -101,6 +103,6 @@ pub unsafe extern "C" fn get_req_handler_hook(
         return handler;
     }
 
-    log("Couldn't call original req handler");
+    error!("Couldn't call original req handler");
     std::ptr::null_mut()
 }

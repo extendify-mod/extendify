@@ -1,0 +1,24 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow.workspace = true
+dirs = "7.0.0"
+jiff.workspace = true
+log.workspace = true
+nestify = "0.3.3"
+owo-colors.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sysinfo = "0.40"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-codesign = { version = "0.29.0", default-features = false }
+goblin = { version = "0.10.7", default-features = false, features = ["std", "mach64", "endian_fd"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+goblin = { version = "0.10.7", default-features = false, features = ["std", "elf32", "elf64", "endian_fd"] }
+scroll = "0.13"
